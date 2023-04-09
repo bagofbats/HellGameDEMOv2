@@ -23,7 +23,7 @@ namespace PERSIST
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            player = new Player(this, new Vector2(96, 32), contManager);
+            player = new Player(this, new Vector2(160, 120), contManager);
 
             RawJSON one = JsonFileReader.Read<RawJSON>("rm_tutorial1.json");
             RawJSON two = JsonFileReader.Read<RawJSON>("rm_tutorial2.json");

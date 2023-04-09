@@ -21,6 +21,7 @@ namespace PERSIST
         private Rectangle bounds;
         private List<Chunk> chunks = new List<Chunk>();
         private List<JSON> JSONs = new List<JSON>();
+        private List<Room> rooms = new List<Room>();
 
         public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam)
         {
@@ -36,9 +37,16 @@ namespace PERSIST
 
             foreach (JSON json in JSONs)
                 foreach (Layer layer in json.raw.layers)
+                {
                     if (layer.name == "walls")
                         for (int i = 0; i < layer.data.Count(); i += 4)
                             AddWall(new Rectangle(layer.data[i] + json.location.X, layer.data[i + 1] + json.location.Y, layer.data[i + 2], layer.data[i + 3]));
+
+                    else if (layer.name == "rooms")
+                        for (int i = 0; i < layer.data.Count(); i += 4)
+                            rooms.Add(new Room(new Rectangle(layer.data[i] + json.location.X, layer.data[i + 1] + json.location.Y, layer.data[i + 2], layer.data[i + 3])));
+                }
+                    
         }
 
         public void AddWall(Rectangle bounds)
@@ -113,9 +121,45 @@ namespace PERSIST
         public void Update(GameTime gameTime)
         {
             player.Update(gameTime);
-            int tempX = player.DrawBox.X + 16 - 160;
-            int tempY = player.DrawBox.Y + 16 - 120;
-            cam.Follow(new Vector2(tempX, tempY));
+
+            Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
+            Vector2 camera_pos = cam.GetPos();
+            Rectangle camera_room = GetRoom(camera_pos);
+
+            if (current_room.Width == 0 || current_room.Height == 0)
+            {
+                // default case that (hopefully) never happens
+                //int tempX = (player.PositionRectangle.X + 16) / 320;
+                //int tempY = (player.PositionRectangle.Y + 16) / 240;
+                cam.Follow(new Vector2(player.DrawBox.X - 160 + 16, player.DrawBox.Y - 120 + 16));
+            }
+
+            else
+            {
+                int tempX = player.DrawBox.X + 16 - 160;
+                int tempY = player.DrawBox.Y + 16 - 120;
+
+                tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
+                tempY = Math.Clamp(tempY, current_room.Y, current_room.Y + current_room.Height - 240);
+
+                if (current_room != camera_room
+                    || camera_pos.X > current_room.X + current_room.Width - 320
+                    || camera_pos.Y > current_room.Y + current_room.Height - 240)
+                    cam.TargetFollow(new Vector2(tempX, tempY)); // transitions between rooms
+                else
+                    cam.Follow(new Vector2(tempX, tempY)); // panning within the room
+            }
+        }
+
+        public Rectangle GetRoom(Vector2 input)
+        {
+            Rectangle room = new Rectangle(0, 0, 0, 0);
+            foreach (Room r in rooms)
+            {
+                if (r.bounds.Contains(input.X, input.Y))
+                    return r.bounds;
+            }
+            return room;
         }
 
         public void Draw(SpriteBatch _spriteBatch)
@@ -204,6 +248,18 @@ namespace PERSIST
         { 
             this.location = location;
             this.raw = raw;
+        }
+    }
+
+
+    public class Room
+    {
+        public Rectangle bounds
+        { get; private set; }
+
+        public Room(Rectangle bounds)
+        { 
+            this.bounds = bounds; 
         }
     }
 
