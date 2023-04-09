@@ -19,7 +19,7 @@ namespace PERSIST
 
         private Rectangle bounds;
         private List<Chunk> chunks = new List<Chunk>();
-        private List<JSON> rooms = new List<JSON>();
+        private List<JSON> JSONs = new List<JSON>();
 
         public Level(Persist root, Rectangle bounds, Player player)
         {
@@ -116,7 +116,6 @@ namespace PERSIST
                 SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise); // transformMatrix: camera.Transform);
 
             player.Draw(_spriteBatch);
-
 
             for (int i = 0; i < chunks.Count(); i++)
                 chunks[i].Draw(_spriteBatch);

@@ -61,6 +61,7 @@ namespace PERSIST
             the_level.AddWall(new Rectangle(0, 208, 240, 16));
             the_level.AddWall(new Rectangle(100, 208 - 16, 100, 16));
             the_level.AddWall(new Rectangle(0, 0, 32, 240));
+            the_level.AddWall(new Rectangle(320 - 32, 0, 32, 240));
         }
 
         protected override void LoadContent()

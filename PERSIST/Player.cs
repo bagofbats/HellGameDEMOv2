@@ -122,7 +122,8 @@ namespace PERSIST
 
             wallslide = !wall_down && (wall_left || wall_right);
 
-            // fall slower while sliding on walls
+
+            // --------- wall jumping ---------
             if (wallslide && vsp > 0)
             {
                 grav = 0.11f;
@@ -138,8 +139,6 @@ namespace PERSIST
                 grav_max = grav_max_default;
             }
 
-
-            // --------- wall jumping ---------
             if (space_pressed && wallslide)
             {
                 vsp = -4.2f;
