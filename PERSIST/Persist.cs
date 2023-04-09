@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.IO;
 
 namespace PERSIST
 {
@@ -29,7 +30,7 @@ namespace PERSIST
             List<JSON> JSONs = new List<JSON>
             {
                 new JSON(new Rectangle(0, 0, 320, 240), one),
-                new JSON(new Rectangle(320, 0, 320, 240), two)
+                new JSON(new Rectangle(320, 40, 320, 240), two)
             };
 
             // determine how much to scale the window up

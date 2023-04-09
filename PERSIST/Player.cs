@@ -36,8 +36,8 @@ namespace PERSIST
         private float vsp = 0f;
         private int hdir;
         private int last_hdir;
-        private float hsp_max = 2.27f;
-        private float hsp_max_default = 2.27f;
+        private float hsp_max = 2.3f;
+        private float hsp_max_default = 2.3f;
         private float grav = 0.211f;
         private float grav_default = 0.211f;
         private float grav_max = 5f;
@@ -151,31 +151,6 @@ namespace PERSIST
             // --------- end wall jumping ---------
 
 
-            // --------- horizontal movement ---------
-            hsp = (hsp_max * hdir) + (hoset * Math.Abs(Math.Sign(hoset) - hdir));
-
-            if (wallslide && hoset == 0)
-                hsp = 0;
-
-            float hsp_col_check = hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
-            if (hsp_col_check > 0)
-                hsp_col_check += 1;
-            else
-                hsp_col_check -= 1;
-
-            Wall hcheck = current_level.SimpleCheckCollision(new Rectangle((int)(HitBox.X + hsp_col_check), HitBox.Y, HitBox.Width, HitBox.Height));
-
-            if (hcheck != null)
-            {
-                if (hsp > 0)
-                    pos.X = hcheck.bounds.Left - 23;
-                else if (hsp < 0)
-                    pos.X = hcheck.bounds.Right - 9;
-                hsp = 0;
-            }
-
-            pos.X += hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
-            // --------- end horizontal movement ---------
 
 
             //  --------- vertical movement ---------
@@ -207,6 +182,37 @@ namespace PERSIST
 
             pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             //  --------- end vertical movement ---------
+
+
+
+
+            // --------- horizontal movement ---------
+            hsp = (hsp_max * hdir) + (hoset * Math.Abs(Math.Sign(hoset) - hdir));
+
+            if (wallslide && hoset == 0)
+                hsp = 0;
+
+            float hsp_col_check = hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+            if (hsp_col_check > 0)
+                hsp_col_check += 1;
+            else
+                hsp_col_check -= 1;
+
+            Wall hcheck = current_level.SimpleCheckCollision(new Rectangle((int)(HitBox.X + hsp_col_check), HitBox.Y, HitBox.Width, HitBox.Height));
+
+            if (hcheck != null)
+            {
+                if (hsp > 0)
+                    pos.X = hcheck.bounds.Left - 23;
+                else if (hsp < 0)
+                    pos.X = hcheck.bounds.Right - 9;
+                hsp = 0;
+            }
+
+            pos.X += hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+            // --------- end horizontal movement ---------
+
+
 
 
             // prep for next cycle
