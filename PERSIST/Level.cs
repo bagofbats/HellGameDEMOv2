@@ -16,16 +16,19 @@ namespace PERSIST
     {
         private Persist root;
         private Player player;
+        private Camera cam;
 
         private Rectangle bounds;
         private List<Chunk> chunks = new List<Chunk>();
         private List<JSON> JSONs = new List<JSON>();
 
-        public Level(Persist root, Rectangle bounds, Player player)
+        public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam)
         {
             this.root = root;
             this.player = player;
             this.bounds = bounds;
+            this.JSONs = JSONs;
+            this.cam = cam;
 
             for (int i = 0; i < bounds.Width; i += 320)
             {
@@ -34,6 +37,12 @@ namespace PERSIST
                     chunks.Add(new Chunk(new Rectangle(i - 32, j - 32, 320 + 64, 240 + 64)));
                 }
             }
+
+            foreach (JSON json in JSONs)
+                foreach (Layer layer in json.raw.layers)
+                    if (layer.name == "walls")
+                        for (int i = 0; i < layer.data.Count(); i += 4)
+                            AddWall(new Rectangle(layer.data[i] + json.location.X, layer.data[i + 1] + json.location.Y, layer.data[i + 2], layer.data[i + 3]));
         }
 
         public void AddWall(Rectangle bounds)
@@ -108,12 +117,15 @@ namespace PERSIST
         public void Update(GameTime gameTime)
         {
             player.Update(gameTime);
+            int tempX = player.DrawBox.X + 16 - 160;
+            int tempY = player.DrawBox.Y + 16 - 120;
+            cam.Follow(new Vector2(tempX, tempY));
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
-                SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise); // transformMatrix: camera.Transform);
+                SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
 
             player.Draw(_spriteBatch);
 
@@ -186,7 +198,17 @@ namespace PERSIST
 
     public class JSON
     {
-        private Rectangle location;
+        public Rectangle location
+        { get; private set; }
+
+        public RawJSON raw
+        { get; private set; }
+
+        public JSON(Rectangle location, RawJSON raw) 
+        { 
+            this.location = location;
+            this.raw = raw;
+        }
     }
 
 

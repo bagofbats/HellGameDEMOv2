@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace PERSIST
 {
@@ -22,7 +23,14 @@ namespace PERSIST
             IsMouseVisible = true;
 
             player = new Player(this, new Vector2(96, 32), contManager);
-            the_level = new Level(this, new Rectangle(0, 0, 320, 240), player);
+
+            RawJSON one = JsonFileReader.Read<RawJSON>("rm_tutorial1.json");
+            RawJSON two = JsonFileReader.Read<RawJSON>("rm_tutorial2.json");
+            List<JSON> JSONs = new List<JSON>
+            {
+                new JSON(new Rectangle(0, 0, 320, 240), one),
+                new JSON(new Rectangle(0, 320, 320, 240), two)
+            };
 
             // determine how much to scale the window up
             // given how big the monitor is
@@ -46,6 +54,8 @@ namespace PERSIST
 
             _graphics.ApplyChanges();
 
+            the_level = new Level(this, new Rectangle(0, 0, 640, 240), player, JSONs, new Camera(target_w, target_h));
+
             Window.Title = "Persist [DEMO]";
         }
 
@@ -58,10 +68,6 @@ namespace PERSIST
             _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
 
             player.SetCurrentLevel(the_level);
-            the_level.AddWall(new Rectangle(0, 208, 240, 16));
-            the_level.AddWall(new Rectangle(100, 208 - 16, 100, 16));
-            the_level.AddWall(new Rectangle(0, 0, 32, 240));
-            the_level.AddWall(new Rectangle(320 - 32, 0, 32, 240));
         }
 
         protected override void LoadContent()

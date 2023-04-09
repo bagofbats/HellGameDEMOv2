@@ -160,6 +160,8 @@ namespace PERSIST
             float hsp_col_check = hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             if (hsp_col_check > 0)
                 hsp_col_check += 1;
+            else
+                hsp_col_check -= 1;
 
             Wall hcheck = current_level.SimpleCheckCollision(new Rectangle((int)(HitBox.X + hsp_col_check), HitBox.Y, HitBox.Width, HitBox.Height));
 
@@ -189,6 +191,8 @@ namespace PERSIST
             float vsp_col_check = vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             if (vsp_col_check > 0)
                 vsp_col_check += 1;
+            else
+                vsp_col_check -= 1;
 
             Wall vcheck = current_level.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
 
