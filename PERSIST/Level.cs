@@ -31,12 +31,13 @@ namespace PERSIST
             this.cam = cam;
 
             for (int i = 0; i < bounds.Width; i += 320)
-            {
                 for (int j = 0; j < bounds.Height; j += 240)
-                {
                     chunks.Add(new Chunk(new Rectangle(i - 32, j - 32, 320 + 64, 240 + 64)));
-                }
-            }
+
+            Debug.WriteLine(chunks.Count());
+
+            for (int i = 0; i < chunks.Count(); i++)
+                Debug.WriteLine(chunks[i].bounds);
 
             foreach (JSON json in JSONs)
                 foreach (Layer layer in json.raw.layers)

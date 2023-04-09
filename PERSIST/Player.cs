@@ -120,7 +120,7 @@ namespace PERSIST
             wall_up = up != null;
             wall_down = down != null;
 
-            wallslide = !wall_down && (wall_left || wall_right);
+            wallslide = !wall_down && !wall_up && (wall_left || wall_right);
 
 
             // --------- wall jumping ---------
@@ -199,8 +199,8 @@ namespace PERSIST
             if (vcheck != null)
             {
                 if (vsp < 0)
-                    pos.Y = vcheck.bounds.Bottom - 17;
-                else
+                    pos.Y = vcheck.bounds.Bottom - 16;
+                else if (vsp > 0)
                     pos.Y = vcheck.bounds.Top - 32;
                 vsp = 0;
             }
