@@ -122,6 +122,7 @@ namespace PERSIST
         {
             player.Update(gameTime);
 
+            // camera following
             Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
             Vector2 camera_pos = cam.GetPos();
             Rectangle camera_room = GetRoom(camera_pos);

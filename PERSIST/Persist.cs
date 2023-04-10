@@ -23,14 +23,16 @@ namespace PERSIST
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            player = new Player(this, new Vector2(160, 120), contManager);
+            player = new Player(this, new Vector2(320, 120), contManager);
 
             RawJSON one = JsonFileReader.Read<RawJSON>("rm_tutorial1.json");
             RawJSON two = JsonFileReader.Read<RawJSON>("rm_tutorial2.json");
+            RawJSON three = JsonFileReader.Read<RawJSON>("rm_tutorial3.json");
             List<JSON> JSONs = new List<JSON>
             {
-                new JSON(new Rectangle(0, 0, 320, 240), one),
-                new JSON(new Rectangle(320, 40, 320, 240), two)
+                new JSON(new Rectangle(0, 0 + 368 + 120 - 16 - 16, 320, 240), one),
+                new JSON(new Rectangle(320, 40 + 368 + 120 - 16 - 16, 320, 240), two),
+                new JSON(new Rectangle(640, 0, 960, 608), three)
             };
 
             // determine how much to scale the window up
@@ -55,7 +57,7 @@ namespace PERSIST
 
             _graphics.ApplyChanges();
 
-            the_level = new Level(this, new Rectangle(0, 0, 640, 240), player, JSONs, new Camera(target_w, target_h));
+            the_level = new Level(this, new Rectangle(0, 0, 1600, 960), player, JSONs, new Camera(target_w, target_h));
 
             Window.Title = "Persist [DEMO]";
         }
