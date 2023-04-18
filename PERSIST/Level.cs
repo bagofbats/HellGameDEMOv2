@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace PERSIST
         private List<Chunk> chunks = new List<Chunk>();
         private List<JSON> JSONs = new List<JSON>();
         private List<Room> rooms = new List<Room>();
+        private List<Checkpoint> checkpoints = new List<Checkpoint>();
 
         public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam)
         {
@@ -45,6 +47,15 @@ namespace PERSIST
                     else if (layer.name == "rooms")
                         for (int i = 0; i < layer.data.Count(); i += 4)
                             rooms.Add(new Room(new Rectangle(layer.data[i] + json.location.X, layer.data[i + 1] + json.location.Y, layer.data[i + 2], layer.data[i + 3])));
+
+                    else if (layer.name == "entities")
+                    {
+                        foreach (Entity entity in layer.entities)
+                        {
+                            if (entity.name == "checkpoint")
+                                checkpoints.Add(new Checkpoint(new Rectangle(entity.x + json.location.X, entity.y + json.location.Y - 16, 16, 32)));
+                        }
+                    }
                 }
                     
         }
@@ -114,8 +125,14 @@ namespace PERSIST
 
         public void Load()
         {
+            Texture2D black = root.Content.Load<Texture2D>("black");
+            Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
+
             for (int i = 0; i < chunks.Count(); i++)
-                chunks[i].Load(root);
+                chunks[i].Load(black);
+
+            for (int i = 0; i < checkpoints.Count(); i++)
+                checkpoints[i].Load(checkpoint);
         }
 
         public void Update(GameTime gameTime)
@@ -167,6 +184,9 @@ namespace PERSIST
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                 SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
+
+            for (int i = 0; i < checkpoints.Count(); i++)
+                checkpoints[i].Draw(_spriteBatch);
 
             player.Draw(_spriteBatch);
 
@@ -230,9 +250,9 @@ namespace PERSIST
                     _spriteBatch.Draw(black, wall.bounds, Color.White);
         }
 
-        public void Load(Persist root)
+        public void Load(Texture2D black)
         {
-            black = root.Content.Load<Texture2D>("black");
+            this.black = black;
         }
     }
 
