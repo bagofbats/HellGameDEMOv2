@@ -27,12 +27,12 @@ namespace PERSIST
 
             RawJSON one = JsonFileReader.Read<RawJSON>("rm_tutorial1.json");
             RawJSON two = JsonFileReader.Read<RawJSON>("rm_tutorial2.json");
-            RawJSON three = JsonFileReader.Read<RawJSON>("rm_tutorial3.json");
+            RawJSON three = JsonFileReader.Read<RawJSON>("rm_tutorial3v2.json");
             List<JSON> JSONs = new List<JSON>
             {
                 new JSON(new Rectangle(0, 0 + 368 + 120 - 16 - 16, 320, 240), one),
                 new JSON(new Rectangle(320, 40 + 368 + 120 - 16 - 16, 320, 240), two),
-                new JSON(new Rectangle(640, 0, 960, 608), three)
+                new JSON(new Rectangle(640, 128, 960, 608), three)
             };
 
             // determine how much to scale the window up
