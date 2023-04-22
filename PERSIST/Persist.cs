@@ -27,7 +27,7 @@ namespace PERSIST
 
             RawJSON one = JsonFileReader.Read<RawJSON>("rm_tutorial1.json");
             RawJSON two = JsonFileReader.Read<RawJSON>("rm_tutorial2.json");
-            RawJSON three = JsonFileReader.Read<RawJSON>("rm_tutorial3v2.json");
+            RawJSON three = JsonFileReader.Read<RawJSON>("sample.json");
             List<JSON> JSONs = new List<JSON>
             {
                 new JSON(new Rectangle(0, 0 + 368 + 120 - 16 - 16, 320, 240), one),

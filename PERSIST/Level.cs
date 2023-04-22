@@ -18,6 +18,7 @@ namespace PERSIST
         private Persist root;
         private Player player;
         private Camera cam;
+        private Checkpoint active_checkpoint;
 
         private Rectangle bounds;
         private List<Chunk> chunks = new List<Chunk>();
@@ -56,6 +57,10 @@ namespace PERSIST
                                 checkpoints.Add(new Checkpoint(new Rectangle(entity.x + json.location.X, entity.y + json.location.Y - 16, 16, 32)));
                         }
                     }
+
+                    else if (layer.name == "obstacles")
+                        for (int i = 0; i < layer.data.Count(); i += 4)
+                            AddObstacle(new Rectangle(layer.data[i] + json.location.X, layer.data[i + 1] + json.location.Y, layer.data[i + 2], layer.data[i + 3]));
                 }
                     
         }
@@ -66,6 +71,13 @@ namespace PERSIST
             for (int i = 0; i < chunks.Count(); i++)
                 if (bounds.Intersects(chunks[i].bounds))
                     chunks[i].AddWall(temp);
+        }
+
+        public void AddObstacle(Rectangle bounds)
+        {
+            for (int i = 0; i < chunks.Count(); i++)
+                if (bounds.Intersects(chunks[i].bounds))
+                    chunks[i].AddObstacle(bounds);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -126,10 +138,11 @@ namespace PERSIST
         public void Load()
         {
             Texture2D black = root.Content.Load<Texture2D>("black");
+            Texture2D red = root.Content.Load<Texture2D>("red");
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
 
             for (int i = 0; i < chunks.Count(); i++)
-                chunks[i].Load(black);
+                chunks[i].Load(black, red);
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Load(checkpoint);
@@ -203,8 +216,10 @@ namespace PERSIST
         public Rectangle bounds
         { get; private set; }
         private Texture2D black;
+        private Texture2D red;
 
         private List<Wall> walls = new List<Wall>();
+        private List<Rectangle> obstacles = new List<Rectangle>();
 
         public Chunk(Rectangle bounds)
         {
@@ -214,6 +229,11 @@ namespace PERSIST
         public void AddWall(Wall newWall)
         {
             walls.Add(newWall);
+        }
+
+        public void AddObstacle(Rectangle bounds)
+        {
+            obstacles.Add(bounds);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -248,11 +268,15 @@ namespace PERSIST
             foreach (Wall wall in walls)
                 if (wall != null)
                     _spriteBatch.Draw(black, wall.bounds, Color.White);
+
+            foreach (Rectangle obstacle in obstacles)
+                _spriteBatch.Draw(red, obstacle, Color.White);
         }
 
-        public void Load(Texture2D black)
+        public void Load(Texture2D black, Texture2D red)
         {
             this.black = black;
+            this.red = red;
         }
     }
 
