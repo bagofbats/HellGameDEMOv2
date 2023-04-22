@@ -16,6 +16,7 @@ namespace PERSIST
         { get; private set; }
         private Rectangle frame = new Rectangle(0, 0, 16, 32);
         private Texture2D sprite;
+        float animate_timer = 0f;
 
         public Checkpoint(Rectangle box)
         {
@@ -25,6 +26,17 @@ namespace PERSIST
         public void Load(Texture2D sprite)
         {
             this.sprite = sprite;
+        }
+
+        public void DontAnimate(GameTime gameTime)
+        {
+            frame.X = 0;
+        }
+
+        public void Animate(GameTime gameTime)
+        {
+            animate_timer += 10 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            frame.X = 16 + (16 * ((int)animate_timer % 4));
         }
 
         public void Draw(SpriteBatch _spriteBatch)

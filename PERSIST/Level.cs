@@ -54,7 +54,7 @@ namespace PERSIST
                         foreach (Entity entity in layer.entities)
                         {
                             if (entity.name == "checkpoint")
-                                checkpoints.Add(new Checkpoint(new Rectangle(entity.x + json.location.X, entity.y + json.location.Y - 16, 16, 32)));
+                                AddCheckpoint(new Rectangle(entity.x + json.location.X, entity.y + json.location.Y - 16, 16, 32));
                         }
                     }
 
@@ -75,9 +75,19 @@ namespace PERSIST
 
         public void AddObstacle(Rectangle bounds)
         {
+            Obstacle temp = new Obstacle(bounds);
             for (int i = 0; i < chunks.Count(); i++)
                 if (bounds.Intersects(chunks[i].bounds))
-                    chunks[i].AddObstacle(bounds);
+                    chunks[i].AddObstacle(temp);
+        }
+
+        public void AddCheckpoint(Rectangle bounds)
+        {
+            Checkpoint temp = new Checkpoint(bounds);
+            checkpoints.Add(temp);
+            for (int i = 0; i < chunks.Count(); i++)
+                if (bounds.Intersects(chunks[i].bounds))
+                    chunks[i].AddCheckpoint(temp);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -87,6 +97,20 @@ namespace PERSIST
                 if (chunks[i].bounds.Intersects(input))
                 {
                     Wall temp = chunks[i].SimpleCheckCollision(input);
+                    if (temp != null)
+                        return temp;
+                }
+            }
+            return null;
+        }
+
+        public Checkpoint CheckpointCheckCollision(Rectangle input)
+        {
+            for (int i = 0; i < chunks.Count(); i++)
+            {
+                if (chunks[i].bounds.Intersects(input))
+                {
+                    Checkpoint temp = chunks[i].CheckpointCheckCollision(input);
                     if (temp != null)
                         return temp;
                 }
@@ -151,6 +175,17 @@ namespace PERSIST
         public void Update(GameTime gameTime)
         {
             player.Update(gameTime);
+
+            for (int i = 0; i < checkpoints.Count(); i++)
+                checkpoints[i].DontAnimate(gameTime);
+
+            Checkpoint temp = CheckpointCheckCollision(player.HitBox);
+
+            if (temp != null)
+                active_checkpoint = temp;
+
+            if (active_checkpoint != null)
+                active_checkpoint.Animate(gameTime);
 
             // camera following
             Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
@@ -219,7 +254,8 @@ namespace PERSIST
         private Texture2D red;
 
         private List<Wall> walls = new List<Wall>();
-        private List<Rectangle> obstacles = new List<Rectangle>();
+        private List<Obstacle> obstacles = new List<Obstacle>();
+        private List<Checkpoint> checkpoints = new List<Checkpoint>();
 
         public Chunk(Rectangle bounds)
         {
@@ -231,9 +267,14 @@ namespace PERSIST
             walls.Add(newWall);
         }
 
-        public void AddObstacle(Rectangle bounds)
+        public void AddObstacle(Obstacle newObstacle)
         {
-            obstacles.Add(bounds);
+            obstacles.Add(newObstacle);
+        }
+
+        public void AddCheckpoint(Checkpoint checkpoint)
+        {
+            checkpoints.Add(checkpoint);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -241,6 +282,24 @@ namespace PERSIST
             for (int i = 0; i < walls.Count(); i++)
                 if (walls[i].bounds.Intersects(input))
                     return walls[i];
+
+            return null;
+        }
+
+        public Obstacle ObstacleCheckCollision(Rectangle input)
+        {
+            for (int i = 0; i < obstacles.Count(); i++)
+                if (obstacles[i].bounds.Intersects(input))
+                    return obstacles[i];
+
+            return null;
+        }
+
+        public Checkpoint CheckpointCheckCollision(Rectangle input)
+        {
+            for (int i = 0; i < checkpoints.Count(); i++)
+                if (checkpoints[i].box.Intersects(input))
+                    return checkpoints[i];
 
             return null;
         }
@@ -269,8 +328,9 @@ namespace PERSIST
                 if (wall != null)
                     _spriteBatch.Draw(black, wall.bounds, Color.White);
 
-            foreach (Rectangle obstacle in obstacles)
-                _spriteBatch.Draw(red, obstacle, Color.White);
+            foreach (Obstacle obstacle in obstacles)
+                if (obstacle != null)
+                    _spriteBatch.Draw(red, obstacle.bounds, Color.White);
         }
 
         public void Load(Texture2D black, Texture2D red)
@@ -318,5 +378,14 @@ namespace PERSIST
         {
             this.bounds = bounds;
         }
+    }
+
+    public class Obstacle
+    {
+        public Rectangle bounds
+        { get; private set; }
+
+        public Obstacle(Rectangle bounds)
+        { this.bounds = bounds; }
     }
 }
