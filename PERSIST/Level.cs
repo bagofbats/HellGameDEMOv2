@@ -18,7 +18,8 @@ namespace PERSIST
         private Persist root;
         private Player player;
         private Camera cam;
-        private Checkpoint active_checkpoint;
+        public Checkpoint active_checkpoint
+        { get; private set; }
 
         private Rectangle bounds;
         private List<Chunk> chunks = new List<Chunk>();
@@ -97,6 +98,20 @@ namespace PERSIST
                 if (chunks[i].bounds.Intersects(input))
                 {
                     Wall temp = chunks[i].SimpleCheckCollision(input);
+                    if (temp != null)
+                        return temp;
+                }
+            }
+            return null;
+        }
+        
+        public Obstacle ObstacleCheckCollision(Rectangle input)
+        {
+            for (int i = 0; i < chunks.Count(); i++)
+            {
+                if (chunks[i].bounds.Intersects(input))
+                {
+                    Obstacle temp = chunks[i].ObstacleCheckCollision(input);
                     if (temp != null)
                         return temp;
                 }

@@ -111,6 +111,12 @@ namespace PERSIST
                 last_hdir = hdir;
         }
 
+        private void Die()
+        {
+            pos.X = current_level.active_checkpoint.box.X - 8;
+            pos.Y = current_level.active_checkpoint.box.Y;
+        }
+
         private void HandleMovementAndCollisions(GameTime gameTime)
         {
             (Wall left, Wall right, Wall up, Wall down) = current_level.FullCheckCollision(HitBox);
@@ -121,6 +127,14 @@ namespace PERSIST
             wall_down = down != null;
 
             wallslide = !wall_down && !wall_up && (wall_left || wall_right);
+
+
+            // --------- death ---------
+            Obstacle o = current_level.ObstacleCheckCollision(HitBox);
+
+            if (o != null)
+                Die();
+            // --------- end death ---------
 
 
             // --------- wall jumping ---------
