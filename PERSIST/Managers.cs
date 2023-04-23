@@ -65,4 +65,12 @@ namespace PERSIST
             old_enter = new_enter;
         }
     }
+
+    public class ProgressionManager
+    {
+        public ProgressionManager()
+        {
+
+        }
+    }
 }

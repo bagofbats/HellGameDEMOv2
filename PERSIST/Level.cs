@@ -403,4 +403,9 @@ namespace PERSIST
         public Obstacle(Rectangle bounds)
         { this.bounds = bounds; }
     }
+
+    public class Breakable : Wall
+    {
+        public Breakable(Rectangle bounds) : base(bounds) { }
+    }
 }

@@ -50,12 +50,16 @@ namespace PERSIST
         private bool wall_down = false;
         private bool wallslide = false;
         private bool old_wallslide = false;
+        private List<Attack> attacks = new List<Attack>();
 
         // animation fields
         private float width = 32; // scale factor for image
         private Rectangle frame = new Rectangle(0, 576, 32, 32);
         private Texture2D sheet;
         private float walk_timer = 0;
+        private bool attacking = false;
+        private bool atk_dir = true;
+        private Texture2D spr_atk;
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager)
         {
@@ -75,18 +79,26 @@ namespace PERSIST
         public void Load()
         {
             sheet = root.Content.Load<Texture2D>("spr_trigo_fullspritesheet");
+            spr_atk = root.Content.Load<Texture2D>("spr_atk");
         }
 
         public void Update(GameTime gameTime)
         {
             GetInput();
             HandleMovementAndCollisions(gameTime);
+            HandleAttacks();
             AnimateNormal(gameTime);
+
+            for (int i = attacks.Count - 1; i >= 0; i--)
+                attacks[i].Update(gameTime);
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
+
+            for (int i = attacks.Count - 1; i >= 0; i--)
+                attacks[i].Draw(_spriteBatch);
         }
 
 
@@ -237,6 +249,40 @@ namespace PERSIST
                 hoset -= hoset_decay;
             else
                 hoset = 0f;
+        }
+
+        private void HandleAttacks()
+        {
+            if (enter_pressed && !attacking)
+                StartAttack();
+        }
+
+        private void StartAttack()
+        {
+            attacking = true;
+            Attack temp;
+            char atk_type;
+
+            if (up)
+                atk_type = 'u';
+            else if (down && !wall_down)
+                atk_type = 'd';
+            else if (last_hdir == -1)
+                atk_type = 'l';
+            else
+                atk_type = 'r';
+
+            temp = new Slash(this, atk_type, spr_atk, atk_dir, current_level);
+            attacks.Add(temp);
+            atk_dir = !atk_dir;
+        }
+
+        public void FinishAttack(Attack atk)
+        {
+            if (atk.GetType() == typeof(Slash))
+                attacking = false;
+            attacks.Remove(atk);
+            atk = null;
         }
 
         private void AnimateNormal(GameTime gameTime)
