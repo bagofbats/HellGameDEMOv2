@@ -18,6 +18,8 @@ namespace PERSIST
         private Persist root;
         private Player player;
         private Camera cam;
+        private Texture2D black;
+        private bool debug;
         public Checkpoint active_checkpoint
         { get; private set; }
 
@@ -27,13 +29,14 @@ namespace PERSIST
         private List<Room> rooms = new List<Room>();
         private List<Checkpoint> checkpoints = new List<Checkpoint>();
 
-        public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam)
+        public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam, bool debug)
         {
             this.root = root;
             this.player = player;
             this.bounds = bounds;
             this.JSONs = JSONs;
             this.cam = cam;
+            this.debug = debug;
 
             for (int i = 0; i < bounds.Width; i += 320)
                 for (int j = 0; j < bounds.Height; j += 240)
@@ -176,12 +179,12 @@ namespace PERSIST
 
         public void Load()
         {
-            Texture2D black = root.Content.Load<Texture2D>("black");
-            Texture2D red = root.Content.Load<Texture2D>("red");
+            black = root.Content.Load<Texture2D>("black");
+
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
 
             for (int i = 0; i < chunks.Count(); i++)
-                chunks[i].Load(black, red);
+                chunks[i].Load(black);
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Load(checkpoint);
@@ -256,6 +259,11 @@ namespace PERSIST
             for (int i = 0; i < chunks.Count(); i++)
                 chunks[i].Draw(_spriteBatch);
 
+            if (debug)
+            {
+                player.DebugDraw(_spriteBatch, black);
+            }
+
             _spriteBatch.End();
         }
     }
@@ -266,7 +274,6 @@ namespace PERSIST
         public Rectangle bounds
         { get; private set; }
         private Texture2D black;
-        private Texture2D red;
 
         private List<Wall> walls = new List<Wall>();
         private List<Obstacle> obstacles = new List<Obstacle>();
@@ -341,17 +348,16 @@ namespace PERSIST
         {
             foreach (Wall wall in walls)
                 if (wall != null)
-                    _spriteBatch.Draw(black, wall.bounds, Color.White);
+                    _spriteBatch.Draw(black, wall.bounds, Color.Black);
 
             foreach (Obstacle obstacle in obstacles)
                 if (obstacle != null)
-                    _spriteBatch.Draw(red, obstacle.bounds, Color.White);
+                    _spriteBatch.Draw(black, obstacle.bounds, Color.Red);
         }
 
-        public void Load(Texture2D black, Texture2D red)
+        public void Load(Texture2D black)
         {
             this.black = black;
-            this.red = red;
         }
     }
 

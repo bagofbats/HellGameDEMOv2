@@ -56,10 +56,10 @@ namespace PERSIST
         private float width = 32; // scale factor for image
         private Rectangle frame = new Rectangle(0, 576, 32, 32);
         private Texture2D sheet;
+        private Texture2D spr_atk;
         private float walk_timer = 0;
         private bool attacking = false;
         private bool atk_dir = true;
-        private Texture2D spr_atk;
         private char atk_type = 'r';
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager)
@@ -74,6 +74,8 @@ namespace PERSIST
         { get { return new Rectangle((int)pos.X, (int)pos.Y, (int)width, (int)height); } }
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + 9, (int)pos.Y + 16, 14, 16); } }
+        public Rectangle HurtBox
+        { get { return new Rectangle((int)pos.X + 12, (int)pos.Y + 16, 8, 14); } }
 
 
         // core functions
@@ -104,6 +106,15 @@ namespace PERSIST
 
             for (int i = attacks.Count - 1; i >= 0; i--)
                 attacks[i].Draw(_spriteBatch);
+        }
+
+        public void DebugDraw(SpriteBatch _spriteBatch, Texture2D blue)
+        {
+            _spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+            _spriteBatch.Draw(blue, HurtBox, Color.Red * 0.5f);
+
+            for (int i = attacks.Count - 1; i >= 0; i--)
+                attacks[i].DebugDraw(_spriteBatch, blue);
         }
 
 
@@ -268,7 +279,6 @@ namespace PERSIST
             Attack temp;
 
             // restrict attacks while on walls
-
             if (!wall_down && wall_right)
                 atk_type = 'l';
             else if (!wall_down && wall_left)

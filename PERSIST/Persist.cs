@@ -8,6 +8,8 @@ namespace PERSIST
 {
     public class Persist : Game
     {
+        private bool debug = true;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Rectangle _screenRectangle;
@@ -57,7 +59,7 @@ namespace PERSIST
 
             _graphics.ApplyChanges();
 
-            the_level = new Level(this, new Rectangle(0, 0, 1600, 960), player, JSONs, new Camera(target_w, target_h));
+            the_level = new Level(this, new Rectangle(0, 0, 1600, 960), player, JSONs, new Camera(target_w, target_h), debug);
 
             Window.Title = "Persist [DEMO]";
         }

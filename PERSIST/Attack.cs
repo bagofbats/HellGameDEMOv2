@@ -105,7 +105,7 @@ namespace PERSIST
 
         public override void DebugDraw(SpriteBatch _spriteBatch, Texture2D blue)
         {
-            throw new NotImplementedException();
+            _spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
     }
 }
