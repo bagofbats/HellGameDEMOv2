@@ -60,6 +60,7 @@ namespace PERSIST
         private bool attacking = false;
         private bool atk_dir = true;
         private Texture2D spr_atk;
+        private char atk_type = 'r';
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager)
         {
@@ -87,7 +88,11 @@ namespace PERSIST
             GetInput();
             HandleMovementAndCollisions(gameTime);
             HandleAttacks();
-            AnimateNormal(gameTime);
+
+            if (attacking)
+                AnimateAtk(gameTime);
+            else
+                AnimateNormal(gameTime);
 
             for (int i = attacks.Count - 1; i >= 0; i--)
                 attacks[i].Update(gameTime);
@@ -261,16 +266,24 @@ namespace PERSIST
         {
             attacking = true;
             Attack temp;
-            char atk_type;
 
-            if (up)
-                atk_type = 'u';
-            else if (down && !wall_down)
-                atk_type = 'd';
-            else if (last_hdir == -1)
+            // restrict attacks while on walls
+
+            if (!wall_down && wall_right)
                 atk_type = 'l';
-            else
+            else if (!wall_down && wall_left)
                 atk_type = 'r';
+            else
+            {
+                if (up)
+                    atk_type = 'u';
+                else if (down && !wall_down)
+                    atk_type = 'd';
+                else if (last_hdir == -1)
+                    atk_type = 'l';
+                else
+                    atk_type = 'r';
+            }
 
             temp = new Slash(this, atk_type, spr_atk, atk_dir, current_level);
             attacks.Add(temp);
@@ -352,6 +365,220 @@ namespace PERSIST
                 // facing left/right
                 if (last_hdir == -1) { frame.Y = 608; }
                 else { frame.Y = 576; }
+            }
+        }
+
+        private void AnimateAtk(GameTime gameTime)
+        {
+            walk_timer += 14 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            // on wall
+            if (!wall_down && wall_right)
+            {
+                frame.Y = 864;
+                if (atk_dir)
+                    frame.X = 192;
+                else
+                    frame.X = 224;
+                
+            }
+            else if (!wall_down && wall_left)
+            {
+                frame.Y = 832;
+                if (atk_dir)
+                    frame.X = 192;
+                else
+                    frame.X = 224;
+            }
+
+            // in air
+            else if (!wall_down)
+            {
+                // facing left
+                if (atk_type == 'l' || last_hdir == -1)
+                    frame.Y = 672;
+
+                // facing right
+                else
+                    frame.Y = 640;
+
+                if (atk_type == 'u')
+                {
+                    if ((atk_dir && last_hdir == -1) || (!atk_dir && last_hdir == 1))
+                        frame.X = 160;
+                    else
+                        frame.X = 128;
+                }
+                else if (atk_type == 'd')
+                {
+                    if ((atk_dir && last_hdir == -1) || (!atk_dir && last_hdir == 1))
+                        frame.X = 224;
+                    else
+                        frame.X = 192;
+                }
+                else if (atk_dir)
+                {
+                    if (down)
+                        frame.X = 224;
+                    else
+                        frame.X = 96;
+                }
+                else
+                {
+                    if (down)
+                        frame.X = 192;
+                    else
+                        frame.X = 64;
+                }
+            }
+
+            // walking
+            else if (hsp != 0)
+            {
+                frame.X = 32 * ((int)walk_timer % 8);
+                if (atk_type == 'l')
+                {
+                    if (down)
+                    {
+                        if (atk_dir)
+                            frame.Y = 544;
+                        else
+                            frame.Y = 512;
+                    }
+                    else
+                    {
+                        if (atk_dir)
+                            frame.Y = 416;
+                        else
+                            frame.Y = 384;
+                    }
+                }
+                else if (atk_type == 'r')
+                {
+                    if (down)
+                    {
+                        if (atk_dir)
+                            frame.Y = 256;
+                        else
+                            frame.Y = 224;
+                    }
+                    else
+                    {
+                        if (atk_dir)
+                            frame.Y = 128;
+                        else
+                            frame.Y = 96;
+                    }
+                }
+                else if (atk_type == 'u')
+                {
+                    if (hdir == -1)
+                    {
+                        if (atk_dir)
+                            frame.Y = 480;
+                        else
+                            frame.Y = 448;
+                    }
+                    else
+                    {
+                        if (atk_dir)
+                            frame.Y = 160;
+                        else
+                            frame.Y = 192;
+                    }
+                }
+                else if (atk_type == 'd')
+                {
+                    if (hdir == -1)
+                    {
+                        if (atk_dir)
+                            frame.Y = 544;
+                        else
+                            frame.Y = 512;
+                    }
+                    else
+                    {
+                        if (atk_dir)
+                            frame.Y = 256;
+                        else
+                            frame.Y = 224;
+                    }
+                }
+            }
+
+            // standing still
+            else
+            {
+                if (atk_type == 'l')
+                {
+                    if (down)
+                    {
+                        frame.Y = 736;
+                        if (atk_dir)
+                            frame.X = 128;
+                        else
+                            frame.X = 160;
+                    }
+                    else
+                    {
+                        frame.Y = 672;
+                        if (atk_dir)
+                            frame.X = 32;
+                        else
+                            frame.X = 0;
+                    }
+                }
+                else if (atk_type == 'r')
+                {
+                    if (down)
+                    {
+                        frame.Y = 704;
+                        if (atk_dir)
+                            frame.X = 128;
+                        else
+                            frame.X = 160;
+                    }
+                    else
+                    {
+                        frame.Y = 640;
+                        if (atk_dir)
+                            frame.X = 32;
+                        else
+                            frame.X = 0;
+                    }
+
+                }
+                else if (atk_type == 'u')
+                {
+                    if (last_hdir == -1)
+                        frame.Y = 736;
+                    else
+                        frame.Y = 704;
+
+                    if (atk_dir)
+                        frame.X = 32;
+                    else
+                        frame.X = 0;
+                }
+                else if (atk_type == 'd')
+                {
+                    if (last_hdir == -1)
+                    {
+                        frame.Y = 736;
+                        if (atk_dir)
+                            frame.X = 128;
+                        else
+                            frame.X = 160;
+                    }
+                    else
+                    {
+                        frame.Y = 704;
+                        if (atk_dir)
+                            frame.X = 128;
+                        else
+                            frame.X = 160;
+                    }
+                }
             }
         }
 
