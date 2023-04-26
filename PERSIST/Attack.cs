@@ -149,8 +149,8 @@ namespace PERSIST
 
         private void Finish()
         {
-            //RangedFX particle = new RangedFX(new Vector2(HitBox.X, HitBox.Y - 4), level.particle_img, level, !up);
-            //level.AddFX(particle);
+            RangedFX particle = new RangedFX(new Vector2(HitBox.X, HitBox.Y - 4), level.particle_img, level, !up);
+            level.AddFX(particle);
             player.FinishAttack(this);
         }
 

@@ -19,6 +19,8 @@ namespace PERSIST
         private Player player;
         private Camera cam;
         private Texture2D black;
+        public Texture2D particle_img
+        { get; private set; }
         private bool debug;
         public Checkpoint active_checkpoint
         { get; private set; }
@@ -28,6 +30,7 @@ namespace PERSIST
         private List<JSON> JSONs = new List<JSON>();
         private List<Room> rooms = new List<Room>();
         private List<Checkpoint> checkpoints = new List<Checkpoint>();
+        private List<ParticleFX> particles = new List<ParticleFX>();
 
         public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam, bool debug)
         {
@@ -92,6 +95,16 @@ namespace PERSIST
             for (int i = 0; i < chunks.Count(); i++)
                 if (bounds.Intersects(chunks[i].bounds))
                     chunks[i].AddCheckpoint(temp);
+        }
+
+        public void AddFX(ParticleFX particle)
+        {
+            particles.Add(particle);
+        }
+
+        public void RemoveFX(ParticleFX particle)
+        {
+            particles.Remove(particle);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -180,6 +193,7 @@ namespace PERSIST
         public void Load()
         {
             black = root.Content.Load<Texture2D>("black");
+            particle_img = root.Content.Load<Texture2D>("spr_particlefx");
 
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
 
@@ -198,6 +212,9 @@ namespace PERSIST
                 checkpoints[i].DontAnimate(gameTime);
 
             Checkpoint temp = CheckpointCheckCollision(player.HitBox);
+
+            for (int i = particles.Count - 1; i >= 0; i--)
+                particles[i].Update(gameTime);
 
             if (temp != null)
                 active_checkpoint = temp;
@@ -258,6 +275,9 @@ namespace PERSIST
 
             for (int i = 0; i < chunks.Count(); i++)
                 chunks[i].Draw(_spriteBatch);
+
+            for (int i = particles.Count - 1; i >= 0; i--)
+                particles[i].Draw(_spriteBatch);
 
             if (debug)
             {
