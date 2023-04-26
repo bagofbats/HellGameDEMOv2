@@ -224,7 +224,7 @@ namespace PERSIST
                 int tempY = player.DrawBox.Y + 16 - 120;
 
                 tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
-                tempY = Math.Clamp(tempY, current_room.Y, current_room.Y + current_room.Height - 240);
+                tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));
 
                 if (current_room != camera_room
                     || camera_pos.X > current_room.X + current_room.Width - 320

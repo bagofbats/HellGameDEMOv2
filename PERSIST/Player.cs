@@ -51,16 +51,21 @@ namespace PERSIST
         private bool wallslide = false;
         private bool old_wallslide = false;
         private List<Attack> attacks = new List<Attack>();
+        private float ranged_timer = 0f;
+        private float ranged_time = 0.36f;
+        private bool ranged_ready = false;
 
         // animation fields
         private float width = 32; // scale factor for image
         private Rectangle frame = new Rectangle(0, 576, 32, 32);
         private Texture2D sheet;
         private Texture2D spr_atk;
+        private Texture2D spr_ranged;
         private float walk_timer = 0;
         private bool attacking = false;
         private bool atk_dir = true;
         private char atk_type = 'r';
+        private bool thrown = false;
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager)
         {
@@ -83,13 +88,14 @@ namespace PERSIST
         {
             sheet = root.Content.Load<Texture2D>("spr_trigo_fullspritesheet");
             spr_atk = root.Content.Load<Texture2D>("spr_atk");
+            spr_ranged = root.Content.Load<Texture2D>("spr_atk_ranged");
         }
 
         public void Update(GameTime gameTime)
         {
             GetInput();
             HandleMovementAndCollisions(gameTime);
-            HandleAttacks();
+            HandleAttacks(gameTime);
 
             if (attacking)
                 AnimateAtk(gameTime);
@@ -158,7 +164,7 @@ namespace PERSIST
 
 
             // --------- death ---------
-            Obstacle o = current_level.ObstacleCheckCollision(HitBox);
+            Obstacle o = current_level.ObstacleCheckCollision(HurtBox);
 
             if (o != null)
                 Die();
@@ -267,10 +273,30 @@ namespace PERSIST
                 hoset = 0f;
         }
 
-        private void HandleAttacks()
+        private void HandleAttacks(GameTime gameTime)
         {
-            if (enter_pressed && !attacking)
+            //if (enter_pressed && !attacking)
+            //    StartAttack();
+
+            if (enter)
+                ranged_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (ranged_timer >= ranged_time)
+                ranged_ready = true;
+
+            if (enter_released && ranged_ready)
+            {
+                Attack temp = new Ranged(this, spr_ranged, last_hdir, up, current_level);
+                attacks.Add(temp);
+                ranged_timer = 0;
+                ranged_ready = false;
+                thrown = false;
+            }
+            else if (enter_released && ! attacking)
+            {
                 StartAttack();
+                ranged_timer = 0;
+                ranged_ready = false;
+            }
         }
 
         private void StartAttack()

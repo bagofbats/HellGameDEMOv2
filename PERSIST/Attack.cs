@@ -108,4 +108,121 @@ namespace PERSIST
             _spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
     }
+
+    public class Ranged : Attack
+    {
+        private Player player;
+        private Texture2D img;
+        private int dir;
+        private bool up;
+        private Level level;
+        private Rectangle frame = new Rectangle(0, 0, 16, 16);
+        private Rectangle pos = new Rectangle(0, 0, 16, 16);
+        private float up_X;
+        private float timer = 0f;
+        private float hspeed = 460f;
+        private float up_hspeed = 30f;
+        private float vspeed = -480f;
+        private float grav = 20f;
+        private float spin_timer = 0;
+
+        public Ranged(Player player, Texture2D img, int dir, bool up, Level level)
+        {
+            this.player = player;
+            this.img = img;
+            this.dir = dir;
+            this.up = up;
+            this.level = level;
+
+            pos.X = player.DrawBox.X + 7;
+            up_X = pos.X;
+            pos.Y = player.DrawBox.Y + 16;
+
+            if (dir == -1)
+                frame.Y = 16;
+            if (up)
+                frame.X = 16;
+        }
+
+        public Rectangle HitBox
+        { get { return new Rectangle(pos.X, pos.Y + 5, 12, 6); } }
+
+        private void Finish()
+        {
+            //RangedFX particle = new RangedFX(new Vector2(HitBox.X, HitBox.Y - 4), level.particle_img, level, !up);
+            //level.AddFX(particle);
+            player.FinishAttack(this);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (!up)
+            {
+                float hsp = hspeed * dir * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                pos.X += (int)hsp;
+                timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (timer > 0.22f)
+                    Finish();
+
+                Wall hcheck = level.SimpleCheckCollision(HitBox);
+                if (hcheck != null)
+                {
+                    if (dir == -1)
+                        pos.X = hcheck.bounds.Right - 7;
+                    else
+                        pos.X = hcheck.bounds.Left - 8;
+
+                    Finish();
+                }
+            }
+
+            else
+            {
+                float vsp = vspeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                float hsp = up_hspeed * dir * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                up_X += hsp;
+
+                Wall vcheck = level.SimpleCheckCollision(new Rectangle(HitBox.X, HitBox.Y + (int)vsp, HitBox.Width, HitBox.Height));
+                if (vcheck != null)
+                {
+                    if (vsp < 0)
+                        pos.Y = vcheck.bounds.Bottom - 8;
+                    else
+                        pos.Y = vcheck.bounds.Top - 9;
+                    Finish();
+                }
+
+
+                Wall hcheck = level.SimpleCheckCollision(new Rectangle((int)up_X, HitBox.Y, HitBox.Width, HitBox.Height));
+                if (hcheck != null)
+                    Finish();
+
+
+                pos.Y += (int)vsp;
+                pos.X = (int)up_X;
+
+                vspeed += grav;
+
+                timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                spin_timer += 24 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                frame.X = 16 * ((int)spin_timer % 8);
+
+                if (timer >= 1f)
+                    Finish();
+
+            }
+        }
+
+        public override void Draw(SpriteBatch _spriteBatch)
+        {
+            _spriteBatch.Draw(img, pos, frame, Color.White);
+        }
+
+        public override void DebugDraw(SpriteBatch _spriteBatch, Texture2D blue)
+        {
+            _spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+    }
 }
