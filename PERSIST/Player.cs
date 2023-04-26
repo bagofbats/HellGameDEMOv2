@@ -66,6 +66,8 @@ namespace PERSIST
         private bool atk_dir = true;
         private char atk_type = 'r';
         private bool thrown = false;
+        private float thrown_timer = 0f;
+        private float thrown_time = 0.2f;
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager)
         {
@@ -96,6 +98,7 @@ namespace PERSIST
             GetInput();
             HandleMovementAndCollisions(gameTime);
             HandleAttacks(gameTime);
+            HandleThrown(gameTime);
 
             if (attacking)
                 AnimateAtk(gameTime);
@@ -235,6 +238,11 @@ namespace PERSIST
 
 
             // --------- horizontal movement ---------
+            if (ranged_ready)
+                hsp_max = hsp_max_default * 0.48f;
+            else
+                hsp_max = hsp_max_default;
+
             hsp = (hsp_max * hdir) + (hoset * Math.Abs(Math.Sign(hoset) - hdir));
 
             if (wallslide && hoset == 0)
@@ -285,11 +293,17 @@ namespace PERSIST
 
             if (enter_released && ranged_ready)
             {
-                Attack temp = new Ranged(this, spr_ranged, last_hdir, up, current_level);
+                int ranged_dir = last_hdir;
+                if (!wall_down && wall_left)
+                    ranged_dir = 1;
+                if (!wall_down && wall_right)
+                    ranged_dir = -1;
+
+                Attack temp = new Ranged(this, spr_ranged, ranged_dir, up, current_level);
                 attacks.Add(temp);
                 ranged_timer = 0;
                 ranged_ready = false;
-                thrown = false;
+                thrown = true;
             }
             else if (enter_released && ! attacking)
             {
@@ -334,10 +348,94 @@ namespace PERSIST
             atk = null;
         }
 
+        private void HandleThrown(GameTime gameTime)
+        {
+            if (thrown)
+            {
+                thrown_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (thrown_timer > thrown_time)
+                {
+                    thrown = false;
+                    thrown_timer = 0;
+                }
+            }
+        }
+
         private void AnimateNormal(GameTime gameTime)
         {
             walk_timer += 14 * (float)gameTime.ElapsedGameTime.TotalSeconds;
             int ydir = (int)(Convert.ToSingle(down) - Convert.ToSingle(up));
+
+            // special case for animating ranged attacks
+            if (ranged_ready)
+            {
+                if (!wall_down)
+                {
+                    if (wall_left)
+                    {
+                        frame.X = 128;
+                        frame.Y = 832;
+                    }
+                    else if (wall_right)
+                    {
+                        frame.X = 128;
+                        frame.Y = 864;
+                    }
+                    else
+                    {
+                        frame.X = 128;
+                        if (hdir == -1 || last_hdir == -1)
+                            frame.Y = 800;
+                        else
+                            frame.Y = 768;
+                    }
+                    
+                }
+                else
+                {
+                    frame.X = 192;
+                    if (hdir == -1 || last_hdir == -1)
+                        frame.Y = 736;
+                    else
+                        frame.Y = 704;
+                }
+                return;
+            }
+            // ranged attacks cont.
+            if (thrown)
+            {
+                if (!wall_down)
+                {
+                    if (wall_left)
+                    {
+                        frame.X = 160;
+                        frame.Y = 832;
+                    }
+                    if (wall_right)
+                    {
+                        frame.X = 160;
+                        frame.Y = 864;
+                    }
+                    else
+                    {
+                        frame.X = 160;
+                        if (hdir == -1 || last_hdir == -1)
+                            frame.Y = 800;
+                        else
+                            frame.Y = 768;
+                    }
+                    
+                }
+                else
+                {
+                    frame.X = 224;
+                    if (hdir == -1 || last_hdir == -1)
+                        frame.Y = 736;
+                    else
+                        frame.Y = 704;
+                }
+                return;
+            }
 
             // on wall
             if (!wall_down && wall_right)
