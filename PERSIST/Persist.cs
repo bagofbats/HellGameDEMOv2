@@ -23,6 +23,7 @@ namespace PERSIST
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef; // <---- look up what this does cuz idfk
             IsMouseVisible = true;
 
             player = new Player(this, new Vector2(320, 120), contManager);

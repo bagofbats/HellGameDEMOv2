@@ -21,6 +21,7 @@ namespace PERSIST
         private Texture2D black;
         public Texture2D particle_img
         { get; private set; }
+        private Texture2D tst_tutorial;
         private bool debug;
         public Checkpoint active_checkpoint
         { get; private set; }
@@ -30,6 +31,7 @@ namespace PERSIST
         private List<JSON> JSONs = new List<JSON>();
         private List<Room> rooms = new List<Room>();
         private List<Checkpoint> checkpoints = new List<Checkpoint>();
+        private List<Enemy> enemies = new List<Enemy>();
         private List<ParticleFX> particles = new List<ParticleFX>();
 
         public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam, bool debug)
@@ -105,6 +107,11 @@ namespace PERSIST
         public void RemoveFX(ParticleFX particle)
         {
             particles.Remove(particle);
+        }
+
+        public void AddEnemy(Enemy enemy) 
+        {
+            enemies.Add(enemy);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -194,6 +201,7 @@ namespace PERSIST
         {
             black = root.Content.Load<Texture2D>("black");
             particle_img = root.Content.Load<Texture2D>("spr_particlefx");
+            tst_tutorial = root.Content.Load<Texture2D>("tst_tutorial");
 
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
 
@@ -273,18 +281,40 @@ namespace PERSIST
 
             player.Draw(_spriteBatch);
 
-            for (int i = 0; i < chunks.Count(); i++)
-                chunks[i].Draw(_spriteBatch);
+            //for (int i = 0; i < chunks.Count(); i++)
+            //    chunks[i].Draw(_spriteBatch);
 
-            for (int i = particles.Count - 1; i >= 0; i--)
+            foreach (JSON json in JSONs)
+                foreach (Layer layer in json.raw.layers)
+                    if (layer.name == "tiles")
+                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
+
+                    for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Draw(_spriteBatch);
 
             if (debug)
-            {
                 player.DebugDraw(_spriteBatch, black);
-            }
 
             _spriteBatch.End();
+        }
+
+        private void DrawLayer(SpriteBatch spriteBatch, Layer layer, Texture2D tileset, int tileset_width, int x, int y)
+        {
+            Rectangle tile = new Rectangle(0, 0, 8, 8);
+            Rectangle frame = new Rectangle(0, 0, 8, 8);
+            //int tileset_width = 19;
+            for (int i = 0; i < layer.data.Count; ++i)
+            {
+                if (layer.data[i] == -1)
+                    continue;
+
+                tile.X = x + layer.gridCellWidth * (i % layer.gridCellsX);
+                tile.Y = y + layer.gridCellHeight * (i / layer.gridCellsX);
+
+                frame.X = 8 * (layer.data[i] % tileset_width);
+                frame.Y = 8 * (layer.data[i] / tileset_width);
+                spriteBatch.Draw(tileset, tile, frame, Color.White);
+            }
         }
     }
 

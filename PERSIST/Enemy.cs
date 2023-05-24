@@ -13,9 +13,45 @@ namespace PERSIST
     public abstract class Enemy
     {
         public abstract Rectangle GetHitBox();
+        public abstract void LoadAssets(Texture2D sprite);
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch);
         public abstract void DebugDraw(SpriteBatch spriteBatch, Texture2D blue);
         public abstract void Damage();
+    }
+
+    public class Slime : Enemy
+    {
+        Texture2D sprite;
+
+        public override Rectangle GetHitBox()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Damage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
