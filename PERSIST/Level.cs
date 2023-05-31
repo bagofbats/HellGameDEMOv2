@@ -16,12 +16,14 @@ namespace PERSIST
     public class Level
     {
         private Persist root;
-        private Player player;
+        public Player player
+        { get; private set; }
         private Camera cam;
         private Texture2D black;
         public Texture2D particle_img
         { get; private set; }
         private Texture2D tst_tutorial;
+        private Texture2D spr_slime;
         private bool debug;
         public Checkpoint active_checkpoint
         { get; private set; }
@@ -64,6 +66,9 @@ namespace PERSIST
                         {
                             if (entity.name == "checkpoint")
                                 AddCheckpoint(new Rectangle(entity.x + json.location.X, entity.y + json.location.Y - 16, 16, 32));
+
+                            if (entity.name == "slime")
+                                AddEnemy(new Slime(new Vector2(entity.x + json.location.X, entity.y + json.location.Y), this));
                         }
                     }
 
@@ -112,6 +117,11 @@ namespace PERSIST
         public void AddEnemy(Enemy enemy) 
         {
             enemies.Add(enemy);
+        }
+
+        public void RemoveEnemy(Enemy enemy)
+        {
+            enemies.Remove(enemy);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -202,6 +212,13 @@ namespace PERSIST
             black = root.Content.Load<Texture2D>("black");
             particle_img = root.Content.Load<Texture2D>("spr_particlefx");
             tst_tutorial = root.Content.Load<Texture2D>("tst_tutorial");
+            spr_slime = root.Content.Load<Texture2D>("spr_slime");
+
+            foreach (Enemy enemy in enemies)
+            {
+                if (enemy.GetType() == typeof(Slime))
+                    enemy.LoadAssets(spr_slime);
+            }
 
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
 
@@ -220,6 +237,9 @@ namespace PERSIST
                 checkpoints[i].DontAnimate(gameTime);
 
             Checkpoint temp = CheckpointCheckCollision(player.HitBox);
+
+            for (int i = 0; i < enemies.Count(); i++)
+                enemies[i].Update(gameTime);
 
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Update(gameTime);
@@ -276,6 +296,20 @@ namespace PERSIST
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                 SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
 
+            foreach (JSON json in JSONs)
+                for (int i = json.raw.layers.Count - 1; i >= 0; i--)
+                {
+                    Layer layer = json.raw.layers[i];
+                    if (layer.name == "cracks")
+                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
+                    if (layer.name == "pillars")
+                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
+                    if (layer.name == "tiles_lower")
+                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
+                    if (layer.name == "tiles")
+                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
+                }
+
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
 
@@ -284,12 +318,10 @@ namespace PERSIST
             //for (int i = 0; i < chunks.Count(); i++)
             //    chunks[i].Draw(_spriteBatch);
 
-            foreach (JSON json in JSONs)
-                foreach (Layer layer in json.raw.layers)
-                    if (layer.name == "tiles")
-                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
+            for (int i = enemies.Count - 1; i >= 0; i--)
+                enemies[i].Draw(_spriteBatch);
 
-                    for (int i = particles.Count - 1; i >= 0; i--)
+            for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Draw(_spriteBatch);
 
             if (debug)
