@@ -207,6 +207,22 @@ namespace PERSIST
             return (left, right, up, down);
         }
 
+        public List<Enemy> CheckEnemyCollision(Rectangle input)
+        {
+            List<Enemy> ret = new List<Enemy>();
+            for (int i = 0; i < enemies.Count(); i++)
+            {
+                // Debug.WriteLine("Checking the enemies!");
+                if (enemies[i] != null && enemies[i].GetHitBox().Intersects(input))
+                {
+                    // Debug.WriteLine("Found an enemy!");
+                    //return enemies[i];
+                    ret.Add(enemies[i]);
+                }
+            }
+            return ret;
+        }
+
         public void Load()
         {
             black = root.Content.Load<Texture2D>("black");

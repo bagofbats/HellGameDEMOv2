@@ -93,8 +93,40 @@ namespace PERSIST
 
             if (frame.X >= 256)
             {
-                // enemies_struck = null;
                 player.FinishAttack(this);
+            }
+
+            if (type == 'd')
+            {
+                List<Enemy> temp = level.CheckEnemyCollision(HitBox);
+                if (temp.Count() != 0)
+                {
+                    if (!pogoed)
+                    {
+                        pogoed = true;
+                        //player.SetPogoed(temp[0].GetHitBox().Y, true);
+                    }
+                    foreach (Enemy enemy in temp)
+                    {
+                        if (!enemies_struck.Contains(enemy))
+                        {
+                            enemies_struck.Add(enemy);
+                            enemy.Damage();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                List<Enemy> temp = level.CheckEnemyCollision(HitBox);
+                foreach (Enemy enemy in temp)
+                {
+                    if (enemy != null && !enemies_struck.Contains(enemy))
+                    {
+                        enemies_struck.Add(enemy);
+                        enemy.Damage();
+                    }
+                }
             }
         }
 
