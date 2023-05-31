@@ -104,7 +104,7 @@ namespace PERSIST
                     if (!pogoed)
                     {
                         pogoed = true;
-                        //player.SetPogoed(temp[0].GetHitBox().Y, true);
+                        player.SetPogoed(temp[0].GetHitBox().Y, true);
                     }
                     foreach (Enemy enemy in temp)
                     {

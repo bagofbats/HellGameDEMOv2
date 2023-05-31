@@ -54,6 +54,13 @@ namespace PERSIST
         private float ranged_timer = 0f;
         private float ranged_time = 0.36f;
         private bool ranged_ready = false;
+        private float pogo_height = 70f;
+        private float pogo_target = 0f;
+        private float pogo_timer = 0f;
+        private float pogo_time = 0.4f;
+        private bool pogoed = false;
+        private float pogo_float_timer = 0.05f;
+        private float pogo_float = 1.1f;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -174,7 +181,7 @@ namespace PERSIST
             // --------- end death ---------
 
 
-            // --------- wall jumping ---------
+            // gravity stuff
             if (wallslide && vsp > 0)
             {
                 grav = 0.11f;
@@ -184,12 +191,20 @@ namespace PERSIST
                 if (vsp > grav_max)
                     vsp = grav_max;
             }
+            else if (pogo_float < pogo_float_timer)
+            {
+                pogo_float += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                grav = 0.11f;
+            }
             else
             {
                 grav = grav_default;
                 grav_max = grav_max_default;
             }
+            // end gravity stuff
 
+
+            // --------- wall jumping ---------
             if (space_pressed && wallslide)
             {
                 vsp = -4.2f;
@@ -205,14 +220,28 @@ namespace PERSIST
 
 
             //  --------- vertical movement ---------
-            if (vsp < grav_max)
-                vsp += grav;
+            if (pogoed)
+            {
+                vsp = (pogo_target - pos.Y) / 8;
+                if (vsp > -1)
+                    SetPogoed(0, false);
+
+                pogo_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (pogo_timer >= pogo_time)
+                    SetPogoed(0, false);
+            }
+            else
+            {
+                if (space_released && !wall_down)
+                    vsp /= 2;
+
+                if (vsp < grav_max)
+                    vsp += grav;
+            }
 
             if (space_pressed && wall_down)
                 vsp = -4.2f;
 
-            if (space_released && !wall_down)
-                vsp /= 2;
 
             float vsp_col_check = vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             if (vsp_col_check > 0)
@@ -225,7 +254,10 @@ namespace PERSIST
             if (vcheck != null)
             {
                 if (vsp < 0)
+                {
                     pos.Y = vcheck.bounds.Bottom - 16;
+                    SetPogoed(0, false);
+                }
                 else if (vsp > 0)
                     pos.Y = vcheck.bounds.Top - 32;
                 vsp = 0;
@@ -358,6 +390,22 @@ namespace PERSIST
                     thrown = false;
                     thrown_timer = 0;
                 }
+            }
+        }
+
+        public void SetPogoed(int victim_y, bool value)
+        {
+            // helper function to handle transitions between pogo/not pogoing states
+            pogoed = value;
+            if (value)
+            {
+                pogo_target = Math.Max(victim_y - pogo_height, pos.Y - pogo_height + 16);
+                pogo_timer = 0;
+            }
+            else
+            {
+                vsp = vsp / 2;
+                pogo_float = 0f;
             }
         }
 
