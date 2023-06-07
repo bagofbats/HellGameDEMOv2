@@ -208,8 +208,9 @@ namespace PERSIST
 
             // --------- death ---------
             Obstacle o = current_level.ObstacleCheckCollision(HurtBox);
+            List<Enemy> e = current_level.CheckEnemyCollision(HurtBox);
 
-            if (o != null)
+            if (o != null || e.Count > 0)
                 Die(gameTime);
             // --------- end death ---------
 
