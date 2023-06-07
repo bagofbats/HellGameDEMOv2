@@ -244,6 +244,16 @@ namespace PERSIST
                     Finish();
 
             }
+
+            List<Enemy> temp = level.CheckEnemyCollision(HitBox);
+            if (temp.Count() != 0)
+            {
+                foreach (Enemy enemy in temp)
+                {
+                    enemy.Damage();
+                    Finish();
+                }
+            }
         }
 
         public override void Draw(SpriteBatch _spriteBatch)
