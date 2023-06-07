@@ -50,4 +50,33 @@ namespace PERSIST
             spriteBatch.Draw(img, pos, frame, Color.White);
         }
     }
+
+    public class SlimeFX : ParticleFX
+    {
+        private Rectangle frame = new Rectangle(0, 48, 32, 32);
+        private Texture2D img;
+        private Rectangle pos;
+        private float animate_timer = 0;
+
+        public SlimeFX(Vector2 pos, Texture2D img, Level root)
+        {
+            this.pos = new Rectangle((int)pos.X, (int)pos.Y, 32, 32);
+            this.root = root;
+            this.img = img;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            animate_timer += 12 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            frame.X = 32 * ((int)animate_timer);
+
+            if (frame.X >= 96)
+                root.RemoveFX(this);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(img, pos, frame, Color.White);
+        }
+    }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -171,7 +172,12 @@ namespace PERSIST
         {
             hp -= 1;
             if (hp <= 0)
+            {
                 root.RemoveEnemy(this);
+                SlimeFX particle = new SlimeFX(new Vector2(PositionRectangle.X, PositionRectangle.Y), root.particle_img, root);
+                root.AddFX(particle);
+            }
+                
             bounce_counter = 1;
             vsp = -1;
             hdir = -Math.Sign(root.player.HitBox.X - pos.X - 8);
