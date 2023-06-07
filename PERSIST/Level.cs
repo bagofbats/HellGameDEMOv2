@@ -24,6 +24,7 @@ namespace PERSIST
         { get; private set; }
         private Texture2D tst_tutorial;
         private Texture2D spr_slime;
+        private Texture2D spr_screenwipe;
         private bool debug;
         public Checkpoint active_checkpoint
         { get; private set; }
@@ -35,6 +36,11 @@ namespace PERSIST
         private List<Checkpoint> checkpoints = new List<Checkpoint>();
         private List<Enemy> enemies = new List<Enemy>();
         private List<ParticleFX> particles = new List<ParticleFX>();
+
+        private bool player_dead = false;
+        private bool finish_player_dead = false;
+        private float dead_timer = 0;
+        private Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
         public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam, bool debug)
         {
@@ -229,6 +235,7 @@ namespace PERSIST
             particle_img = root.Content.Load<Texture2D>("spr_particlefx");
             tst_tutorial = root.Content.Load<Texture2D>("tst_tutorial");
             spr_slime = root.Content.Load<Texture2D>("spr_slime");
+            spr_screenwipe = root.Content.Load<Texture2D>("spr_screenwipe");
 
             foreach (Enemy enemy in enemies)
             {
@@ -247,7 +254,10 @@ namespace PERSIST
 
         public void Update(GameTime gameTime)
         {
-            player.Update(gameTime);
+            if (!player_dead)
+                player.Update(gameTime);
+            if (player_dead || finish_player_dead)
+                HandleDeath(gameTime);
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].DontAnimate(gameTime);
@@ -329,7 +339,8 @@ namespace PERSIST
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
 
-            player.Draw(_spriteBatch);
+            if (!player_dead)
+                player.Draw(_spriteBatch);
 
             //for (int i = 0; i < chunks.Count(); i++)
             //    chunks[i].Draw(_spriteBatch);
@@ -342,6 +353,9 @@ namespace PERSIST
 
             if (debug)
                 player.DebugDraw(_spriteBatch, black);
+
+            if (player_dead || finish_player_dead)
+                _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.White);
 
             _spriteBatch.End();
         }
@@ -363,6 +377,37 @@ namespace PERSIST
                 frame.Y = 8 * (layer.data[i] / tileset_width);
                 spriteBatch.Draw(tileset, tile, frame, Color.White);
             }
+        }
+
+        public void HandleDeath(GameTime gameTime)
+        {
+            if (dead_timer == 0)
+                player_dead = true;
+
+            dead_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (dead_timer >= 0.34 && player_dead)
+            {
+                player.SetPos(new Vector2(active_checkpoint.box.X - 8, active_checkpoint.box.Y));
+                Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
+                int tempX = player.DrawBox.X + 16 - 160;
+                int tempY = player.DrawBox.Y + 16 - 120;
+                tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
+                tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));
+                cam.SetPos(new Vector2(tempX, tempY));
+                player_dead = false;
+                finish_player_dead = true;
+            }
+
+            if (dead_timer >= 0.68)
+            {
+                player_dead = false;
+                finish_player_dead = false;
+                dead_timer = 0;
+            }
+
+            screenwipe_rect.Y = (int)cam.GetPos().Y;
+            screenwipe_rect.X = (int)(cam.GetPos().X - 960 + (32 * dead_timer * 60));
         }
     }
 
@@ -480,10 +525,33 @@ namespace PERSIST
     {
         public Rectangle bounds
         { get; private set; }
+        private List<Enemy> enemies = new List<Enemy>();
 
         public Room(Rectangle bounds)
         { 
             this.bounds = bounds; 
+        }
+
+        public void UpdateEnemies(GameTime gameTime)
+        {
+            for (int i = enemies.Count - 1; i >= 0; i--)
+                enemies[i].Update(gameTime);
+        }
+
+        public void DrawEnemies(SpriteBatch _spriteBatch)
+        {
+            for (int i = enemies.Count - 1; i >= 0; i--)
+                enemies[i].Draw(_spriteBatch);
+        }
+
+        public void AddEnemy(Enemy enemy)
+        {
+            enemies.Add(enemy);
+        }
+
+        public void RemoveEnemy(Enemy enemy)
+        {
+            enemies.Remove(enemy);
         }
     }
 

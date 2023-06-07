@@ -155,10 +155,11 @@ namespace PERSIST
                 last_hdir = hdir;
         }
 
-        private void Die()
+        private void Die(GameTime gameTime)
         {
-            pos.X = current_level.active_checkpoint.box.X - 8;
-            pos.Y = current_level.active_checkpoint.box.Y;
+            current_level.HandleDeath(gameTime);
+            //pos.X = current_level.active_checkpoint.box.X - 8;
+            //pos.Y = current_level.active_checkpoint.box.Y;
         }
 
         private void HandleMovementAndCollisions(GameTime gameTime)
@@ -177,7 +178,7 @@ namespace PERSIST
             Obstacle o = current_level.ObstacleCheckCollision(HurtBox);
 
             if (o != null)
-                Die();
+                Die(gameTime);
             // --------- end death ---------
 
 
@@ -407,6 +408,11 @@ namespace PERSIST
                 vsp = vsp / 2;
                 pogo_float = 0f;
             }
+        }
+
+        public void SetPos(Vector2 new_pos)
+        {
+            pos = new_pos;
         }
 
         private void AnimateNormal(GameTime gameTime)
