@@ -25,6 +25,7 @@ namespace PERSIST
         private Texture2D tst_tutorial;
         private Texture2D spr_slime;
         private Texture2D spr_screenwipe;
+        private Texture2D bg_brick;
         private bool debug;
         public Checkpoint active_checkpoint
         { get; private set; }
@@ -236,6 +237,7 @@ namespace PERSIST
             tst_tutorial = root.Content.Load<Texture2D>("tst_tutorial");
             spr_slime = root.Content.Load<Texture2D>("spr_slime");
             spr_screenwipe = root.Content.Load<Texture2D>("spr_screenwipe");
+            bg_brick = root.Content.Load<Texture2D>("bg_brick2");
 
             foreach (Enemy enemy in enemies)
             {
@@ -321,6 +323,9 @@ namespace PERSIST
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                 SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
+
+            Rectangle source = bounds;
+            _spriteBatch.Draw(bg_brick, bounds, source, Color.White);
 
             foreach (JSON json in JSONs)
                 for (int i = json.raw.layers.Count - 1; i >= 0; i--)
