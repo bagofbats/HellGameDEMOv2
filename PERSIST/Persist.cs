@@ -26,7 +26,7 @@ namespace PERSIST
             _graphics.GraphicsProfile = GraphicsProfile.HiDef; // <---- look up what this does cuz idfk
             IsMouseVisible = true;
 
-            player = new Player(this, new Vector2(320, 120), contManager);
+            player = new Player(this, new Vector2(800, 500), contManager);
 
             RawJSON one = JsonFileReader.Read<RawJSON>("rm_tutorial1.json");
             RawJSON two = JsonFileReader.Read<RawJSON>("rm_tutorial2.json");

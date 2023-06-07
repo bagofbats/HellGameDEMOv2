@@ -346,6 +346,7 @@ namespace PERSIST
 
             if (!player_dead)
                 player.Draw(_spriteBatch);
+                
 
             //for (int i = 0; i < chunks.Count(); i++)
             //    chunks[i].Draw(_spriteBatch);
@@ -361,6 +362,13 @@ namespace PERSIST
 
             if (player_dead || finish_player_dead)
                 _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.White);
+
+            if (player_dead)
+            {
+                player.DrawDead(_spriteBatch, dead_timer);
+                //player.DebugDraw(_spriteBatch, black);
+            }
+                
 
             _spriteBatch.End();
         }
@@ -391,7 +399,7 @@ namespace PERSIST
 
             dead_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (dead_timer >= 0.34 && player_dead)
+            if (dead_timer >= 0.64 && player_dead)
             {
                 player.SetPos(new Vector2(active_checkpoint.box.X - 8, active_checkpoint.box.Y));
                 Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
@@ -404,15 +412,22 @@ namespace PERSIST
                 finish_player_dead = true;
             }
 
-            if (dead_timer >= 0.68)
+            if (dead_timer >= 0.98)
             {
                 player_dead = false;
                 finish_player_dead = false;
                 dead_timer = 0;
             }
-
+            
             screenwipe_rect.Y = (int)cam.GetPos().Y;
-            screenwipe_rect.X = (int)(cam.GetPos().X - 960 + (32 * dead_timer * 60));
+
+            if (dead_timer < 0.34)
+                screenwipe_rect.X = (int)(cam.GetPos().X - 960 + (32 * dead_timer * 60));
+            else if (dead_timer > 0.64)
+                screenwipe_rect.X = (int)(cam.GetPos().X - 960 + (32 * (dead_timer - 0.2) * 60));
+            else
+                screenwipe_rect.X = (int)(cam.GetPos().X - 960 + (32 * 0.34 * 60));
+
         }
     }
 

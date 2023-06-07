@@ -75,6 +75,7 @@ namespace PERSIST
         private bool thrown = false;
         private float thrown_timer = 0f;
         private float thrown_time = 0.2f;
+        private float death_hsp = 0f;
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager)
         {
@@ -133,6 +134,34 @@ namespace PERSIST
                 attacks[i].DebugDraw(_spriteBatch, blue);
         }
 
+        public void DrawDead(SpriteBatch _spriteBatch, float timer)
+        {
+            frame.X = 0;
+
+            if (last_hdir == 1)
+                frame.Y = 1088;
+            else
+                frame.Y = 1120;
+
+            pos.X += death_hsp;
+            death_hsp /= 1.06f;
+
+            if (timer < 0.20)
+            {
+                _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
+                frame.X = 32;
+                _spriteBatch.Draw(sheet, DrawBox, frame, Color.White * (30 * timer * timer));
+            }
+            else
+            {
+                frame.X = 32 + (32 * (int)(timer * 16));
+                if (frame.X > 224)
+                    frame.X = 224;
+                _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
+            }
+
+        }
+
 
 
         // helper functions
@@ -158,6 +187,9 @@ namespace PERSIST
         private void Die(GameTime gameTime)
         {
             current_level.HandleDeath(gameTime);
+            death_hsp = -2.3f * last_hdir;
+            if (last_hdir == 0)
+                death_hsp = 2.3f;
             //pos.X = current_level.active_checkpoint.box.X - 8;
             //pos.Y = current_level.active_checkpoint.box.Y;
         }
