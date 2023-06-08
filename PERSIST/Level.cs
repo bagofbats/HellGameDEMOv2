@@ -335,12 +335,12 @@ namespace PERSIST
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "background_lower")
-                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y, cam);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, cam);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "background")
-                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y, cam);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, cam);
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
@@ -354,12 +354,12 @@ namespace PERSIST
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles_lower")
-                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y, cam);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, cam);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles")
-                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y, cam);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, cam);
 
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Draw(_spriteBatch);
@@ -377,14 +377,18 @@ namespace PERSIST
             _spriteBatch.End();
         }
 
-        private void DrawLayer(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, int x, int y)
+        private void DrawLayer(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset)
         {
             if (layer.data == null)
                 return;
 
+            int bounds_xoset = t.location.X;
+            int bounds_yoset = t.location.Y;
+
             for (int i = 0; i < layer.data.Length; i++)
             {
                 int gid = layer.data[i];
+
 
                 if (gid == 0)
                     continue;
@@ -399,23 +403,26 @@ namespace PERSIST
                 int loc_x = (i % t.map.Width) * t.map.TileWidth;
                 int loc_y = (int)Math.Floor(i / (double)t.map.Width) * t.map.TileHeight;
 
-                loc_x += t.location.X;
-                loc_y += t.location.Y;
+                loc_x += bounds_xoset;
+                loc_y += bounds_yoset;
 
                 Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
                 Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
 
-                spriteBatch.Draw(tst_tutorial, loc, tile, Color.White);
+                spriteBatch.Draw(tileset, loc, tile, Color.White);
             }
         }
 
-        private void DrawLayerOnScreen(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, int x, int y, Camera cam)
+        private void DrawLayerOnScreen(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, Camera cam)
         {
             if (layer.data == null)
                 return;
 
-            int cam_x = ((int)cam.GetPos().X - t.location.X) / t.map.TileWidth;
-            int cam_y = ((int)cam.GetPos().Y - t.location.Y) / t.map.TileHeight * t.map.Width;
+            int bounds_xoset = t.location.X;
+            int bounds_yoset = t.location.Y;
+
+            int cam_x = ((int)cam.GetPos().X - bounds_xoset) / t.map.TileWidth;
+            int cam_y = ((int)cam.GetPos().Y - bounds_yoset) / t.map.TileHeight * t.map.Width;
 
             int t_width = t.tst.TileWidth;
             int t_height = t.tst.TileHeight;
@@ -440,13 +447,13 @@ namespace PERSIST
                     int loc_x = (index % t.map.Width) * t.map.TileWidth;
                     int loc_y = (int)Math.Floor(index / (double)t.map.Width) * t.map.TileHeight;
 
-                    loc_x += t.location.X;
-                    loc_y += t.location.Y;
+                    loc_x += bounds_xoset;
+                    loc_y += bounds_yoset;
 
                     Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
                     Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
 
-                    spriteBatch.Draw(tst_tutorial, loc, tile, Color.White);
+                    spriteBatch.Draw(tileset, loc, tile, Color.White);
                 }
         }
 
