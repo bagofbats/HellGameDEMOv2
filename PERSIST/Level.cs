@@ -334,8 +334,13 @@ namespace PERSIST
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
+                    if (l.name == "background_lower")
+                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y, cam);
+
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "background")
-                        DrawLayer(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y, cam);
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
@@ -349,12 +354,12 @@ namespace PERSIST
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles_lower")
-                        DrawLayer(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y, cam);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles")
-                        DrawLayer(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y, cam);
 
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Draw(_spriteBatch);
@@ -399,6 +404,44 @@ namespace PERSIST
 
                 spriteBatch.Draw(tst_tutorial, loc, tile, Color.White);
             }
+        }
+
+        private void DrawLayerOnScreen(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, int x, int y, Camera cam)
+        {
+            if (layer.data == null)
+                return;
+
+            int cam_x = (int)cam.GetPos().X / t.map.TileWidth;
+            int cam_y = (int)cam.GetPos().Y / t.map.TileHeight * t.map.Width;
+
+            int t_width = t.tst.TileWidth;
+            int t_height = t.tst.TileHeight;
+
+            for (int j = 0; j < 248 / t.map.TileHeight; j++)
+                for (int i = 0; i < 328 / t.map.TileWidth; i++)
+                {
+                    int index = cam_x + i + cam_y + (j * t.map.Width);
+
+                    if (index > layer.data.Length)
+                        return;
+
+                    int gid = layer.data[index];
+
+                    if (gid == 0)
+                        continue;
+
+                    int tileFrame = gid - 1;
+                    int column = tileFrame % t.tst.Columns;
+                    int row = (int)Math.Floor(tileFrame / (double)t.tst.Columns);
+
+                    int loc_x = (index % t.map.Width) * t.map.TileWidth;
+                    int loc_y = (int)Math.Floor(index / (double)t.map.Width) * t.map.TileHeight;
+
+                    Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
+                    Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
+
+                    spriteBatch.Draw(tst_tutorial, loc, tile, Color.White);
+                }
         }
 
         public void HandleDeath(GameTime gameTime)
