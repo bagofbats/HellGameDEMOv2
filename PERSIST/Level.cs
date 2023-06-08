@@ -74,6 +74,27 @@ namespace PERSIST
                                                              (int)l.objects[i].y + t.location.Y,
                                                              (int)l.objects[i].width,
                                                              (int)l.objects[i].height)));
+
+                    if (l.name == "obstacles")
+                        for (int i = 0; i < l.objects.Count(); i++)
+                            AddWall(new Rectangle((int)l.objects[i].x + t.location.X,
+                                                  (int)l.objects[i].y + t.location.Y,
+                                                  (int)l.objects[i].width,
+                                                  (int)l.objects[i].height));
+
+                    if (l.name == "entities")
+                        for (int i = 0; i < l.objects.Count(); i++)
+                        {
+                            if (l.objects[i].name == "player")
+                                player.SetPos(new Vector2(l.objects[i].x, l.objects[i].y));
+
+                            if (l.objects[i].name == "checkpoint")
+                                AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
+
+                            if (l.objects[i].name == "slime")
+                                AddEnemy(new Slime(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y), this));
+                        }
+                            
                 }
         }
         public void AddWall(Rectangle bounds)
@@ -208,15 +229,9 @@ namespace PERSIST
         {
             List<Enemy> ret = new List<Enemy>();
             for (int i = 0; i < enemies.Count(); i++)
-            {
-                // Debug.WriteLine("Checking the enemies!");
                 if (enemies[i] != null && enemies[i].GetHitBox().Intersects(input))
-                {
-                    // Debug.WriteLine("Found an enemy!");
-                    //return enemies[i];
                     ret.Add(enemies[i]);
-                }
-            }
+
             return ret;
         }
 
@@ -318,23 +333,23 @@ namespace PERSIST
             _spriteBatch.Draw(bg_brick, bounds, source, Color.White);
 
             foreach (TiledData t in tld)
-            {
-                var tiles = t.map.Layers.First(l => l.name == "tiles");
-                DrawLayer(_spriteBatch, tiles, t, tst_tutorial, t.location.X, t.location.Y);
-            }
+                foreach (TiledLayer l in t.map.Layers)
+                    if (l.name == "pillars")
+                        DrawLayer(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y);
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
 
             if (!player_dead)
                 player.Draw(_spriteBatch);
-                
-
-            //for (int i = 0; i < chunks.Count(); i++)
-            //    chunks[i].Draw(_spriteBatch);
 
             for (int i = enemies.Count - 1; i >= 0; i--)
                 enemies[i].Draw(_spriteBatch);
+
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
+                    if (l.name == "tiles")
+                        DrawLayer(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y);
 
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Draw(_spriteBatch);
@@ -346,10 +361,7 @@ namespace PERSIST
                 _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.White);
 
             if (player_dead)
-            {
                 player.DrawDead(_spriteBatch, dead_timer);
-                //player.DebugDraw(_spriteBatch, black);
-            }
                 
 
             _spriteBatch.End();
@@ -357,26 +369,30 @@ namespace PERSIST
 
         private void DrawLayer(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, int x, int y)
         {
+            if (layer.data == null)
+                return;
+
             for (int i = 0; i < layer.data.Length; i++)
             {
                 int gid = layer.data[i];
+
+                if (gid == 0)
+                    continue;
+
                 int t_width = t.tst.TileWidth;
                 int t_height = t.tst.TileHeight;
 
-                if (gid != 0)
-                {
-                    int tileFrame = gid - 1;
-                    int column = tileFrame % t.tst.Columns;
-                    int row = (int)Math.Floor((double)tileFrame / (double)t.tst.Columns);
+                int tileFrame = gid - 1;
+                int column = tileFrame % t.tst.Columns;
+                int row = (int)Math.Floor((double)tileFrame / (double)t.tst.Columns);
 
-                    int loc_x = (i % t.map.Width) * t.map.TileWidth;
-                    int loc_y = (int)Math.Floor(i / (double)t.map.Width) * t.map.TileHeight;
+                int loc_x = (i % t.map.Width) * t.map.TileWidth;
+                int loc_y = (int)Math.Floor(i / (double)t.map.Width) * t.map.TileHeight;
 
-                    Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
-                    Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
+                Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
+                Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
 
-                    spriteBatch.Draw(tst_tutorial, loc, tile, Color.White);
-                }
+                spriteBatch.Draw(tst_tutorial, loc, tile, Color.White);
             }
         }
 
@@ -566,5 +582,24 @@ namespace PERSIST
     public class Breakable : Wall
     {
         public Breakable(Rectangle bounds) : base(bounds) { }
+    }
+
+    public class TiledData
+    {
+        public Rectangle location
+        { get; private set; }
+
+        public TiledMap map
+        { get; private set; }
+
+        public TiledTileset tst
+        { get; private set; }
+
+        public TiledData(Rectangle location, TiledMap map, TiledTileset tst)
+        {
+            this.location = location;
+            this.map = map;
+            this.tst = tst;
+        }
     }
 }

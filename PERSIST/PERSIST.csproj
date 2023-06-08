@@ -25,6 +25,9 @@
     <PackageReference Include="tiledcs" Version="3.3.3" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Content\rm_tutorial1.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\testlevel.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

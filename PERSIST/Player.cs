@@ -445,7 +445,7 @@ namespace PERSIST
 
         public void SetPos(Vector2 new_pos)
         {
-            pos = new_pos;
+            pos = new Vector2(new_pos.X - 16, new_pos.Y);
         }
 
         private void AnimateNormal(GameTime gameTime)
