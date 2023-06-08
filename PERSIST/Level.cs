@@ -77,7 +77,7 @@ namespace PERSIST
 
                     if (l.name == "obstacles")
                         for (int i = 0; i < l.objects.Count(); i++)
-                            AddWall(new Rectangle((int)l.objects[i].x + t.location.X,
+                            AddObstacle(new Rectangle((int)l.objects[i].x + t.location.X,
                                                   (int)l.objects[i].y + t.location.Y,
                                                   (int)l.objects[i].width,
                                                   (int)l.objects[i].height));
@@ -334,7 +334,7 @@ namespace PERSIST
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
-                    if (l.name == "pillars")
+                    if (l.name == "background")
                         DrawLayer(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y);
 
             for (int i = 0; i < checkpoints.Count(); i++)
@@ -345,6 +345,11 @@ namespace PERSIST
 
             for (int i = enemies.Count - 1; i >= 0; i--)
                 enemies[i].Draw(_spriteBatch);
+
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
+                    if (l.name == "tiles_lower")
+                        DrawLayer(_spriteBatch, l, t, tst_tutorial, t.location.X, t.location.Y);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
@@ -405,7 +410,7 @@ namespace PERSIST
 
             if (dead_timer >= 0.7 && player_dead)
             {
-                player.SetPos(new Vector2(active_checkpoint.box.X - 8, active_checkpoint.box.Y));
+                player.SetPos(new Vector2(active_checkpoint.box.X + 8, active_checkpoint.box.Y));
                 Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
                 int tempX = player.DrawBox.X + 16 - 160;
                 int tempY = player.DrawBox.Y + 16 - 120;
