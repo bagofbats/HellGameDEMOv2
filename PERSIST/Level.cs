@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TiledCS;
 
 namespace PERSIST
 {
@@ -32,7 +34,7 @@ namespace PERSIST
 
         private Rectangle bounds;
         private List<Chunk> chunks = new List<Chunk>();
-        private List<JSON> JSONs = new List<JSON>();
+        private List<TiledData> tld = new List<TiledData>();
         private List<Room> rooms = new List<Room>();
         private List<Checkpoint> checkpoints = new List<Checkpoint>();
         private List<Enemy> enemies = new List<Enemy>();
@@ -43,12 +45,12 @@ namespace PERSIST
         private float dead_timer = 0;
         private Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
-        public Level(Persist root, Rectangle bounds, Player player, List<JSON> JSONs, Camera cam, bool debug)
+        public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, bool debug)
         {
             this.root = root;
             this.player = player;
             this.bounds = bounds;
-            this.JSONs = JSONs;
+            this.tld = tld;
             this.cam = cam;
             this.debug = debug;
 
@@ -56,36 +58,24 @@ namespace PERSIST
                 for (int j = 0; j < bounds.Height; j += 240)
                     chunks.Add(new Chunk(new Rectangle(i - 32, j - 32, 320 + 64, 240 + 64)));
 
-            foreach (JSON json in JSONs)
-                foreach (Layer layer in json.raw.layers)
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
                 {
-                    if (layer.name == "walls")
-                        for (int i = 0; i < layer.data.Count(); i += 4)
-                            AddWall(new Rectangle(layer.data[i] + json.location.X, layer.data[i + 1] + json.location.Y, layer.data[i + 2], layer.data[i + 3]));
+                    if (l.name == "walls")
+                        for (int i = 0; i < l.objects.Count(); i++)
+                            AddWall(new Rectangle((int)l.objects[i].x + t.location.X,
+                                                  (int)l.objects[i].y + t.location.Y,
+                                                  (int)l.objects[i].width,
+                                                  (int)l.objects[i].height));
 
-                    else if (layer.name == "rooms")
-                        for (int i = 0; i < layer.data.Count(); i += 4)
-                            rooms.Add(new Room(new Rectangle(layer.data[i] + json.location.X, layer.data[i + 1] + json.location.Y, layer.data[i + 2], layer.data[i + 3])));
-
-                    else if (layer.name == "entities")
-                    {
-                        foreach (Entity entity in layer.entities)
-                        {
-                            if (entity.name == "checkpoint")
-                                AddCheckpoint(new Rectangle(entity.x + json.location.X, entity.y + json.location.Y - 16, 16, 32));
-
-                            if (entity.name == "slime")
-                                AddEnemy(new Slime(new Vector2(entity.x + json.location.X, entity.y + json.location.Y), this));
-                        }
-                    }
-
-                    else if (layer.name == "obstacles")
-                        for (int i = 0; i < layer.data.Count(); i += 4)
-                            AddObstacle(new Rectangle(layer.data[i] + json.location.X, layer.data[i + 1] + json.location.Y, layer.data[i + 2], layer.data[i + 3]));
+                    if (l.name == "rooms")
+                        for (int i = 0; i < l.objects.Count(); i++)
+                            rooms.Add(new Room(new Rectangle((int)l.objects[i].x + t.location.X,
+                                                             (int)l.objects[i].y + t.location.Y,
+                                                             (int)l.objects[i].width,
+                                                             (int)l.objects[i].height)));
                 }
-                    
         }
-
         public void AddWall(Rectangle bounds)
         {
             Wall temp = new Wall(bounds);
@@ -327,19 +317,11 @@ namespace PERSIST
             Rectangle source = bounds;
             _spriteBatch.Draw(bg_brick, bounds, source, Color.White);
 
-            foreach (JSON json in JSONs)
-                for (int i = json.raw.layers.Count - 1; i >= 0; i--)
-                {
-                    Layer layer = json.raw.layers[i];
-                    if (layer.name == "cracks")
-                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
-                    if (layer.name == "pillars")
-                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
-                    if (layer.name == "tiles_lower")
-                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
-                    if (layer.name == "tiles")
-                        DrawLayer(_spriteBatch, layer, tst_tutorial, 19, json.location.X, json.location.Y);
-                }
+            foreach (TiledData t in tld)
+            {
+                var tiles = t.map.Layers.First(l => l.name == "tiles");
+                DrawLayer(_spriteBatch, tiles, t, tst_tutorial, t.location.X, t.location.Y);
+            }
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
@@ -373,22 +355,28 @@ namespace PERSIST
             _spriteBatch.End();
         }
 
-        private void DrawLayer(SpriteBatch spriteBatch, Layer layer, Texture2D tileset, int tileset_width, int x, int y)
+        private void DrawLayer(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, int x, int y)
         {
-            Rectangle tile = new Rectangle(0, 0, 8, 8);
-            Rectangle frame = new Rectangle(0, 0, 8, 8);
-            //int tileset_width = 19;
-            for (int i = 0; i < layer.data.Count; ++i)
+            for (int i = 0; i < layer.data.Length; i++)
             {
-                if (layer.data[i] == -1)
-                    continue;
+                int gid = layer.data[i];
+                int t_width = t.tst.TileWidth;
+                int t_height = t.tst.TileHeight;
 
-                tile.X = x + layer.gridCellWidth * (i % layer.gridCellsX);
-                tile.Y = y + layer.gridCellHeight * (i / layer.gridCellsX);
+                if (gid != 0)
+                {
+                    int tileFrame = gid - 1;
+                    int column = tileFrame % t.tst.Columns;
+                    int row = (int)Math.Floor((double)tileFrame / (double)t.tst.Columns);
 
-                frame.X = 8 * (layer.data[i] % tileset_width);
-                frame.Y = 8 * (layer.data[i] / tileset_width);
-                spriteBatch.Draw(tileset, tile, frame, Color.White);
+                    int loc_x = (i % t.map.Width) * t.map.TileWidth;
+                    int loc_y = (int)Math.Floor(i / (double)t.map.Width) * t.map.TileHeight;
+
+                    Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
+                    Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
+
+                    spriteBatch.Draw(tst_tutorial, loc, tile, Color.White);
+                }
             }
         }
 
@@ -519,23 +507,6 @@ namespace PERSIST
             this.black = black;
         }
     }
-
-
-    public class JSON
-    {
-        public Rectangle location
-        { get; private set; }
-
-        public RawJSON raw
-        { get; private set; }
-
-        public JSON(Rectangle location, RawJSON raw) 
-        { 
-            this.location = location;
-            this.raw = raw;
-        }
-    }
-
 
     public class Room
     {

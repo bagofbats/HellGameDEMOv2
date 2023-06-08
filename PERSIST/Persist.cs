@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.IO;
+using TiledCS;
 
 namespace PERSIST
 {
@@ -26,16 +27,15 @@ namespace PERSIST
             _graphics.GraphicsProfile = GraphicsProfile.HiDef; // <---- look up what this does cuz idfk
             IsMouseVisible = true;
 
-            player = new Player(this, new Vector2(800, 500), contManager);
+            player = new Player(this, new Vector2(100, 100), contManager);
 
-            RawJSON one = JsonFileReader.Read<RawJSON>("rm_tutorial1.json");
-            RawJSON two = JsonFileReader.Read<RawJSON>("rm_tutorial2.json");
-            RawJSON three = JsonFileReader.Read<RawJSON>("sample.json");
-            List<JSON> JSONs = new List<JSON>
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\testlevel.tmx");
+            TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
+            TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
+
+            List<TiledData> tld = new List<TiledData>
             {
-                new JSON(new Rectangle(0, 0 + 368 + 120 - 16 - 16, 320, 240), one),
-                new JSON(new Rectangle(320, 40 + 368 + 120 - 16 - 16, 320, 240), two),
-                new JSON(new Rectangle(640, 128, 960, 608), three)
+                one
             };
 
             // determine how much to scale the window up
@@ -60,7 +60,7 @@ namespace PERSIST
 
             _graphics.ApplyChanges();
 
-            the_level = new Level(this, new Rectangle(0, 0, 1600, 960), player, JSONs, new Camera(target_w, target_h), debug);
+            the_level = new Level(this, new Rectangle(0, 0, 1600, 960), player, tld, new Camera(target_w, target_h), debug);
 
             Window.Title = "Persist [DEMO]";
         }

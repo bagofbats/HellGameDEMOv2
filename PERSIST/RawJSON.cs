@@ -60,4 +60,19 @@ namespace PERSIST
             return JsonSerializer.Deserialize<T>(text);
         }
     }
+
+    public class JSON
+    {
+        public Rectangle location
+        { get; private set; }
+
+        public RawJSON raw
+        { get; private set; }
+
+        public JSON(Rectangle location, RawJSON raw)
+        {
+            this.location = location;
+            this.raw = raw;
+        }
+    }
 }
