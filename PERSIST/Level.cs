@@ -399,6 +399,9 @@ namespace PERSIST
                 int loc_x = (i % t.map.Width) * t.map.TileWidth;
                 int loc_y = (int)Math.Floor(i / (double)t.map.Width) * t.map.TileHeight;
 
+                loc_x += t.location.X;
+                loc_y += t.location.Y;
+
                 Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
                 Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
 
@@ -411,8 +414,8 @@ namespace PERSIST
             if (layer.data == null)
                 return;
 
-            int cam_x = (int)cam.GetPos().X / t.map.TileWidth;
-            int cam_y = (int)cam.GetPos().Y / t.map.TileHeight * t.map.Width;
+            int cam_x = ((int)cam.GetPos().X - t.location.X) / t.map.TileWidth;
+            int cam_y = ((int)cam.GetPos().Y - t.location.Y) / t.map.TileHeight * t.map.Width;
 
             int t_width = t.tst.TileWidth;
             int t_height = t.tst.TileHeight;
@@ -422,7 +425,7 @@ namespace PERSIST
                 {
                     int index = cam_x + i + cam_y + (j * t.map.Width);
 
-                    if (index > layer.data.Length)
+                    if (index > layer.data.Length || index < 0)
                         return;
 
                     int gid = layer.data[index];
@@ -436,6 +439,9 @@ namespace PERSIST
 
                     int loc_x = (index % t.map.Width) * t.map.TileWidth;
                     int loc_y = (int)Math.Floor(index / (double)t.map.Width) * t.map.TileHeight;
+
+                    loc_x += t.location.X;
+                    loc_y += t.location.Y;
 
                     Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
                     Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
