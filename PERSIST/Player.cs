@@ -61,6 +61,8 @@ namespace PERSIST
         private bool pogoed = false;
         private float pogo_float_timer = 0.05f;
         private float pogo_float = 1.1f;
+        private float coyote_time = 0.08f;
+        private float coyote_timer = 0f;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -242,6 +244,7 @@ namespace PERSIST
             if (space_pressed && wallslide)
             {
                 vsp = -4.2f;
+                coyote_timer = coyote_time + 1;
 
                 if (wall_right)
                     hoset = -3.0f;
@@ -254,6 +257,9 @@ namespace PERSIST
 
 
             //  --------- vertical movement ---------
+            if (wall_down)
+                coyote_timer = 0;
+
             if (pogoed)
             {
                 vsp = (pogo_target - pos.Y) / 8;
@@ -266,17 +272,22 @@ namespace PERSIST
             }
             else
             {
-                if (space_released && !wall_down)
+                if (space_released && !wall_down && vsp < 0)
                     vsp /= 2;
 
                 if (vsp < grav_max)
                     vsp += grav;
             }
-
-            if (space_pressed && wall_down)
+            
+            if (space_pressed && (wall_down || coyote_timer <= coyote_time))
+            {
                 vsp = -4.2f;
+                coyote_timer = coyote_time + 1;
+            }
 
-
+            if (!wall_down && coyote_timer <= coyote_time + 1)
+                coyote_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            
             float vsp_col_check = vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             if (vsp_col_check > 0)
                 vsp_col_check += 1;
