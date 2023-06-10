@@ -73,4 +73,29 @@ namespace PERSIST
 
         }
     }
+
+    public class FPSCounter
+    {
+        int frames = 0;
+        float time_elapsed = 0;
+
+        public FPSCounter()
+        {
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            frames++;
+            time_elapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (time_elapsed >= 5)
+            {
+                int f = (int) (frames / time_elapsed);
+                Debug.WriteLine(f);
+                frames = 0;
+                time_elapsed = 0;
+            }
+        }
+    }
 }

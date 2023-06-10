@@ -17,6 +17,7 @@ namespace PERSIST
         private RenderTarget2D _nativeRenderTarget;
 
         private ControllerManager contManager = new ControllerManager();
+        private FPSCounter fpsCounter = new FPSCounter();
         private Player player;
         private Level the_level;
 
@@ -95,6 +96,8 @@ namespace PERSIST
 
             contManager.GetInputs(Keyboard.GetState());
             the_level.Update(gameTime);
+
+            //fpsCounter.Update(gameTime);
 
             base.Update(gameTime);
         }
