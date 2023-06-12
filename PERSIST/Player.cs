@@ -438,7 +438,7 @@ namespace PERSIST
             }
         }
 
-        public void SetPogoed(int victim_y, bool value)
+        public void SetPogoed(int victim_y, bool value, bool halved=false)
         {
             // helper function to handle transitions between pogo/not pogoing states
             pogoed = value;
@@ -446,6 +446,12 @@ namespace PERSIST
             {
                 pogo_target = Math.Max(victim_y - pogo_height, pos.Y - pogo_height + 16);
                 pogo_timer = 0;
+                if (halved)
+                {
+                    var temp = Math.Abs(pogo_target - pos.Y) / 3;
+                    pogo_target += temp;
+                }
+                    
             }
             else
             {

@@ -137,6 +137,12 @@ namespace PERSIST
                 {
                     specials.Add((Breakable)wall);
                     wall.Damage();
+
+                    if (!pogoed && type == 'd')
+                    {
+                        pogoed = true;
+                        player.SetPogoed(temp_specials[0].bounds.Y, true, true);
+                    }
                 }
             }
         }
