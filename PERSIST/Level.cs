@@ -88,6 +88,7 @@ namespace PERSIST
                         {
                             if (l.objects[i].name == "player")
                                 player.SetPos(new Vector2(l.objects[i].x, l.objects[i].y));
+                                
 
                             if (l.objects[i].name == "checkpoint")
                                 AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
@@ -280,6 +281,8 @@ namespace PERSIST
 
         public void Load()
         {
+            cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
+
             black = root.Content.Load<Texture2D>("black");
             particle_img = root.Content.Load<Texture2D>("spr_particlefx");
             tst_tutorial = root.Content.Load<Texture2D>("tst_tutorial");
@@ -523,12 +526,7 @@ namespace PERSIST
             if (dead_timer >= 0.7 && player_dead)
             {
                 player.SetPos(new Vector2(active_checkpoint.box.X + 8, active_checkpoint.box.Y));
-                Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
-                int tempX = player.DrawBox.X + 16 - 160;
-                int tempY = player.DrawBox.Y + 16 - 120;
-                tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
-                tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));
-                cam.SetPos(new Vector2(tempX, tempY));
+                cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
                 player_dead = false;
                 finish_player_dead = true;
             }

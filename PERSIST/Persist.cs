@@ -61,7 +61,9 @@ namespace PERSIST
 
             _graphics.ApplyChanges();
 
-            the_level = new Level(this, new Rectangle(0, 0, 1600, 960), player, tld, new Camera(target_w, target_h), debug);
+            Camera cam = new Camera(target_w, target_h);
+            the_level = new Level(this, new Rectangle(0, 0, 1600, 960), player, tld, cam, debug);
+            cam.root = the_level;
 
             Window.Title = "Persist [DEMO]";
         }

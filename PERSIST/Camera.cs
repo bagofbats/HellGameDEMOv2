@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace PERSIST
 {
@@ -16,6 +18,7 @@ namespace PERSIST
         int h;
         float current_x = 0;
         float current_y = 0;
+        public Level root;
 
         public Camera(int w, int h)
         {
@@ -60,6 +63,16 @@ namespace PERSIST
         {
             current_x = pos.X;
             current_y = pos.Y;
+        }
+
+        public void SmartSetPos(Vector2 pos)
+        {
+            Rectangle current_room = root.GetRoom(pos);
+            int tempX = (int)pos.X - 160;
+            int tempY = (int)pos.Y - 120;
+            tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
+            tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));
+            SetPos(new Vector2(tempX, tempY));
         }
 
         public Vector2 GetPos()
