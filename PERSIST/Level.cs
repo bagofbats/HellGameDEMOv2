@@ -39,6 +39,7 @@ namespace PERSIST
         private List<Checkpoint> checkpoints = new List<Checkpoint>();
         private List<Enemy> enemies = new List<Enemy>();
         private List<ParticleFX> particles = new List<ParticleFX>();
+        private List<Wall> special_walls = new List<Wall>();
 
         private bool player_dead = false;
         private bool finish_player_dead = false;
@@ -93,6 +94,16 @@ namespace PERSIST
 
                             if (l.objects[i].name == "slime")
                                 AddEnemy(new Slime(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y), this));
+
+                            if (l.objects[i].name == "breakable")
+                            {
+                                int h_bound = (int)l.objects[i].x + (int)l.objects[i].width;
+                                int v_bound = (int)l.objects[i].y + (int)l.objects[i].height;
+
+                                for (int h = (int)l.objects[i].x; h < h_bound; h += 8)
+                                    for (int v = (int)l.objects[i].y; v < v_bound; v += 8)
+                                        AddSpecialWall(new Breakable(new Rectangle(h, v, 8, 8), this));
+                            }
                         }
                             
                 }
@@ -140,6 +151,16 @@ namespace PERSIST
         public void RemoveEnemy(Enemy enemy)
         {
             enemies.Remove(enemy);
+        }
+
+        public void AddSpecialWall(Wall wall)
+        {
+            special_walls.Add(wall);
+        }
+
+        public void RemoveSpecialWall(Wall wall)
+        {
+            special_walls.Remove(wall);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -243,11 +264,18 @@ namespace PERSIST
             spr_slime = root.Content.Load<Texture2D>("spr_slime");
             spr_screenwipe = root.Content.Load<Texture2D>("spr_screenwipe");
             bg_brick = root.Content.Load<Texture2D>("bg_brick2");
+            Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
 
             foreach (Enemy enemy in enemies)
             {
                 if (enemy.GetType() == typeof(Slime))
                     enemy.LoadAssets(spr_slime);
+            }
+
+            foreach (Wall wall in special_walls)
+            {
+                if (wall.GetType() == typeof(Breakable))
+                    wall.Load(spr_breakable);
             }
 
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
@@ -273,6 +301,9 @@ namespace PERSIST
 
             for (int i = 0; i < enemies.Count(); i++)
                 enemies[i].Update(gameTime);
+
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                special_walls[i].Update(gameTime);
 
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Update(gameTime);
@@ -350,6 +381,9 @@ namespace PERSIST
 
             for (int i = enemies.Count - 1; i >= 0; i--)
                 enemies[i].Draw(_spriteBatch);
+
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                special_walls[i].Draw(_spriteBatch);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
@@ -629,6 +663,14 @@ namespace PERSIST
         {
             this.bounds = bounds;
         }
+
+        public virtual void Draw(SpriteBatch spriteBatch) { }
+
+        public virtual void Update(GameTime gameTime) { }
+
+        public virtual void Load(Texture2D img) { }
+
+        public virtual void Damage() { }
     }
 
     public class Obstacle
@@ -642,7 +684,64 @@ namespace PERSIST
 
     public class Breakable : Wall
     {
-        public Breakable(Rectangle bounds) : base(bounds) { }
+        private Level root;
+        public Texture2D img { get; set; }
+        private Rectangle frame = new Rectangle(0, 8, 8, 8);
+        private int hp = 0;
+        private bool damaged;
+        private Random rnd = new Random();
+        private Rectangle draw_rectangle;
+        private float damaged_timer = 0f;
+
+        public Breakable(Rectangle bounds, Level root) : base(bounds) 
+        {
+            this.root = root;
+            draw_rectangle = bounds;
+        }
+
+        public override void Load(Texture2D img)
+        {
+            this.img = img;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (damaged)
+            {
+                draw_rectangle.X = bounds.X + (int)((rnd.Next(0, 2) - 0.5f) * 2);
+                draw_rectangle.Y = bounds.Y + (int)((rnd.Next(0, 2) - 0.5f) * 2);
+            }
+            else
+            {
+                draw_rectangle.X = bounds.X;
+                draw_rectangle.Y = bounds.Y;
+            }
+            spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            frame.X = 8 * hp;
+
+            if (damaged)
+            {
+                damaged_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (damaged_timer >= 0.1)
+                {
+                    damaged = false;
+                    damaged_timer = 0f;
+                    hp += 1;
+                }
+            }
+
+            if (hp >= 3 && !damaged)
+                root.RemoveSpecialWall(this);
+        }
+
+        public override void Damage()
+        {
+            damaged = true;
+        }
     }
 
     public class TiledData
