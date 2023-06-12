@@ -168,6 +168,7 @@ namespace PERSIST
         private float vspeed = -480f;
         private float grav = 20f;
         private float spin_timer = 0;
+        private bool fx_created = false;
 
         public Ranged(Player player, Texture2D img, int dir, bool up, Level level)
         {
@@ -193,7 +194,12 @@ namespace PERSIST
         private void Finish()
         {
             RangedFX particle = new RangedFX(new Vector2(HitBox.X, HitBox.Y - 4), level.particle_img, level, !up);
-            level.AddFX(particle);
+            if (!fx_created)
+            {
+                level.AddFX(particle);
+                fx_created = true;
+            }
+            
             player.FinishAttack(this);
         }
 
@@ -206,6 +212,7 @@ namespace PERSIST
                 timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 if (timer > 0.22f)
                     Finish();
+                    
 
                 Wall hcheck = level.SimpleCheckCollision(HitBox);
                 if (hcheck != null)
@@ -238,7 +245,8 @@ namespace PERSIST
 
                 Wall hcheck = level.SimpleCheckCollision(new Rectangle((int)up_X, HitBox.Y, HitBox.Width, HitBox.Height));
                 if (hcheck != null)
-                    Finish();
+                    Finish(); 
+                    
 
 
                 pos.Y += (int)vsp;
@@ -253,6 +261,7 @@ namespace PERSIST
 
                 if (timer >= 1f)
                     Finish();
+                    
 
             }
 
@@ -262,9 +271,10 @@ namespace PERSIST
                 foreach (Enemy enemy in temp)
                 {
                     enemy.Damage();
-                    Finish();
                 }
+                Finish();
             }
+
 
             List<Wall> temp_specials = level.ListCheckCollision(HitBox);
 

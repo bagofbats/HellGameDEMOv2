@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="200" height="75" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="167">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="200" height="75" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="169">
  <tileset firstgid="1" source="tst_tutorial.tsx"/>
  <objectgroup id="3" name="rooms">
   <object id="9" x="0" y="280" width="320" height="240"/>
@@ -26,6 +26,8 @@
   <object id="164" name="breakable" x="1488" y="400" width="16" height="40"/>
   <object id="165" name="breakable" x="1536" y="384" width="48" height="16"/>
   <object id="166" name="breakable" x="1440" y="160" width="16" height="56"/>
+  <object id="167" name="breakable" x="0" y="408" width="8" height="64"/>
+  <object id="168" name="breakable" x="1016" y="216" width="32" height="8"/>
  </objectgroup>
  <layer id="8" name="background_lower" width="200" height="75">
   <data encoding="csv">
