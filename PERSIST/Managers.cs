@@ -91,7 +91,7 @@ namespace PERSIST
 
             if (time_elapsed >= 5)
             {
-                int f = (int) (frames / time_elapsed);
+                float f = (frames / time_elapsed);
                 Debug.WriteLine(f);
                 frames = 0;
                 time_elapsed = 0;

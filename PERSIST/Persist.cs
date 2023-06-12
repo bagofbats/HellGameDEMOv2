@@ -97,7 +97,7 @@ namespace PERSIST
             contManager.GetInputs(Keyboard.GetState());
             the_level.Update(gameTime);
 
-            //fpsCounter.Update(gameTime);
+            // fpsCounter.Update(gameTime);
 
             base.Update(gameTime);
         }
