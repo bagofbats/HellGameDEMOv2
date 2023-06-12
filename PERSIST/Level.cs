@@ -156,11 +156,18 @@ namespace PERSIST
         public void AddSpecialWall(Wall wall)
         {
             special_walls.Add(wall);
+            for (int i = 0; i < chunks.Count(); i++)
+                if (bounds.Intersects(chunks[i].bounds))
+                    chunks[i].AddWall(wall);
         }
 
         public void RemoveSpecialWall(Wall wall)
         {
             special_walls.Remove(wall);
+
+            for (int i = 0; i < chunks.Count(); i++)
+                if (bounds.Intersects(chunks[i].bounds))
+                    chunks[i].RemoveWall(wall);
         }
 
         public Wall SimpleCheckCollision(Rectangle input)
@@ -252,6 +259,21 @@ namespace PERSIST
             for (int i = 0; i < enemies.Count(); i++)
                 if (enemies[i] != null && enemies[i].GetHitBox().Intersects(input))
                     ret.Add(enemies[i]);
+
+            return ret;
+        }
+
+        public List<Wall> ListCheckCollision(Rectangle input)
+        {
+            List<Wall> ret = new List<Wall>();
+
+            for (int i = 0; i < chunks.Count(); i++)
+                if (chunks[i].bounds.Intersects(input))
+                {
+                    var temp = chunks[i].ListCheckCollision(input);
+                    foreach (Wall wall in temp)
+                        ret.Add(wall);
+                }
 
             return ret;
         }
@@ -547,6 +569,11 @@ namespace PERSIST
             walls.Add(newWall);
         }
 
+        public void RemoveWall(Wall wall)
+        {
+            walls.Remove(wall);
+        }
+
         public void AddObstacle(Obstacle newObstacle)
         {
             obstacles.Add(newObstacle);
@@ -564,6 +591,17 @@ namespace PERSIST
                     return walls[i];
 
             return null;
+        }
+
+        public List<Wall> ListCheckCollision(Rectangle input)
+        {
+            List<Wall> ret = new List<Wall>();
+
+            for (int i = 0; i < walls.Count(); i++)
+                if (walls[i].bounds.Intersects(input))
+                    ret.Add(walls[i]);
+
+            return ret;
         }
 
         public Obstacle ObstacleCheckCollision(Rectangle input)

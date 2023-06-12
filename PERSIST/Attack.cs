@@ -128,6 +128,17 @@ namespace PERSIST
                     }
                 }
             }
+
+            List<Wall> temp_specials = level.ListCheckCollision(HitBox);
+
+            foreach (Wall wall in temp_specials)
+            {
+                if (wall.GetType() == typeof(Breakable) && !specials.Contains(wall))
+                {
+                    specials.Add((Breakable)wall);
+                    wall.Damage();
+                }
+            }
         }
 
         public override void Draw(SpriteBatch _spriteBatch)
@@ -254,6 +265,15 @@ namespace PERSIST
                     Finish();
                 }
             }
+
+            List<Wall> temp_specials = level.ListCheckCollision(HitBox);
+
+            foreach (Wall wall in temp_specials)
+                if (wall.GetType() == typeof(Breakable))
+                    wall.Damage();
+
+            if (temp_specials.Count() != 0)
+                Finish();
         }
 
         public override void Draw(SpriteBatch _spriteBatch)
