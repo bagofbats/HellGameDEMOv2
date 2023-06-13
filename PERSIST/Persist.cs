@@ -9,7 +9,7 @@ namespace PERSIST
 {
     public class Persist : Game
     {
-        private bool debug = true;
+        private bool debug = false;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -74,7 +74,7 @@ namespace PERSIST
 
             base.Initialize();
 
-            _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, 320, 240);
+            _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, 320, 240); // <--- use this to change camera zoom
 
             player.SetCurrentLevel(the_level);
         }

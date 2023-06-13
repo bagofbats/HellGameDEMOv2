@@ -40,6 +40,7 @@ namespace PERSIST
         private List<Enemy> enemies = new List<Enemy>();
         private List<ParticleFX> particles = new List<ParticleFX>();
         private List<Wall> special_walls = new List<Wall>();
+        private List<Rectangle> special_walls_bounds = new List<Rectangle>();
 
         private bool player_dead = false;
         private bool finish_player_dead = false;
@@ -103,7 +104,11 @@ namespace PERSIST
 
                                 for (int h = (int)l.objects[i].x; h < h_bound; h += 8)
                                     for (int v = (int)l.objects[i].y; v < v_bound; v += 8)
+                                    {
                                         AddSpecialWall(new Breakable(new Rectangle(h, v, 8, 8), this));
+                                        special_walls_bounds.Add(new Rectangle(h, v, 8, 8));
+                                    }
+                                        
                             }
                         }
                             
@@ -534,6 +539,17 @@ namespace PERSIST
                 cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
                 player_dead = false;
                 finish_player_dead = true;
+
+                // reset breakable walls
+                for (int i = special_walls.Count - 1; i >= 0; i--)
+                    RemoveSpecialWall(special_walls[i]);
+
+                foreach (Rectangle bounds in special_walls_bounds)
+                    AddSpecialWall(new Breakable(bounds, this));
+
+                foreach (Wall wall in special_walls)
+                    if (wall.GetType() == typeof(Breakable))
+                        wall.Load(tst_tutorial);
             }
 
             if (dead_timer >= 1.04)
