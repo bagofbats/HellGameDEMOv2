@@ -722,7 +722,7 @@ namespace PERSIST
     {
         private Level root;
         public Texture2D img { get; set; }
-        private Rectangle frame = new Rectangle(0, 8, 8, 8);
+        private Rectangle frame = new Rectangle(0, 16, 8, 8);
         private int hp = 0;
         private bool damaged;
         private Random rnd = new Random();
