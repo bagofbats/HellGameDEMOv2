@@ -158,7 +158,7 @@ namespace PERSIST
         {
             special_walls.Add(wall);
             for (int i = 0; i < chunks.Count(); i++)
-                if (bounds.Intersects(chunks[i].bounds))
+                if (wall.bounds.Intersects(chunks[i].bounds))
                     chunks[i].AddWall(wall);
         }
 
@@ -289,7 +289,7 @@ namespace PERSIST
             spr_slime = root.Content.Load<Texture2D>("spr_slime");
             spr_screenwipe = root.Content.Load<Texture2D>("spr_screenwipe");
             bg_brick = root.Content.Load<Texture2D>("bg_brick2");
-            Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
+            // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
 
             foreach (Enemy enemy in enemies)
             {
@@ -300,7 +300,7 @@ namespace PERSIST
             foreach (Wall wall in special_walls)
             {
                 if (wall.GetType() == typeof(Breakable))
-                    wall.Load(spr_breakable);
+                    wall.Load(tst_tutorial);
             }
 
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
@@ -424,14 +424,19 @@ namespace PERSIST
                 particles[i].Draw(_spriteBatch);
 
             if (debug)
+            {
                 player.DebugDraw(_spriteBatch, black);
+                foreach (Chunk c in chunks)
+                    if (c.bounds.Contains(player.HitBox.X, player.HitBox.Y))
+                        c.Draw(_spriteBatch);
+            }
+                
 
             if ((player_dead || finish_player_dead) && dead_timer > 0.36)
                 _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.White);
 
             if (player_dead)
                 player.DrawDead(_spriteBatch, dead_timer);
-                
 
             _spriteBatch.End();
         }
@@ -642,11 +647,11 @@ namespace PERSIST
         {
             foreach (Wall wall in walls)
                 if (wall != null)
-                    _spriteBatch.Draw(black, wall.bounds, Color.Black);
+                    _spriteBatch.Draw(black, wall.bounds, Color.Blue * 0.2f);
 
             foreach (Obstacle obstacle in obstacles)
                 if (obstacle != null)
-                    _spriteBatch.Draw(black, obstacle.bounds, Color.Red);
+                    _spriteBatch.Draw(black, obstacle.bounds, Color.Red * 0.2f);
         }
 
         public void Load(Texture2D black)
@@ -722,7 +727,7 @@ namespace PERSIST
     {
         private Level root;
         public Texture2D img { get; set; }
-        private Rectangle frame = new Rectangle(0, 16, 8, 8);
+        private Rectangle frame = new Rectangle(24, 128, 8, 8);
         private int hp = 0;
         private bool damaged;
         private Random rnd = new Random();
@@ -757,7 +762,7 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            frame.X = 8 * hp;
+            frame.X = (8 * hp) + 24;
 
             if (damaged)
             {
