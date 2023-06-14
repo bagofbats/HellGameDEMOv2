@@ -17,37 +17,34 @@ namespace PERSIST
 {
     public class Level
     {
-        private Persist root;
+        protected Persist root;
         public Player player
-        { get; private set; }
-        private Camera cam;
-        private Texture2D black;
+        { get; protected set; }
+        protected Camera cam;
+        protected Texture2D black;
         public Texture2D particle_img
-        { get; private set; }
-        private Texture2D tst_tutorial;
-        private Texture2D spr_slime;
-        private Texture2D spr_screenwipe;
-        private Texture2D bg_brick;
-        private bool debug;
+        { get; protected set; }
+        protected Texture2D spr_screenwipe;
+        protected bool debug;
         public Checkpoint active_checkpoint
-        { get; private set; }
+        { get; protected set; }
 
-        private Rectangle bounds;
-        private List<Chunk> chunks = new List<Chunk>();
-        private List<TiledData> tld = new List<TiledData>();
-        private List<Room> rooms = new List<Room>();
-        private List<Checkpoint> checkpoints = new List<Checkpoint>();
-        private List<Enemy> enemies = new List<Enemy>();
-        private List<ParticleFX> particles = new List<ParticleFX>();
-        private List<Wall> special_walls = new List<Wall>();
-        private List<Rectangle> special_walls_bounds = new List<Rectangle>();
-        private List<Vector2> enemy_locations = new List<Vector2>();
-        private List<String> enemy_types = new List<String>();
+        protected Rectangle bounds;
+        protected List<Chunk> chunks = new List<Chunk>();
+        protected List<TiledData> tld = new List<TiledData>();
+        protected List<Room> rooms = new List<Room>();
+        protected List<Checkpoint> checkpoints = new List<Checkpoint>();
+        protected List<Enemy> enemies = new List<Enemy>();
+        protected List<ParticleFX> particles = new List<ParticleFX>();
+        protected List<Wall> special_walls = new List<Wall>();
+        protected List<Rectangle> special_walls_bounds = new List<Rectangle>();
+        protected List<Vector2> enemy_locations = new List<Vector2>();
+        protected List<String> enemy_types = new List<String>();
 
-        private bool player_dead = false;
-        private bool finish_player_dead = false;
-        private float dead_timer = 0;
-        private Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
+        protected bool player_dead = false;
+        protected bool finish_player_dead = false;
+        protected float dead_timer = 0;
+        protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
         public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, bool debug)
         {
@@ -61,67 +58,90 @@ namespace PERSIST
             for (int i = 0; i < bounds.Width; i += 320)
                 for (int j = 0; j < bounds.Height; j += 240)
                     chunks.Add(new Chunk(new Rectangle(i - 32, j - 32, 320 + 64, 240 + 64)));
-
-            foreach (TiledData t in tld)
-                foreach (TiledLayer l in t.map.Layers)
-                {
-                    if (l.name == "walls")
-                        for (int i = 0; i < l.objects.Count(); i++)
-                            AddWall(new Rectangle((int)l.objects[i].x + t.location.X,
-                                                  (int)l.objects[i].y + t.location.Y,
-                                                  (int)l.objects[i].width,
-                                                  (int)l.objects[i].height));
-
-                    if (l.name == "rooms")
-                        for (int i = 0; i < l.objects.Count(); i++)
-                            rooms.Add(new Room(new Rectangle((int)l.objects[i].x + t.location.X,
-                                                             (int)l.objects[i].y + t.location.Y,
-                                                             (int)l.objects[i].width,
-                                                             (int)l.objects[i].height)));
-
-                    if (l.name == "obstacles")
-                        for (int i = 0; i < l.objects.Count(); i++)
-                            AddObstacle(new Rectangle((int)l.objects[i].x + t.location.X,
-                                                  (int)l.objects[i].y + t.location.Y,
-                                                  (int)l.objects[i].width,
-                                                  (int)l.objects[i].height));
-
-                    if (l.name == "entities")
-                        for (int i = 0; i < l.objects.Count(); i++)
-                        {
-                            if (l.objects[i].name == "player")
-                                player.SetPos(new Vector2(l.objects[i].x, l.objects[i].y));
-                                
-
-                            if (l.objects[i].name == "checkpoint")
-                                AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
-
-                            if (l.objects[i].name == "slime")
-                            {
-                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
-                                AddEnemy(new Slime(temp, this));
-                                enemy_locations.Add(temp);
-                                enemy_types.Add("slime");
-                            }
-                                
-
-                            if (l.objects[i].name == "breakable")
-                            {
-                                int h_bound = (int)l.objects[i].x + (int)l.objects[i].width;
-                                int v_bound = (int)l.objects[i].y + (int)l.objects[i].height;
-
-                                for (int h = (int)l.objects[i].x; h < h_bound; h += 8)
-                                    for (int v = (int)l.objects[i].y; v < v_bound; v += 8)
-                                    {
-                                        AddSpecialWall(new Breakable(new Rectangle(h, v, 8, 8), this));
-                                        special_walls_bounds.Add(new Rectangle(h, v, 8, 8));
-                                    }
-                                        
-                            }
-                        }
-                            
-                }
         }
+
+
+        // -----------------------------------------------
+
+        // override these in child classes
+        // (only Update has any code in the parent class -- the rest are blank functions to be overwritten)
+
+        public virtual void Load()
+        {
+            // nothing xd
+        }
+
+        public virtual void Update(GameTime gameTime)
+        {
+            if (!player_dead)
+                player.Update(gameTime);
+            if (player_dead || finish_player_dead)
+                HandleDeath(gameTime);
+
+            for (int i = 0; i < checkpoints.Count(); i++)
+                checkpoints[i].DontAnimate(gameTime);
+
+            Checkpoint temp = CheckpointCheckCollision(player.HitBox);
+
+            for (int i = 0; i < enemies.Count(); i++)
+                enemies[i].Update(gameTime);
+
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                special_walls[i].Update(gameTime);
+
+            for (int i = particles.Count - 1; i >= 0; i--)
+                particles[i].Update(gameTime);
+
+            if (temp != null)
+                active_checkpoint = temp;
+
+            if (active_checkpoint != null)
+                active_checkpoint.Animate(gameTime);
+
+            // camera following
+            Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
+            Vector2 camera_pos = cam.GetPos();
+            Rectangle camera_room = GetRoom(camera_pos);
+
+            if (current_room.Width == 0 || current_room.Height == 0)
+            {
+                // default case that (hopefully) never happens
+                //int tempX = (player.PositionRectangle.X + 16) / 320;
+                //int tempY = (player.PositionRectangle.Y + 16) / 240;
+                cam.Follow(new Vector2(player.DrawBox.X - 160 + 16, player.DrawBox.Y - 120 + 16));
+            }
+
+            else
+            {
+                int tempX = player.DrawBox.X + 16 - 160;
+                int tempY = player.DrawBox.Y + 16 - 120;
+
+                tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
+                tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));
+
+                if (current_room != camera_room
+                    || camera_pos.X > current_room.X + current_room.Width - 320
+                    || camera_pos.Y > current_room.Y + current_room.Height - 240)
+                    cam.TargetFollow(new Vector2(tempX, tempY)); // transitions between rooms
+                else
+                    cam.Follow(new Vector2(tempX, tempY)); // panning within the room
+            }
+        }
+
+        public virtual void Draw(SpriteBatch _spriteBatch)
+        {
+            // nothing xd
+        }
+
+        public virtual void ResetUponDeath()
+        {
+            // nothing xd
+        }
+
+        // -----------------------------------------------
+
+
+
         public void AddWall(Rectangle bounds)
         {
             Wall temp = new Wall(bounds);
@@ -292,96 +312,6 @@ namespace PERSIST
             return ret;
         }
 
-        public void Load()
-        {
-            cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
-
-            black = root.Content.Load<Texture2D>("black");
-            particle_img = root.Content.Load<Texture2D>("spr_particlefx");
-            tst_tutorial = root.Content.Load<Texture2D>("tst_tutorial");
-            spr_slime = root.Content.Load<Texture2D>("spr_slime");
-            spr_screenwipe = root.Content.Load<Texture2D>("spr_screenwipe");
-            bg_brick = root.Content.Load<Texture2D>("bg_brick2");
-            // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
-
-            foreach (Enemy enemy in enemies)
-            {
-                if (enemy.GetType() == typeof(Slime))
-                    enemy.LoadAssets(spr_slime);
-            }
-
-            foreach (Wall wall in special_walls)
-            {
-                if (wall.GetType() == typeof(Breakable))
-                    wall.Load(tst_tutorial);
-            }
-
-            Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
-
-            for (int i = 0; i < chunks.Count(); i++)
-                chunks[i].Load(black);
-
-            for (int i = 0; i < checkpoints.Count(); i++)
-                checkpoints[i].Load(checkpoint);
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            if (!player_dead)
-                player.Update(gameTime);
-            if (player_dead || finish_player_dead)
-                HandleDeath(gameTime);
-
-            for (int i = 0; i < checkpoints.Count(); i++)
-                checkpoints[i].DontAnimate(gameTime);
-
-            Checkpoint temp = CheckpointCheckCollision(player.HitBox);
-
-            for (int i = 0; i < enemies.Count(); i++)
-                enemies[i].Update(gameTime);
-
-            for (int i = special_walls.Count - 1; i >= 0; i--)
-                special_walls[i].Update(gameTime);
-
-            for (int i = particles.Count - 1; i >= 0; i--)
-                particles[i].Update(gameTime);
-
-            if (temp != null)
-                active_checkpoint = temp;
-
-            if (active_checkpoint != null)
-                active_checkpoint.Animate(gameTime);
-
-            // camera following
-            Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
-            Vector2 camera_pos = cam.GetPos();
-            Rectangle camera_room = GetRoom(camera_pos);
-
-            if (current_room.Width == 0 || current_room.Height == 0)
-            {
-                // default case that (hopefully) never happens
-                //int tempX = (player.PositionRectangle.X + 16) / 320;
-                //int tempY = (player.PositionRectangle.Y + 16) / 240;
-                cam.Follow(new Vector2(player.DrawBox.X - 160 + 16, player.DrawBox.Y - 120 + 16));
-            }
-
-            else
-            {
-                int tempX = player.DrawBox.X + 16 - 160;
-                int tempY = player.DrawBox.Y + 16 - 120;
-
-                tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
-                tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));
-
-                if (current_room != camera_room
-                    || camera_pos.X > current_room.X + current_room.Width - 320
-                    || camera_pos.Y > current_room.Y + current_room.Height - 240)
-                    cam.TargetFollow(new Vector2(tempX, tempY)); // transitions between rooms
-                else
-                    cam.Follow(new Vector2(tempX, tempY)); // panning within the room
-            }
-        }
-
         public Rectangle GetRoom(Vector2 input)
         {
             Rectangle room = new Rectangle(0, 0, 0, 0);
@@ -393,23 +323,23 @@ namespace PERSIST
             return room;
         }
 
-        public void Draw(SpriteBatch _spriteBatch)
+        public void DrawTiles(SpriteBatch _spriteBatch, Texture2D tileset, Texture2D background)
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                 SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
 
             Rectangle source = bounds;
-            _spriteBatch.Draw(bg_brick, bounds, source, Color.White);
+            _spriteBatch.Draw(background, bounds, source, Color.White);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "background_lower")
-                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, cam);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "background")
-                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, cam);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
@@ -426,12 +356,12 @@ namespace PERSIST
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles_lower")
-                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, cam);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles")
-                        DrawLayerOnScreen(_spriteBatch, l, t, tst_tutorial, cam);
+                        DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
 
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Draw(_spriteBatch);
@@ -452,42 +382,6 @@ namespace PERSIST
                 player.DrawDead(_spriteBatch, dead_timer);
 
             _spriteBatch.End();
-        }
-
-        private void DrawLayer(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset)
-        {
-            if (layer.data == null)
-                return;
-
-            int bounds_xoset = t.location.X;
-            int bounds_yoset = t.location.Y;
-
-            for (int i = 0; i < layer.data.Length; i++)
-            {
-                int gid = layer.data[i];
-
-
-                if (gid == 0)
-                    continue;
-
-                int t_width = t.tst.TileWidth;
-                int t_height = t.tst.TileHeight;
-
-                int tileFrame = gid - 1;
-                int column = tileFrame % t.tst.Columns;
-                int row = (int)Math.Floor((double)tileFrame / (double)t.tst.Columns);
-
-                int loc_x = (i % t.map.Width) * t.map.TileWidth;
-                int loc_y = (int)Math.Floor(i / (double)t.map.Width) * t.map.TileHeight;
-
-                loc_x += bounds_xoset;
-                loc_y += bounds_yoset;
-
-                Rectangle tile = new Rectangle(t_width * column, t_height * row, t_width, t_height);
-                Rectangle loc = new Rectangle(loc_x, loc_y, t_width, t_height);
-
-                spriteBatch.Draw(tileset, loc, tile, Color.White);
-            }
         }
 
         private void DrawLayerOnScreen(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, Camera cam)
@@ -548,28 +442,7 @@ namespace PERSIST
                 player_dead = false;
                 finish_player_dead = true;
 
-                // reset breakable walls
-                for (int i = special_walls.Count - 1; i >= 0; i--)
-                    RemoveSpecialWall(special_walls[i]);
-
-                foreach (Rectangle bounds in special_walls_bounds)
-                    AddSpecialWall(new Breakable(bounds, this));
-
-                foreach (Wall wall in special_walls)
-                    if (wall.GetType() == typeof(Breakable))
-                        wall.Load(tst_tutorial);
-
-                // respawn enemies
-                for (int i = enemies.Count - 1; i >= 0; i--)
-                    RemoveEnemy(enemies[i]);
-
-                for (int i = 0; i < enemy_locations.Count; i++)
-                    if (enemy_types[i] == "slime")
-                        AddEnemy(new Slime(enemy_locations[i], this));
-
-                foreach (Enemy enemy in enemies)
-                    if (enemy.GetType() == typeof(Slime))
-                        enemy.LoadAssets(spr_slime);
+                ResetUponDeath();
             }
 
             if (dead_timer >= 1.04)

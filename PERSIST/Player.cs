@@ -35,7 +35,7 @@ namespace PERSIST
         private float hsp = 0f;
         private float vsp = 0f;
         private int hdir;
-        private int last_hdir;
+        private int last_hdir = 1;
         private float hsp_max = 2.4f;
         private float hsp_max_default = 2.4f;
         private float grav = 0.211f;
