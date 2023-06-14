@@ -68,9 +68,25 @@ namespace PERSIST
 
     public class ProgressionManager
     {
+        Checkpoint default_respawn = new FakeCheckpoint(new Rectangle(632, 416, 1, 1), null);
+        Checkpoint active_checkpoint;
+
         public ProgressionManager()
         {
 
+        }
+
+        public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
+        {
+            active_checkpoint = newActiveCheckpoint;
+        }
+
+        public Checkpoint GetActiveCheckpoint()
+        {
+            if (active_checkpoint == null)
+                return default_respawn;
+
+            return active_checkpoint;
         }
     }
 

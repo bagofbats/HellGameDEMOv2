@@ -14,13 +14,17 @@ namespace PERSIST
     {
         public Rectangle box
         { get; private set; }
+        public Rectangle HitBox 
+        { get { return new Rectangle(box.X + 2, box.Y + 14, box.Width - 4, box.Height - 14); } }
         private Rectangle frame = new Rectangle(0, 0, 16, 32);
         private Texture2D sprite;
         float animate_timer = 0f;
+        private Level root;
 
-        public Checkpoint(Rectangle box)
+        public Checkpoint(Rectangle box, Level root)
         {
             this.box = box;
+            this.root = root;
         }
 
         public void Load(Texture2D sprite)
@@ -43,5 +47,13 @@ namespace PERSIST
         {
             _spriteBatch.Draw(sprite, box, frame, Color.White);
         }
+    }
+
+    public class FakeCheckpoint : Checkpoint
+    {
+        public FakeCheckpoint(Rectangle box, Level root) : base(box, root) { }
+
+        public Rectangle box
+        { get; private set; }
     }
 }

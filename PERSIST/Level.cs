@@ -26,8 +26,7 @@ namespace PERSIST
         { get; protected set; }
         protected Texture2D spr_screenwipe;
         protected bool debug;
-        public Checkpoint active_checkpoint
-        { get; protected set; }
+        protected ProgressionManager prog_manager;
 
         protected Rectangle bounds;
         protected List<Chunk> chunks = new List<Chunk>();
@@ -46,7 +45,7 @@ namespace PERSIST
         protected float dead_timer = 0;
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
-        public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, bool debug)
+        public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug)
         {
             this.root = root;
             this.player = player;
@@ -54,12 +53,12 @@ namespace PERSIST
             this.tld = tld;
             this.cam = cam;
             this.debug = debug;
+            this.prog_manager = prog_manager;
 
             for (int i = 0; i < bounds.Width; i += 320)
                 for (int j = 0; j < bounds.Height; j += 240)
                     chunks.Add(new Chunk(new Rectangle(i - 32, j - 32, 320 + 64, 240 + 64)));
         }
-
 
         // -----------------------------------------------
 
@@ -83,6 +82,9 @@ namespace PERSIST
 
             Checkpoint temp = CheckpointCheckCollision(player.HitBox);
 
+            if (temp != null)
+                prog_manager.SetActiveCheckpoint(temp);
+
             for (int i = 0; i < enemies.Count(); i++)
                 enemies[i].Update(gameTime);
 
@@ -92,11 +94,8 @@ namespace PERSIST
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Update(gameTime);
 
-            if (temp != null)
-                active_checkpoint = temp;
-
-            if (active_checkpoint != null)
-                active_checkpoint.Animate(gameTime);
+            if (prog_manager.GetActiveCheckpoint() != null)
+                prog_manager.GetActiveCheckpoint().Animate(gameTime);
 
             // camera following
             Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
@@ -160,7 +159,7 @@ namespace PERSIST
 
         public void AddCheckpoint(Rectangle bounds)
         {
-            Checkpoint temp = new Checkpoint(bounds);
+            Checkpoint temp = new Checkpoint(bounds, this);
             checkpoints.Add(temp);
             for (int i = 0; i < chunks.Count(); i++)
                 if (bounds.Intersects(chunks[i].bounds))
@@ -373,6 +372,9 @@ namespace PERSIST
                     if (c.bounds.Contains(player.HitBox.X, player.HitBox.Y))
                         c.Draw(_spriteBatch);
             }
+
+            var overlay = new Rectangle((int)cam.GetPos().X, (int)cam.GetPos().Y, 320, 12);
+            _spriteBatch.Draw(black, overlay, Color.Black);
                 
 
             if ((player_dead || finish_player_dead) && dead_timer > 0.36)
@@ -437,7 +439,7 @@ namespace PERSIST
 
             if (dead_timer >= 0.7 && player_dead)
             {
-                player.SetPos(new Vector2(active_checkpoint.box.X + 8, active_checkpoint.box.Y));
+                player.SetPos(new Vector2(prog_manager.GetActiveCheckpoint().box.X + 8, prog_manager.GetActiveCheckpoint().box.Y));
                 cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
                 player_dead = false;
                 finish_player_dead = true;
@@ -528,7 +530,7 @@ namespace PERSIST
         public Checkpoint CheckpointCheckCollision(Rectangle input)
         {
             for (int i = 0; i < checkpoints.Count(); i++)
-                if (checkpoints[i].box.Intersects(input))
+                if (checkpoints[i].HitBox.Intersects(input))
                     return checkpoints[i];
 
             return null;
@@ -561,6 +563,10 @@ namespace PERSIST
             foreach (Obstacle obstacle in obstacles)
                 if (obstacle != null)
                     _spriteBatch.Draw(black, obstacle.bounds, Color.Red * 0.2f);
+
+            foreach (Checkpoint c in checkpoints)
+                if (c != null)
+                    _spriteBatch.Draw(black, c.HitBox, Color.Blue * 0.2f);
         }
 
         public void Load(Texture2D black)

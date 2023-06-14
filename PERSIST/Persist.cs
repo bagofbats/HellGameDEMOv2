@@ -17,7 +17,9 @@ namespace PERSIST
         private RenderTarget2D _nativeRenderTarget;
 
         private ControllerManager contManager = new ControllerManager();
+        private ProgressionManager progManager = new ProgressionManager();
         private FPSCounter fpsCounter = new FPSCounter();
+
         private Player player;
         private Level the_level;
 
@@ -62,7 +64,7 @@ namespace PERSIST
             _graphics.ApplyChanges();
 
             Camera cam = new Camera(target_w, target_h);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, debug);
+            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug);
             cam.root = the_level;
 
             Window.Title = "Persist [DEMO]";

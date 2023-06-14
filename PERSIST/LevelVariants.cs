@@ -22,7 +22,7 @@ namespace PERSIST
         private Texture2D spr_slime;
         private Texture2D bg_brick;
 
-        public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, bool debug) : base(root, bounds, player, tld, cam, debug) 
+        public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug) : base(root, bounds, player, tld, cam, prog_manager, debug) 
         {
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
