@@ -39,7 +39,7 @@ namespace PERSIST
                             rooms.Add(new Room(new Rectangle((int)l.objects[i].x + t.location.X,
                                                              (int)l.objects[i].y + t.location.Y,
                                                              (int)l.objects[i].width,
-                                                             (int)l.objects[i].height)));
+                                                             (int)l.objects[i].height), l.objects[i].name));
 
                     if (l.name == "obstacles")
                         for (int i = 0; i < l.objects.Count(); i++)
@@ -89,7 +89,8 @@ namespace PERSIST
         {
             cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
 
-            black = root.Content.Load<Texture2D>("black");
+            base.Load();
+
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
             particle_img = root.Content.Load<Texture2D>("spr_particlefx");
             tst_tutorial = root.Content.Load<Texture2D>("tst_tutorial");

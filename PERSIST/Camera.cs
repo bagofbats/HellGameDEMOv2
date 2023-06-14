@@ -20,10 +20,14 @@ namespace PERSIST
         float current_y = 0;
         public Level root;
 
+        public bool stable
+        { get; private set; }
+
         public Camera(int w, int h)
         {
             this.w = w;
             this.h = h;
+            stable = true;
         }
 
         public Matrix Transform { get; private set; }
@@ -55,6 +59,11 @@ namespace PERSIST
                 current_x = target.X;
             if (Math.Abs(current_y - target.Y) <= 0.3)
                 current_y = target.Y;
+
+            if (Math.Abs(current_x - target.X) <= 0.3 && Math.Abs(current_y - target.Y) <= 0.3)
+                stable = true;
+            else
+                stable = false;
 
             Follow(new Vector2(current_x, current_y));
         }

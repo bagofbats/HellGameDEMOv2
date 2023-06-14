@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TiledCS;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PERSIST
 {
@@ -22,11 +23,13 @@ namespace PERSIST
         { get; protected set; }
         protected Camera cam;
         protected Texture2D black;
+        protected SpriteFont font;
         public Texture2D particle_img
         { get; protected set; }
         protected Texture2D spr_screenwipe;
         protected bool debug;
         protected ProgressionManager prog_manager;
+        protected bool overlay = true;
 
         protected Rectangle bounds;
         protected List<Chunk> chunks = new List<Chunk>();
@@ -63,11 +66,12 @@ namespace PERSIST
         // -----------------------------------------------
 
         // override these in child classes
-        // (only Update has any code in the parent class -- the rest are blank functions to be overwritten)
+        // (only Update and Load have any code in the parent class -- the rest are blank functions to be overwritten)
 
         public virtual void Load()
         {
-            // nothing xd
+            font = root.Content.Load<SpriteFont>("pixellocale");
+            black = root.Content.Load<Texture2D>("black");
         }
 
         public virtual void Update(GameTime gameTime)
@@ -322,6 +326,17 @@ namespace PERSIST
             return room;
         }
 
+        public Room RealGetRoom(Vector2 input)
+        {
+            foreach (Room r in rooms)
+            {
+                if (r.bounds.Contains(input.X, input.Y))
+                    return r;
+            }
+
+            return null;
+        }
+
         public void DrawTiles(SpriteBatch _spriteBatch, Texture2D tileset, Texture2D background)
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
@@ -373,9 +388,24 @@ namespace PERSIST
                         c.Draw(_spriteBatch);
             }
 
-            var overlay = new Rectangle((int)cam.GetPos().X, (int)cam.GetPos().Y, 320, 12);
-            _spriteBatch.Draw(black, overlay, Color.Black);
+            if (overlay)
+            {
+                var overlay_rect = new Rectangle((int)cam.GetPos().X, (int)cam.GetPos().Y, 320, 12);
+                _spriteBatch.Draw(black, overlay_rect, Color.Black);
+
+                var current_room = RealGetRoom(cam.GetPos());
+                if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
+                    if (current_room.name != null)
+                    {
+                        Vector2 textMiddlePoint = font.MeasureString(current_room.name) / 2;
+                        Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160 + 0.5f, cam.GetPos().Y + 4 + 0.5f);
+                        _spriteBatch.DrawString(font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                    }
                 
+            }
+            
+
+
 
             if ((player_dead || finish_player_dead) && dead_timer > 0.36)
                 _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.White);
@@ -580,10 +610,13 @@ namespace PERSIST
         public Rectangle bounds
         { get; private set; }
         private List<Enemy> enemies = new List<Enemy>();
+        public String name
+        { get; private set; }
 
-        public Room(Rectangle bounds)
+        public Room(Rectangle bounds, String name)
         { 
-            this.bounds = bounds; 
+            this.bounds = bounds;
+            this.name = name;
         }
 
         public void UpdateEnemies(GameTime gameTime)

@@ -49,6 +49,13 @@
 /processorParam:TextureFormat=Color
 /build:black.png
 
+#begin pixellocale.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=NoChange
+/build:pixellocale.spritefont
+
 #begin spr_atk_ranged.png
 /importer:TextureImporter
 /processor:TextureProcessor

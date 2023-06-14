@@ -53,7 +53,7 @@ namespace PERSIST
     {
         public FakeCheckpoint(Rectangle box, Level root) : base(box, root) { }
 
-        public Rectangle box
+        new public Rectangle box
         { get; private set; }
     }
 }
