@@ -184,7 +184,11 @@ namespace PERSIST
             this.up = up;
             this.level = level;
 
-            pos.X = player.DrawBox.X + 7;
+            pos.X = player.DrawBox.X + 6;
+
+            if (up)
+                pos.X -= 4 * dir;
+
             up_X = pos.X;
             pos.Y = player.DrawBox.Y + 16;
 
@@ -195,7 +199,15 @@ namespace PERSIST
         }
 
         public Rectangle HitBox
-        { get { return new Rectangle(pos.X, pos.Y + 5, 12, 6); } }
+        { 
+            get 
+            {
+                if (!up)
+                    return new Rectangle(pos.X, pos.Y + 5, 12, 6);
+                else
+                    return new Rectangle(pos.X + 4, pos.Y + 4, 9, 9);
+            } 
+        }
 
         private void Finish()
         {
@@ -251,9 +263,16 @@ namespace PERSIST
 
                 Wall hcheck = level.SimpleCheckCollision(new Rectangle((int)up_X, HitBox.Y, HitBox.Width, HitBox.Height));
                 if (hcheck != null)
-                    Finish(); 
-                    
+                {
+                    if (hsp < 0)
+                        pos.X = hcheck.bounds.Right - 7;
+                    else
+                        pos.X = hcheck.bounds.Left + 9;
 
+                    hcheck.Damage();
+
+                    Finish();
+                }
 
                 pos.Y += (int)vsp;
                 pos.X = (int)up_X;

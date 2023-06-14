@@ -41,6 +41,8 @@ namespace PERSIST
         private List<ParticleFX> particles = new List<ParticleFX>();
         private List<Wall> special_walls = new List<Wall>();
         private List<Rectangle> special_walls_bounds = new List<Rectangle>();
+        private List<Vector2> enemy_locations = new List<Vector2>();
+        private List<String> enemy_types = new List<String>();
 
         private bool player_dead = false;
         private bool finish_player_dead = false;
@@ -95,7 +97,13 @@ namespace PERSIST
                                 AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
 
                             if (l.objects[i].name == "slime")
-                                AddEnemy(new Slime(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y), this));
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Slime(temp, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("slime");
+                            }
+                                
 
                             if (l.objects[i].name == "breakable")
                             {
@@ -550,6 +558,18 @@ namespace PERSIST
                 foreach (Wall wall in special_walls)
                     if (wall.GetType() == typeof(Breakable))
                         wall.Load(tst_tutorial);
+
+                // respawn enemies
+                for (int i = enemies.Count - 1; i >= 0; i--)
+                    RemoveEnemy(enemies[i]);
+
+                for (int i = 0; i < enemy_locations.Count; i++)
+                    if (enemy_types[i] == "slime")
+                        AddEnemy(new Slime(enemy_locations[i], this));
+
+                foreach (Enemy enemy in enemies)
+                    if (enemy.GetType() == typeof(Slime))
+                        enemy.LoadAssets(spr_slime);
             }
 
             if (dead_timer >= 1.04)
