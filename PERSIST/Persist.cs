@@ -30,7 +30,7 @@ namespace PERSIST
             _graphics.GraphicsProfile = GraphicsProfile.HiDef; // <---- look up what this does cuz idfk
             IsMouseVisible = true;
 
-            player = new Player(this, new Vector2(100, 100), contManager);
+            player = new Player(this, new Vector2(100, 100), contManager, progManager);
 
             TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");

@@ -16,6 +16,7 @@ namespace PERSIST
     {
         private Persist root;
         private ControllerManager contManager;
+        private ProgressionManager progManager;
         private Level current_level;
 
         // input fields
@@ -79,11 +80,12 @@ namespace PERSIST
         private float thrown_time = 0.2f;
         private float death_hsp = 0f;
 
-        public Player(Persist root, Vector2 pos, ControllerManager contManager)
+        public Player(Persist root, Vector2 pos, ControllerManager contManager, ProgressionManager progManager)
         {
             this.root = root;
             this.pos = pos;
             this.contManager = contManager;
+            this.progManager = progManager;
         }
 
         private float height { get { return frame.Height * width / frame.Width; } }
@@ -107,13 +109,24 @@ namespace PERSIST
         {
             GetInput();
             HandleMovementAndCollisions(gameTime);
-            HandleAttacks(gameTime);
-            HandleThrown(gameTime);
 
-            if (attacking)
-                AnimateAtk(gameTime);
+            if (progManager.knife)
+            {
+                HandleAttacks(gameTime);
+                HandleThrown(gameTime);
+            }
+            
+
+            if (progManager.knife)
+            {
+                if (attacking)
+                    AnimateAtk(gameTime);
+                else
+                    AnimateNormal(gameTime);
+            }
             else
-                AnimateNormal(gameTime);
+                AnimateNoKnife(gameTime);
+            
 
             for (int i = attacks.Count - 1; i >= 0; i--)
                 attacks[i].Update(gameTime);
@@ -817,6 +830,78 @@ namespace PERSIST
                             frame.X = 160;
                     }
                 }
+            }
+        }
+
+        private void AnimateNoKnife(GameTime gameTime)
+        {
+            walk_timer += 14 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            int ydir = (int)(Convert.ToSingle(down) - Convert.ToSingle(up));
+
+            // on wall
+            if (!wall_down && wall_left)
+            { frame.X = 32; frame.Y = 768; }
+            else if (!wall_down && wall_right )
+            { frame.X = 32; frame.Y = 800; }
+
+            // in air
+            else if (!wall_down)
+            {
+                if (ydir == 1 && hdir == 1)
+                { frame.X = 32; frame.Y = 832; }
+                else if (ydir == -1 && hdir == 1)
+                { frame.X = 0; frame.Y = 832; }
+                else if (ydir == 1 && hdir == -1)
+                { frame.X = 32; frame.Y = 864; }
+                else if (ydir == -1 && hdir == -1)
+                { frame.X = 0; frame.Y = 864; }
+                else if (hdir == 1)
+                { frame.X = 96; frame.Y = 768; }
+                else if (hdir == -1)
+                { frame.X = 96; frame.Y = 800; }
+                else if (last_hdir == 1)
+                {
+                    if (ydir == 1) { frame.X = 32; frame.Y = 832; }
+                    else if (ydir == -1) { frame.X = 0; frame.Y = 832; }
+                    else { frame.X = 96; frame.Y = 768; }
+                }
+                else if (last_hdir == -1)
+                {
+                    if (ydir == 1) { frame.X = 32; frame.Y = 864; }
+                    else if (ydir == -1) { frame.X = 0; frame.Y = 864; }
+                    else { frame.X = 96; frame.Y = 800; }
+                }
+            }
+
+            // walking
+            else if (hsp != 0)
+            {
+                frame.X = 32 * ((int)walk_timer % 8);
+                if (hdir == -1)
+                {
+                    if (ydir == -1) { frame.Y = 992; }
+                    else if (ydir == 1) { frame.Y = 1056; }
+                    else { frame.Y = 928; }
+                }
+                else
+                {
+                    if (ydir == -1) { frame.Y = 960; }
+                    else if (ydir == 1) { frame.Y = 1024; }
+                    else { frame.Y = 896; }
+                }
+            }
+
+            // standing
+            else
+            {
+                // looking up/down
+                if (ydir == 1) { frame.X = 224; }
+                else if (ydir == -1) { frame.X = 192; }
+                else { frame.X = 0; }
+
+                // facing left/right
+                if (last_hdir == -1) { frame.Y = 800; }
+                else { frame.Y = 768; }
             }
         }
 

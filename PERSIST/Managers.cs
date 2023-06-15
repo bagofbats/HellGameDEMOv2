@@ -71,9 +71,12 @@ namespace PERSIST
         Checkpoint default_respawn = new FakeCheckpoint(new Rectangle(632, 416, 1, 1), null);
         Checkpoint active_checkpoint;
 
+        public bool knife
+        { get; private set; }
+
         public ProgressionManager()
         {
-
+            knife = true;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)

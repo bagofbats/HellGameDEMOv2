@@ -398,7 +398,10 @@ namespace PERSIST
                     if (current_room.name != null)
                     {
                         Vector2 textMiddlePoint = font.MeasureString(current_room.name) / 2;
-                        Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160 + 0.5f, cam.GetPos().Y + 4 + 0.5f);
+                        textMiddlePoint.X = (int)textMiddlePoint.X;
+                        textMiddlePoint.Y = (int)textMiddlePoint.Y;
+
+                        Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 4);
                         _spriteBatch.DrawString(font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                     }
                 
