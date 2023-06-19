@@ -340,7 +340,7 @@ namespace PERSIST
         public void DrawTiles(SpriteBatch _spriteBatch, Texture2D tileset, Texture2D background)
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
-                SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
+                SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
 
             Rectangle source = bounds;
             _spriteBatch.Draw(background, bounds, source, Color.White);
