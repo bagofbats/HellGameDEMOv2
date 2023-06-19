@@ -22,6 +22,7 @@ namespace PERSIST
         private Texture2D spr_slime;
         private Texture2D bg_brick;
 
+        private List<EyeSwitch> switches = new List<EyeSwitch>();
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
         private List<Rectangle> switch_blocks_two = new List<Rectangle>();
 
@@ -104,9 +105,10 @@ namespace PERSIST
 
                             if (l.objects[i].name == "switch")
                             {
-                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 12, 12);
-                                AddEnemy(new EyeSwitch(temp, this));
-                                enemy_locations.Add(new Vector2(temp.X, temp.Y));
+                                var temp = new EyeSwitch(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 12, 12), this);
+                                AddEnemy(temp);
+                                switches.Add(temp);
+                                enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
                                 enemy_types.Add("switch");
                             }
                         }
@@ -186,13 +188,21 @@ namespace PERSIST
             for (int i = enemies.Count - 1; i >= 0; i--)
                 RemoveEnemy(enemies[i]);
 
+            for (int i = switches.Count - 1; i >= 0; i--)
+                switches.Remove(switches[i]);
+
             for (int i = 0; i < enemy_locations.Count; i++)
             {
                 if (enemy_types[i] == "slime")
                     AddEnemy(new Slime(enemy_locations[i], this));
 
                 if (enemy_types[i] == "switch")
-                    AddEnemy(new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 12, 12), this));
+                {
+                    var temp = new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 12, 12), this);
+                    AddEnemy(temp);
+                    switches.Add(temp);
+                }
+                    
             }
                 
 
@@ -233,7 +243,9 @@ namespace PERSIST
                                 temp.Load(tst_tutorial);
                             }
 
-
+            foreach (EyeSwitch s in switches)
+                if (s.GetHitBox().Intersects(r.bounds))
+                    s.two = !two;
         }
     }
 }

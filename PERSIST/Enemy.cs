@@ -205,7 +205,7 @@ namespace PERSIST
     {
         private Texture2D sprite;
         private Rectangle bounds;
-        private bool two = true;
+        public bool two = true;
 
         public EyeSwitch(Rectangle bounds, Level root)
         {
@@ -238,7 +238,7 @@ namespace PERSIST
         public override void Damage()
         {
             root.Switch(room, two);
-            two = !two;
+            // two = !two;
         }
 
         public override Rectangle GetHitBox()

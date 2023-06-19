@@ -207,6 +207,10 @@ namespace PERSIST
                 death_hsp = 2.3f;
             //pos.X = current_level.active_checkpoint.box.X - 8;
             //pos.Y = current_level.active_checkpoint.box.Y;
+
+            for (int i = attacks.Count - 1; i >= 0; i--)
+                FinishAttack(attacks[i]);
+
             hsp = 0;
             vsp = 0;
             SetPogoed(0, false);
