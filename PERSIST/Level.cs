@@ -40,6 +40,7 @@ namespace PERSIST
         protected List<ParticleFX> particles = new List<ParticleFX>();
         protected List<Wall> special_walls = new List<Wall>();
         protected List<Rectangle> special_walls_bounds = new List<Rectangle>();
+        protected List<String> special_walls_types = new List<String>();
         protected List<Vector2> enemy_locations = new List<Vector2>();
         protected List<String> enemy_types = new List<String>();
 
@@ -672,6 +673,30 @@ namespace PERSIST
 
         public Obstacle(Rectangle bounds)
         { this.bounds = bounds; }
+    }
+
+    public class SwitchBlock : Wall
+    {
+        private Level root;
+        public Texture2D img { get; set; }
+        private Rectangle draw_rectangle;
+        private Rectangle frame = new Rectangle(48, 32, 16, 16);
+
+        public SwitchBlock(Rectangle bounds, Level root) : base(bounds)
+        {
+            this.root = root;
+            draw_rectangle = bounds;
+        }
+
+        public override void Load(Texture2D img)
+        {
+            this.img = img;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+        }
     }
 
     public class Breakable : Wall

@@ -77,8 +77,22 @@ namespace PERSIST
                                     {
                                         AddSpecialWall(new Breakable(new Rectangle(h, v, 8, 8), this));
                                         special_walls_bounds.Add(new Rectangle(h, v, 8, 8));
+                                        special_walls_types.Add("breakable");
                                     }
+                            }
 
+                            if (l.objects[i].name == "switch_one")
+                            {
+                                int h_bound = (int)l.objects[i].x + (int)l.objects[i].width;
+                                int v_bound = (int)l.objects[i].y + (int)l.objects[i].height;
+
+                                for (int h = (int)l.objects[i].x; h < h_bound; h += 16)
+                                    for (int v = (int)l.objects[i].y; v < v_bound; v += 16)
+                                    {
+                                        AddSpecialWall(new SwitchBlock(new Rectangle(h, v, 16, 16), this));
+                                        special_walls_bounds.Add(new Rectangle(h, v, 16, 16));
+                                        special_walls_types.Add("switch");
+                                    }
                             }
                         }
 
@@ -107,7 +121,9 @@ namespace PERSIST
 
             foreach (Wall wall in special_walls)
             {
-                if (wall.GetType() == typeof(Breakable))
+                var temp = wall.GetType();
+
+                if (temp == typeof(Breakable) || temp == typeof(SwitchBlock))
                     wall.Load(tst_tutorial);
             }
 
@@ -134,12 +150,22 @@ namespace PERSIST
             for (int i = special_walls.Count - 1; i >= 0; i--)
                 RemoveSpecialWall(special_walls[i]);
 
-            foreach (Rectangle bounds in special_walls_bounds)
-                AddSpecialWall(new Breakable(bounds, this));
+            for (int i = 0; i < special_walls_bounds.Count; i++)
+            {
+                if (special_walls_types[i] == "breakable")
+                    AddSpecialWall(new Breakable(special_walls_bounds[i], this));
+                else if (special_walls_types[i] == "switch")
+                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this));
+            }
+                
 
             foreach (Wall wall in special_walls)
-                if (wall.GetType() == typeof(Breakable))
+            {
+                var temp = wall.GetType();
+                if (temp == typeof(Breakable) || temp == typeof(SwitchBlock))
                     wall.Load(tst_tutorial);
+            }
+                
 
             // respawn enemies
             for (int i = enemies.Count - 1; i >= 0; i--)
