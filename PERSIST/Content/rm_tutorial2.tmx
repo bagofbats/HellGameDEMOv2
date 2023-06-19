@@ -22,10 +22,10 @@
   </object>
   <object id="39" name="switch_one" x="656" y="104" width="32" height="32"/>
   <object id="40" name="switch_two" x="800" y="144" width="32" height="64"/>
-  <object id="41" name="switch" x="776" y="80">
+  <object id="41" name="switch" x="784" y="80">
    <point/>
   </object>
-  <object id="66" name="switch" x="624" y="168">
+  <object id="66" name="switch" x="624" y="152">
    <point/>
   </object>
   <object id="67" name="door" x="64" y="136" width="8" height="24">

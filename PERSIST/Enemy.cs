@@ -201,34 +201,45 @@ namespace PERSIST
 
     public class EyeSwitch : Enemy
     {
+        public Room home
+        { get; private set; }
+        private Texture2D sprite;
+        private Rectangle bounds;
+
+        public EyeSwitch(Rectangle bounds, Level root)
+        {
+            this.bounds = bounds;
+            this.root = root;
+        }
+
         public override void LoadAssets(Texture2D sprite)
         {
-            throw new NotImplementedException();
+            this.sprite = sprite;
         }
 
         public override void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            throw new NotImplementedException();
+            spriteBatch.Draw(sprite, bounds, Color.Red);
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public override void Damage()
         {
-            throw new NotImplementedException();
+            
         }
 
         public override Rectangle GetHitBox()
         {
-            throw new NotImplementedException();
+            return bounds;
         }
     }
 }

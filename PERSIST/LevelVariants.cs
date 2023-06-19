@@ -22,6 +22,9 @@ namespace PERSIST
         private Texture2D spr_slime;
         private Texture2D bg_brick;
 
+        private List<Rectangle> switch_blocks_one = new List<Rectangle>();
+        private List<Rectangle> switch_blocks_two = new List<Rectangle>();
+
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug) : base(root, bounds, player, tld, cam, prog_manager, debug) 
         {
             foreach (TiledData t in tld)
@@ -52,8 +55,7 @@ namespace PERSIST
                         for (int i = 0; i < l.objects.Count(); i++)
                         {
                             if (l.objects[i].name == "player")
-                                player.SetPos(new Vector2(l.objects[i].x, l.objects[i].y));
-
+                                player.SetPos(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
 
                             if (l.objects[i].name == "checkpoint")
                                 AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
@@ -66,14 +68,13 @@ namespace PERSIST
                                 enemy_types.Add("slime");
                             }
 
-
                             if (l.objects[i].name == "breakable")
                             {
-                                int h_bound = (int)l.objects[i].x + (int)l.objects[i].width;
-                                int v_bound = (int)l.objects[i].y + (int)l.objects[i].height;
+                                int h_bound = (int)l.objects[i].x + (int)l.objects[i].width + t.location.X;
+                                int v_bound = (int)l.objects[i].y + (int)l.objects[i].height + t.location.Y;
 
-                                for (int h = (int)l.objects[i].x; h < h_bound; h += 8)
-                                    for (int v = (int)l.objects[i].y; v < v_bound; v += 8)
+                                for (int h = (int)l.objects[i].x + t.location.X; h < h_bound; h += 8)
+                                    for (int v = (int)l.objects[i].y + t.location.Y; v < v_bound; v += 8)
                                     {
                                         AddSpecialWall(new Breakable(new Rectangle(h, v, 8, 8), this));
                                         special_walls_bounds.Add(new Rectangle(h, v, 8, 8));
@@ -83,16 +84,28 @@ namespace PERSIST
 
                             if (l.objects[i].name == "switch_one")
                             {
-                                int h_bound = (int)l.objects[i].x + (int)l.objects[i].width;
-                                int v_bound = (int)l.objects[i].y + (int)l.objects[i].height;
+                                int h_bound = (int)l.objects[i].x + (int)l.objects[i].width + t.location.X;
+                                int v_bound = (int)l.objects[i].y + (int)l.objects[i].height + t.location.Y;
+                                switch_blocks_one.Add(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height));
 
-                                for (int h = (int)l.objects[i].x; h < h_bound; h += 16)
-                                    for (int v = (int)l.objects[i].y; v < v_bound; v += 16)
+                                for (int h = (int)l.objects[i].x + t.location.X; h < h_bound; h += 16)
+                                    for (int v = (int)l.objects[i].y + t.location.Y; v < v_bound; v += 16)
                                     {
                                         AddSpecialWall(new SwitchBlock(new Rectangle(h, v, 16, 16), this));
                                         special_walls_bounds.Add(new Rectangle(h, v, 16, 16));
                                         special_walls_types.Add("switch");
                                     }
+                            }
+
+                            if (l.objects[i].name == "switch_two")
+                                switch_blocks_two.Add(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height));
+
+                            if (l.objects[i].name == "switch")
+                            {
+                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 16, 16);
+                                AddEnemy(new EyeSwitch(temp, this));
+                                enemy_locations.Add(new Vector2(temp.X, temp.Y));
+                                enemy_types.Add("switch");
                             }
                         }
 
@@ -115,8 +128,13 @@ namespace PERSIST
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.GetType() == typeof(Slime))
+                var temp = enemy.GetType();
+
+                if (temp == typeof(Slime))
                     enemy.LoadAssets(spr_slime);
+
+                if (temp == typeof(EyeSwitch))
+                    enemy.LoadAssets(black);
             }
 
             foreach (Wall wall in special_walls)
@@ -172,12 +190,26 @@ namespace PERSIST
                 RemoveEnemy(enemies[i]);
 
             for (int i = 0; i < enemy_locations.Count; i++)
+            {
                 if (enemy_types[i] == "slime")
                     AddEnemy(new Slime(enemy_locations[i], this));
 
+                if (enemy_types[i] == "switch")
+                    AddEnemy(new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 16, 16), this));
+            }
+                
+
             foreach (Enemy enemy in enemies)
-                if (enemy.GetType() == typeof(Slime))
+            {
+                var temp = enemy.GetType();
+
+                if (temp == typeof(Slime))
                     enemy.LoadAssets(spr_slime);
+
+                else if (temp == typeof(EyeSwitch))
+                    enemy.LoadAssets(black);
+            }
+                
         }
     }
 }

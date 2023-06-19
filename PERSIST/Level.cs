@@ -614,6 +614,8 @@ namespace PERSIST
         public Rectangle bounds
         { get; private set; }
         private List<Enemy> enemies = new List<Enemy>();
+        public List<Wall> specials = new List<Wall>();
+
         public String name
         { get; private set; }
 
