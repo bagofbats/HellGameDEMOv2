@@ -142,6 +142,11 @@ namespace PERSIST
             // nothing xd
         }
 
+        public virtual void Switch(Room r, bool two)
+        {
+            // nothing
+        }
+
         // -----------------------------------------------
 
 
@@ -359,11 +364,11 @@ namespace PERSIST
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
 
-            if (!player_dead)
-                player.Draw(_spriteBatch);
-
             for (int i = enemies.Count - 1; i >= 0; i--)
                 enemies[i].Draw(_spriteBatch);
+
+            if (!player_dead)
+                player.Draw(_spriteBatch);
 
             for (int i = special_walls.Count - 1; i >= 0; i--)
                 special_walls[i].Draw(_spriteBatch);
@@ -614,7 +619,6 @@ namespace PERSIST
         public Rectangle bounds
         { get; private set; }
         private List<Enemy> enemies = new List<Enemy>();
-        public List<Wall> specials = new List<Wall>();
 
         public String name
         { get; private set; }

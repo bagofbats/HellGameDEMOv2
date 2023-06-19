@@ -25,6 +25,8 @@ namespace PERSIST
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
         private List<Rectangle> switch_blocks_two = new List<Rectangle>();
 
+        private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
+
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug) : base(root, bounds, player, tld, cam, prog_manager, debug) 
         {
             foreach (TiledData t in tld)
@@ -102,7 +104,7 @@ namespace PERSIST
 
                             if (l.objects[i].name == "switch")
                             {
-                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 16, 16);
+                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 12, 12);
                                 AddEnemy(new EyeSwitch(temp, this));
                                 enemy_locations.Add(new Vector2(temp.X, temp.Y));
                                 enemy_types.Add("switch");
@@ -126,16 +128,11 @@ namespace PERSIST
             bg_brick = root.Content.Load<Texture2D>("bg_brick2");
             // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
 
+            enemy_assets.Add(typeof(Slime), spr_slime);
+            enemy_assets.Add(typeof(EyeSwitch), black);
+
             foreach (Enemy enemy in enemies)
-            {
-                var temp = enemy.GetType();
-
-                if (temp == typeof(Slime))
-                    enemy.LoadAssets(spr_slime);
-
-                if (temp == typeof(EyeSwitch))
-                    enemy.LoadAssets(black);
-            }
+                enemy.LoadAssets(enemy_assets[enemy.GetType()]);
 
             foreach (Wall wall in special_walls)
             {
@@ -195,21 +192,48 @@ namespace PERSIST
                     AddEnemy(new Slime(enemy_locations[i], this));
 
                 if (enemy_types[i] == "switch")
-                    AddEnemy(new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 16, 16), this));
+                    AddEnemy(new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 12, 12), this));
             }
                 
 
             foreach (Enemy enemy in enemies)
+                enemy.LoadAssets(enemy_assets[enemy.GetType()]);
+                
+        }
+
+        public override void Switch(Room r, bool two)
+        {
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                if (special_walls[i].GetType() == typeof(SwitchBlock))
+                    if (special_walls[i].bounds.Intersects(r.bounds))
+                        RemoveSpecialWall(special_walls[i]);
+
+            if (two)
             {
-                var temp = enemy.GetType();
-
-                if (temp == typeof(Slime))
-                    enemy.LoadAssets(spr_slime);
-
-                else if (temp == typeof(EyeSwitch))
-                    enemy.LoadAssets(black);
+                foreach (Rectangle rect in switch_blocks_two)
+                    if (rect.Intersects(r.bounds))
+                        for (int h = rect.X; h < rect.X + rect.Width; h += 16)
+                            for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
+                            {
+                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this);
+                                AddSpecialWall(temp);
+                                temp.Load(tst_tutorial);
+                            }
+                                
             }
                 
+            else
+                foreach (Rectangle rect in switch_blocks_one)
+                    if (rect.Intersects(r.bounds))
+                        for (int h = rect.X; h < rect.X + rect.Width; h += 16)
+                            for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
+                            {
+                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this);
+                                AddSpecialWall(temp);
+                                temp.Load(tst_tutorial);
+                            }
+
+
         }
     }
 }

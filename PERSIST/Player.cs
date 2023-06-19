@@ -207,6 +207,9 @@ namespace PERSIST
                 death_hsp = 2.3f;
             //pos.X = current_level.active_checkpoint.box.X - 8;
             //pos.Y = current_level.active_checkpoint.box.Y;
+            hsp = 0;
+            vsp = 0;
+            SetPogoed(0, false);
         }
 
         private void HandleMovementAndCollisions(GameTime gameTime)
@@ -225,8 +228,15 @@ namespace PERSIST
             Obstacle o = current_level.ObstacleCheckCollision(HurtBox);
             List<Enemy> e = current_level.CheckEnemyCollision(HurtBox);
 
-            if (o != null || e.Count > 0)
+            if (o != null)
                 Die(gameTime);
+            else if (e.Count > 0)
+                foreach (Enemy temp in e)
+                    if (temp.hurtful)
+                    {
+                        Die(gameTime);
+                        break;
+                    }
             // --------- end death ---------
 
 

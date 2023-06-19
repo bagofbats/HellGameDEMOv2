@@ -24,6 +24,7 @@ namespace PERSIST
         public Room room { get; set; }
         protected Vector2 pos;
         public Vector2 Pos { get => pos; }
+        public bool hurtful { get; protected set; }
     }
 
     public class Slime : Enemy
@@ -46,6 +47,7 @@ namespace PERSIST
         {
             this.pos = pos;
             this.root = root;
+            hurtful = true;
         }
 
         public int HP
@@ -201,20 +203,21 @@ namespace PERSIST
 
     public class EyeSwitch : Enemy
     {
-        public Room home
-        { get; private set; }
         private Texture2D sprite;
         private Rectangle bounds;
+        private bool two = true;
 
         public EyeSwitch(Rectangle bounds, Level root)
         {
             this.bounds = bounds;
             this.root = root;
+            hurtful = false;
         }
 
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
+            this.room = root.RealGetRoom(new Vector2(bounds.X, bounds.Y));
         }
 
         public override void Update(GameTime gameTime)
@@ -234,7 +237,8 @@ namespace PERSIST
 
         public override void Damage()
         {
-            
+            root.Switch(room, two);
+            two = !two;
         }
 
         public override Rectangle GetHitBox()
