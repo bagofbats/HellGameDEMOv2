@@ -309,6 +309,10 @@ namespace PERSIST
 
             if (temp_specials.Count() != 0)
                 Finish();
+
+            Obstacle o = level.ObstacleCheckCollision(HitBox);
+            if (o != null)
+                Finish();
         }
 
         public override void Draw(SpriteBatch _spriteBatch)
