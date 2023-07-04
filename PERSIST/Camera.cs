@@ -21,7 +21,7 @@ namespace PERSIST
         public Level root;
 
         public bool stable
-        { get; private set; }
+        { get; set; }
 
         public Camera(int w, int h)
         {

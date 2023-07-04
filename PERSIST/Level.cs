@@ -22,7 +22,8 @@ namespace PERSIST
         public Player player
         { get; protected set; }
         protected Camera cam;
-        protected Texture2D black;
+        public Texture2D black
+        { get; protected set; }
         protected SpriteFont font;
         public Texture2D particle_img
         { get; protected set; }
@@ -128,7 +129,11 @@ namespace PERSIST
                     || camera_pos.Y > current_room.Y + current_room.Height - 240)
                     cam.TargetFollow(new Vector2(tempX, tempY)); // transitions between rooms
                 else
+                {
                     cam.Follow(new Vector2(tempX, tempY)); // panning within the room
+                    cam.stable = true;
+                }
+                    
             }
         }
 
@@ -370,13 +375,13 @@ namespace PERSIST
             if (!player_dead)
                 player.Draw(_spriteBatch);
 
-            for (int i = special_walls.Count - 1; i >= 0; i--)
-                special_walls[i].Draw(_spriteBatch);
-
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles_lower")
                         DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
+
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                special_walls[i].Draw(_spriteBatch);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
@@ -685,8 +690,11 @@ namespace PERSIST
     {
         private Level root;
         public Texture2D img { get; set; }
+        private Texture2D black;
         private Rectangle draw_rectangle;
         private Rectangle frame = new Rectangle(48, 32, 16, 16);
+        bool flash = true;
+        private float flash_timer = 0f;
 
         public SwitchBlock(Rectangle bounds, Level root) : base(bounds)
         {
@@ -697,11 +705,25 @@ namespace PERSIST
         public override void Load(Texture2D img)
         {
             this.img = img;
+            this.black = root.black;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (flash_timer >= 0.08f)
+                    flash = false;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+            if (flash)
+                spriteBatch.Draw(black, draw_rectangle, frame, Color.White);
+            else
+                spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
         }
     }
 

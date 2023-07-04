@@ -117,4 +117,9 @@ namespace PERSIST
             }
         }
     }
+
+    public class ProgressionPickup
+    {
+
+    }
 }
