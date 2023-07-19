@@ -73,10 +73,13 @@ namespace PERSIST
 
         public bool knife
         { get; private set; }
+        public bool ranged
+        { get; private set; }
 
         public ProgressionManager()
         {
             knife = true;
+            ranged = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)

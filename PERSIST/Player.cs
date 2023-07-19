@@ -112,8 +112,13 @@ namespace PERSIST
 
             if (progManager.knife)
             {
-                HandleAttacks(gameTime);
-                HandleThrown(gameTime);
+                if (progManager.ranged)
+                {
+                    HandleAttacks(gameTime);
+                    HandleThrown(gameTime);
+                }
+                else
+                    HandleAttacksNoRanged(gameTime);
             }
             
 
@@ -414,6 +419,14 @@ namespace PERSIST
                 StartAttack();
                 ranged_timer = 0;
                 ranged_ready = false;
+            }
+        }
+
+        private void HandleAttacksNoRanged(GameTime gameTime)
+        {
+            if (enter_released && !attacking)
+            {
+                StartAttack();
             }
         }
 
