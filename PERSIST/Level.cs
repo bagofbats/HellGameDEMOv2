@@ -675,6 +675,8 @@ namespace PERSIST
         public virtual void Load(Texture2D img) { }
 
         public virtual void Damage() { }
+
+        public virtual void FlashDestroy() { }
     }
 
     public class Obstacle
@@ -693,7 +695,8 @@ namespace PERSIST
         private Texture2D black;
         private Rectangle draw_rectangle;
         private Rectangle frame = new Rectangle(48, 32, 16, 16);
-        bool flash = true;
+        private bool flash = true;
+        private bool self_destruct = false;
         private float flash_timer = 0f;
 
         public SwitchBlock(Rectangle bounds, Level root) : base(bounds)
@@ -714,7 +717,12 @@ namespace PERSIST
             {
                 flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 if (flash_timer >= 0.08f)
+                {
                     flash = false;
+                    flash_timer = 0f;
+                    if (self_destruct)
+                        root.RemoveSpecialWall(this);
+                }
             }
         }
 
@@ -724,6 +732,13 @@ namespace PERSIST
                 spriteBatch.Draw(black, draw_rectangle, frame, Color.White);
             else
                 spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+        }
+
+        public override void FlashDestroy()
+        {
+            flash = true;
+            self_destruct = true;
+            flash_timer = 0f;
         }
     }
 

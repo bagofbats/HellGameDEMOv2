@@ -216,7 +216,7 @@ namespace PERSIST
             for (int i = special_walls.Count - 1; i >= 0; i--)
                 if (special_walls[i].GetType() == typeof(SwitchBlock))
                     if (special_walls[i].bounds.Intersects(r.bounds))
-                        RemoveSpecialWall(special_walls[i]);
+                        special_walls[i].FlashDestroy();
 
             if (two)
             {
