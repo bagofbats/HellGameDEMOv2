@@ -424,7 +424,7 @@ namespace PERSIST
 
         private void HandleAttacksNoRanged(GameTime gameTime)
         {
-            if (enter_released && !attacking)
+            if (enter_pressed && !attacking)
             {
                 StartAttack();
             }
