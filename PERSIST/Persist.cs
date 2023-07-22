@@ -10,7 +10,7 @@ namespace PERSIST
 {
     public class Persist : Game
     {
-        private bool debug = false;
+        private bool debug = true;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
