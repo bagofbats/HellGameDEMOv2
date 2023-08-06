@@ -43,6 +43,9 @@ namespace PERSIST
         private float damaged_timer = 0f;
         private Random rnd = new Random();
 
+        private SleepFX sleepFX;
+        private bool sleep;
+
         public Slime(Vector2 pos, Level root)
         {
             this.pos = pos;
@@ -67,6 +70,8 @@ namespace PERSIST
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
+
+            sleepFX = new SleepFX(root.particle_img, root, this);
         }
 
         public override void Update(GameTime gameTime)
@@ -90,7 +95,7 @@ namespace PERSIST
 
             Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
 
-            bool sleep = (dist_x > 100 || dist_y > 70) && vcheck != null;
+            sleep = (dist_x > 100 || dist_y > 70) && vcheck != null;
 
             if (vcheck != null)
             {
@@ -162,12 +167,16 @@ namespace PERSIST
 
             if (sleep)
             {
+                sleepFX.Update(gameTime);
                 frame.X = 64;
                 if (hdir == 1)
                     frame.Y = 0;
                 else
                     frame.Y = 32;
             }
+            else
+                sleepFX.ResetZs();
+            
         }
 
         public override void Damage()
@@ -198,6 +207,8 @@ namespace PERSIST
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            if (sleep)
+                sleepFX.Draw(spriteBatch);
         }
     }
 
