@@ -79,7 +79,7 @@ namespace PERSIST
         public ProgressionManager()
         {
             knife = true;
-            ranged = false;
+            ranged = true;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
