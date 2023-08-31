@@ -18,7 +18,7 @@ namespace PERSIST
         public ControllerManager contManager
         { get; private set; }
         private ProgressionManager progManager;
-        public Level current_level;
+        // public Level current_level;
 
         // input fields
         private bool up;
@@ -207,7 +207,7 @@ namespace PERSIST
 
         private void Die(GameTime gameTime)
         {
-            current_level.HandleDeath(gameTime);
+            root.the_level.HandleDeath(gameTime);
             death_hsp = -2.3f * last_hdir;
             if (last_hdir == 0)
                 death_hsp = 2.3f;
@@ -224,7 +224,7 @@ namespace PERSIST
 
         private void HandleMovementAndCollisions(GameTime gameTime)
         {
-            (Wall left, Wall right, Wall up, Wall down) = current_level.FullCheckCollision(HitBox);
+            (Wall left, Wall right, Wall up, Wall down) = root.the_level.FullCheckCollision(HitBox);
 
             wall_left = left != null;
             wall_right = right != null;
@@ -235,8 +235,8 @@ namespace PERSIST
 
 
             // --------- death ---------
-            Obstacle o = current_level.ObstacleCheckCollision(HurtBox);
-            List<Enemy> e = current_level.CheckEnemyCollision(HurtBox);
+            Obstacle o = root.the_level.ObstacleCheckCollision(HurtBox);
+            List<Enemy> e = root.the_level.CheckEnemyCollision(HurtBox);
 
             if (o != null)
                 Die(gameTime);
@@ -327,7 +327,7 @@ namespace PERSIST
             else
                 vsp_col_check -= 1;
 
-            Wall vcheck = current_level.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
+            Wall vcheck = root.the_level.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
 
             if (vcheck != null)
             {
@@ -364,7 +364,7 @@ namespace PERSIST
             else
                 hsp_col_check -= 1;
 
-            Wall hcheck = current_level.SimpleCheckCollision(new Rectangle((int)(HitBox.X + hsp_col_check), HitBox.Y, HitBox.Width, HitBox.Height));
+            Wall hcheck = root.the_level.SimpleCheckCollision(new Rectangle((int)(HitBox.X + hsp_col_check), HitBox.Y, HitBox.Width, HitBox.Height));
 
             if (hcheck != null)
             {
@@ -409,7 +409,7 @@ namespace PERSIST
                 if (!wall_down && wall_right)
                     ranged_dir = -1;
 
-                Attack temp = new Ranged(this, spr_ranged, ranged_dir, up, current_level);
+                Attack temp = new Ranged(this, spr_ranged, ranged_dir, up, root.the_level);
                 attacks.Add(temp);
                 ranged_timer = 0;
                 ranged_ready = false;
@@ -453,7 +453,7 @@ namespace PERSIST
                     atk_type = 'r';
             }
 
-            temp = new Slash(this, atk_type, spr_atk, atk_dir, current_level);
+            temp = new Slash(this, atk_type, spr_atk, atk_dir, root.the_level);
             attacks.Add(temp);
             atk_dir = !atk_dir;
         }
@@ -931,11 +931,6 @@ namespace PERSIST
                 if (last_hdir == -1) { frame.Y = 800; }
                 else { frame.Y = 768; }
             }
-        }
-
-        public void SetCurrentLevel(Level newLevel)
-        {
-            current_level = newLevel;
         }
     }
 }

@@ -14,19 +14,17 @@ namespace PERSIST
 {
     public class Camera
     {
-        int w;
-        int h;
-        float current_x = 0;
-        float current_y = 0;
-        public Level root;
+        private float current_x = 0;
+        private float current_y = 0;
+
+        private Persist root;
 
         public bool stable
         { get; set; }
 
-        public Camera(int w, int h)
+        public Camera(Persist root)
         {
-            this.w = w;
-            this.h = h;
+            this.root = root;
             stable = true;
         }
 
@@ -76,7 +74,7 @@ namespace PERSIST
 
         public void SmartSetPos(Vector2 pos)
         {
-            Rectangle current_room = root.GetRoom(pos);
+            Rectangle current_room = root.the_level.GetRoom(pos);
 
             if (current_room == new Rectangle(0, 0, 0, 0))
                 return;

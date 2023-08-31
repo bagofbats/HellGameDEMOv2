@@ -22,7 +22,9 @@ namespace PERSIST
         private FPSCounter fpsCounter = new FPSCounter();
 
         private Player player;
-        private Level the_level;
+        public Level the_level
+        { get; private set; }
+
         private Dictionary<(string, string), LevelStruct> level_map;
 
         private LevelStruct tutorial_one = new LevelStruct("\\rm_tutorial1.tmx", "\\tst_tutorial.tsx");
@@ -76,9 +78,8 @@ namespace PERSIST
 
             _graphics.ApplyChanges();
 
-            Camera cam = new Camera(target_w, target_h);
+            Camera cam = new Camera(this);
             the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug);
-            cam.root = the_level;
 
             Window.Title = "Persist [DEMO]";
         }
@@ -90,8 +91,6 @@ namespace PERSIST
             base.Initialize();
 
             _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, 320, 240); // <--- use this to change camera zoom
-
-            player.SetCurrentLevel(the_level);
         }
 
         protected override void LoadContent()
@@ -145,13 +144,10 @@ namespace PERSIST
 
             List<TiledData> tld = new List<TiledData> { data };
 
-            Camera cam = new Camera(0, 0);
+            Camera cam = new Camera(this);
             the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug);
-            cam.root = the_level;
 
             the_level.Load(code);
-
-            player.current_level = the_level;
         }
     }
 }
