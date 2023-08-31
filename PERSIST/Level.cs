@@ -38,6 +38,7 @@ namespace PERSIST
         protected List<Room> rooms = new List<Room>();
         protected List<Checkpoint> checkpoints = new List<Checkpoint>();
         protected List<Enemy> enemies = new List<Enemy>();
+        protected List<Door> doors = new List<Door>();
         protected List<ParticleFX> particles = new List<ParticleFX>();
         protected List<Wall> special_walls = new List<Wall>();
         protected List<Rectangle> special_walls_bounds = new List<Rectangle>();
@@ -70,7 +71,7 @@ namespace PERSIST
         // override these in child classes
         // (only Update and Load have any code in the parent class -- the rest are blank functions to be overwritten)
 
-        public virtual void Load()
+        public virtual void Load(string code="")
         {
             font = root.Content.Load<SpriteFont>("pixellocale");
             black = root.Content.Load<Texture2D>("black");
@@ -102,6 +103,12 @@ namespace PERSIST
 
             if (prog_manager.GetActiveCheckpoint() != null)
                 prog_manager.GetActiveCheckpoint().Animate(gameTime);
+
+            // door nonsense idk
+            for (int i = 0; i < doors.Count(); i++)
+                if (doors[i] != null)
+                    if (doors[i].location.Intersects(player.HitBox) && player.contManager.DOWN_PRESSED)
+                        root.GoToLevel(doors[i].destination, doors[i].code);
 
             // camera following
             Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
@@ -397,6 +404,9 @@ namespace PERSIST
                 foreach (Chunk c in chunks)
                     if (c.bounds.Contains(player.HitBox.X, player.HitBox.Y))
                         c.Draw(_spriteBatch);
+
+                for (int i = 0; i < doors.Count; i++)
+                    _spriteBatch.Draw(black, doors[i].location, Color.Blue * 0.2f);
             }
 
             if (overlay)
@@ -657,7 +667,6 @@ namespace PERSIST
         }
     }
 
-
     public class Wall
     {
         public Rectangle bounds
@@ -821,5 +830,31 @@ namespace PERSIST
             this.map = map;
             this.tst = tst;
         }
+    }
+
+    public class Door
+    {
+        public Rectangle location { get; private set; }
+        public string code { get; private set; }
+        public string destination { get; private set; }
+
+        public Door(Rectangle location, string code, string destination) 
+        {
+            this.location = location;
+            this.code = code;
+            this.destination = destination;
+        }
+    }
+
+    public struct LevelStruct
+    {
+        public LevelStruct(string map, string tileset)
+        {
+            this.map = map;
+            this.tileset = tileset;
+        }
+
+        public string map;
+        public string tileset;
     }
 }

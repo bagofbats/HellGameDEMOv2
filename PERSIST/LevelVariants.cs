@@ -63,6 +63,9 @@ namespace PERSIST
                             if (l.objects[i].name == "checkpoint")
                                 AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
 
+                            if (l.objects[i].name == "door")
+                                doors.Add(new Door(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), l.objects[i].properties[1].value, l.objects[i].properties[0].value));
+
                             if (l.objects[i].name == "slime")
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
@@ -116,8 +119,19 @@ namespace PERSIST
                 }
         }
 
-        public override void Load()
+        public override void Load(string code="")
         {
+            if (code != "")
+            {
+                for (int i = 0; i < doors.Count; i++)
+                    if (doors[i].code == code)
+                    {
+                        Door dst = doors[i];
+                        player.SetPos(new Vector2(dst.location.X, dst.location.Y));
+                        break;
+                    }
+            }
+
             cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
 
             base.Load();

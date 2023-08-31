@@ -77,6 +77,10 @@ namespace PERSIST
         public void SmartSetPos(Vector2 pos)
         {
             Rectangle current_room = root.GetRoom(pos);
+
+            if (current_room == new Rectangle(0, 0, 0, 0))
+                return;
+
             int tempX = (int)pos.X - 160;
             int tempY = (int)pos.Y - 120;
             tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);

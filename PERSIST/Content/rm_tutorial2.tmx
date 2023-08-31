@@ -99,10 +99,10 @@
   <object id="372" name="slime" x="320" y="624">
    <point/>
   </object>
-  <object id="373" name="slime" x="432" y="744">
+  <object id="373" name="slime" x="392" y="752">
    <point/>
   </object>
-  <object id="374" name="slime" x="416" y="624">
+  <object id="374" name="slime" x="496" y="760">
    <point/>
   </object>
   <object id="392" name="switch" x="656" y="608">

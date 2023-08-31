@@ -15,9 +15,10 @@ namespace PERSIST
     public class Player
     {
         private Persist root;
-        private ControllerManager contManager;
+        public ControllerManager contManager
+        { get; private set; }
         private ProgressionManager progManager;
-        private Level current_level;
+        public Level current_level;
 
         // input fields
         private bool up;

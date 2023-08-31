@@ -23,6 +23,10 @@ namespace PERSIST
 
         private Player player;
         private Level the_level;
+        private Dictionary<(string, string), LevelStruct> level_map;
+
+        private LevelStruct tutorial_one = new LevelStruct("\\rm_tutorial1.tmx", "\\tst_tutorial.tsx");
+        private LevelStruct tutorial_two = new LevelStruct("\\rm_tutorial2.tmx", "\\tst_tutorial.tsx");
 
         public Persist()
         {
@@ -31,9 +35,17 @@ namespace PERSIST
             _graphics.GraphicsProfile = GraphicsProfile.HiDef; // <---- look up what this does cuz idfk
             IsMouseVisible = true;
 
+
+            level_map = new Dictionary<(string, string), LevelStruct>()
+            {
+                {("rm_tutorial2", "blue"), tutorial_two },
+                {("rm_tutorial1", "blue"), tutorial_one }
+            };
+
+
             player = new Player(this, new Vector2(100, 100), contManager, progManager);
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial2.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
@@ -121,6 +133,25 @@ namespace PERSIST
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        public void GoToLevel(string destination, string code)
+        {
+            LevelStruct dst_info = level_map[(destination, code)];
+
+            TiledMap map = new TiledMap(Content.RootDirectory + dst_info.map);
+            TiledTileset tst = new TiledTileset(Content.RootDirectory + dst_info.tileset);
+            TiledData data = new TiledData(new Rectangle(0, 0, 320, 240), map, tst);
+
+            List<TiledData> tld = new List<TiledData> { data };
+
+            Camera cam = new Camera(0, 0);
+            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug);
+            cam.root = the_level;
+
+            the_level.Load(code);
+
+            player.current_level = the_level;
         }
     }
 }
