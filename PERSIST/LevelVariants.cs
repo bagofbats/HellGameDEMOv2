@@ -63,6 +63,13 @@ namespace PERSIST
                             if (l.objects[i].name == "checkpoint")
                                 AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
 
+                            if (l.objects[i].name == "fake_checkpoint")
+                            {
+                                AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
+                                checkpoints[checkpoints.Count - 1].visible = false;
+                            }
+                                
+
                             if (l.objects[i].name == "door")
                                 doors.Add(new Door(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), l.objects[i].properties[1].value, l.objects[i].properties[0].value));
 

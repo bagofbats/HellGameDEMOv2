@@ -22,10 +22,14 @@ namespace PERSIST
         public Level root
         { get; private set; }
 
+        public bool visible
+        { get; set; }
+
         public Checkpoint(Rectangle box, Level root)
         {
             this.box = box;
             this.root = root;
+            visible = true;
         }
 
         public void Load(Texture2D sprite)
@@ -46,15 +50,8 @@ namespace PERSIST
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            _spriteBatch.Draw(sprite, box, frame, Color.White);
+            if (visible)
+                _spriteBatch.Draw(sprite, box, frame, Color.White);
         }
-    }
-
-    public class FakeCheckpoint : Checkpoint
-    {
-        public FakeCheckpoint(Rectangle box, Level root) : base(box, root) { }
-
-        new public Rectangle box
-        { get; private set; }
     }
 }

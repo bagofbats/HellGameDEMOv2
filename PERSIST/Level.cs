@@ -93,7 +93,7 @@ namespace PERSIST
 
             Checkpoint temp = CheckpointCheckCollision(player.HitBox);
 
-            if (temp != null)
+            if (temp != null && (temp.visible || prog_manager.GetActiveCheckpoint() == null))
                 prog_manager.SetActiveCheckpoint(temp);
 
             for (int i = 0; i < enemies.Count(); i++)

@@ -80,18 +80,22 @@ namespace PERSIST
 
     public class ProgressionManager
     {
-        Checkpoint default_respawn = new FakeCheckpoint(new Rectangle(632, 416, 1, 1), null);
         Checkpoint active_checkpoint;
 
         public bool knife
         { get; private set; }
         public bool ranged
         { get; private set; }
+        
+        // bosses and mini-bosses
+        public bool slime_dead
+        { get; private set; }
 
         public ProgressionManager()
         {
             knife = true;
             ranged = true;
+            slime_dead = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
@@ -101,9 +105,6 @@ namespace PERSIST
 
         public Checkpoint GetActiveCheckpoint()
         {
-            if (active_checkpoint == null)
-                return default_respawn;
-
             return active_checkpoint;
         }
     }
