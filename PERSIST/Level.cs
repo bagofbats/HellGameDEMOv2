@@ -31,6 +31,8 @@ namespace PERSIST
         protected bool debug;
         protected ProgressionManager prog_manager;
         protected bool overlay = true;
+        public string name
+        { get; protected set; }
 
         protected Rectangle bounds;
         protected List<Chunk> chunks = new List<Chunk>();
@@ -51,7 +53,7 @@ namespace PERSIST
         protected float dead_timer = 0;
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
-        public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug)
+        public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name)
         {
             this.root = root;
             this.player = player;
@@ -60,10 +62,12 @@ namespace PERSIST
             this.cam = cam;
             this.debug = debug;
             this.prog_manager = prog_manager;
+            this.name = name;
 
             for (int i = 0; i < bounds.Width; i += 320)
                 for (int j = 0; j < bounds.Height; j += 240)
                     chunks.Add(new Chunk(new Rectangle(i - 32, j - 32, 320 + 64, 240 + 64)));
+            this.name = name;
         }
 
         // -----------------------------------------------
@@ -427,9 +431,6 @@ namespace PERSIST
                     }
                 
             }
-            
-
-
 
             if ((player_dead || finish_player_dead) && dead_timer > 0.36)
                 _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.White);
@@ -493,6 +494,16 @@ namespace PERSIST
 
             if (dead_timer >= 0.7 && player_dead)
             {
+                var active_check = prog_manager.GetActiveCheckpoint();
+
+                if (active_check.root != this)
+                {
+                    root.SimpleGoToLevel(active_check.root);
+                    active_check.root.MiddleHandleDeath();
+                    active_check.root.ResetUponDeath();
+                }
+                    
+
                 player.SetPos(new Vector2(prog_manager.GetActiveCheckpoint().box.X + 8, prog_manager.GetActiveCheckpoint().box.Y));
                 cam.SmartSetPos(new Vector2(prog_manager.GetActiveCheckpoint().box.X + 8, prog_manager.GetActiveCheckpoint().box.Y));
                 player_dead = false;
@@ -513,6 +524,27 @@ namespace PERSIST
             if (dead_timer > 0.36)
                 screenwipe_rect.X = (int)(cam.GetPos().X - 960 + (32 * (dead_timer - 0.36) * 60));
 
+        }
+
+        public void MiddleHandleDeath()
+        {
+            dead_timer = 0.7f;
+            player_dead = true;
+        }
+
+        public void PlayerGotoDoor(string code)
+        {
+            if (code != "")
+            {
+                for (int i = 0; i < doors.Count; i++)
+                    if (doors[i].code == code)
+                    {
+                        Door dst = doors[i];
+                        player.SetPos(new Vector2(dst.location.X, dst.location.Y));
+                        cam.SmartSetPos(new Vector2(dst.location.X, dst.location.Y));
+                        break;
+                    }
+            }
         }
     }
 

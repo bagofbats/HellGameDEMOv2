@@ -28,7 +28,7 @@ namespace PERSIST
 
         private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
 
-        public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug) : base(root, bounds, player, tld, cam, prog_manager, debug) 
+        public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)

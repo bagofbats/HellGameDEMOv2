@@ -79,7 +79,7 @@ namespace PERSIST
             _graphics.ApplyChanges();
 
             Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug);
+            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug, "rm_tutorial1");
 
             Window.Title = "Persist [DEMO]";
         }
@@ -136,6 +136,14 @@ namespace PERSIST
 
         public void GoToLevel(string destination, string code)
         {
+            if (progManager.GetActiveCheckpoint().root.name == destination)
+            {
+                SimpleGoToLevel(progManager.GetActiveCheckpoint().root);
+                progManager.GetActiveCheckpoint().root.PlayerGotoDoor(code);
+                return;
+            }
+
+
             LevelStruct dst_info = level_map[(destination, code)];
 
             TiledMap map = new TiledMap(Content.RootDirectory + dst_info.map);
@@ -145,9 +153,14 @@ namespace PERSIST
             List<TiledData> tld = new List<TiledData> { data };
 
             Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug);
+            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug, destination);
 
             the_level.Load(code);
+        }
+
+        public void SimpleGoToLevel(Level destination)
+        {
+            the_level = destination;
         }
     }
 }

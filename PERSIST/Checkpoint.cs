@@ -19,7 +19,8 @@ namespace PERSIST
         private Rectangle frame = new Rectangle(0, 0, 16, 32);
         private Texture2D sprite;
         float animate_timer = 0f;
-        private Level root;
+        public Level root
+        { get; private set; }
 
         public Checkpoint(Rectangle box, Level root)
         {
