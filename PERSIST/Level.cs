@@ -494,7 +494,7 @@ namespace PERSIST
             if (dead_timer >= 0.7 && player_dead)
             {
                 player.SetPos(new Vector2(prog_manager.GetActiveCheckpoint().box.X + 8, prog_manager.GetActiveCheckpoint().box.Y));
-                cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
+                cam.SmartSetPos(new Vector2(prog_manager.GetActiveCheckpoint().box.X + 8, prog_manager.GetActiveCheckpoint().box.Y));
                 player_dead = false;
                 finish_player_dead = true;
 

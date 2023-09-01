@@ -27,6 +27,8 @@ namespace PERSIST
         public bool hurtful { get; protected set; }
     }
 
+    // regular enemies
+
     public class Slime : Enemy
     {
         Texture2D sprite;
@@ -255,6 +257,42 @@ namespace PERSIST
         public override Rectangle GetHitBox()
         {
             return bounds;
+        }
+    }
+
+
+    // bosses and mini-bosses
+
+    public class BigSlime : Enemy
+    {
+        public override void LoadAssets(Texture2D sprite)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Damage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Rectangle GetHitBox()
+        {
+            throw new NotImplementedException();
         }
     }
 }
