@@ -265,6 +265,57 @@ namespace PERSIST
 
     public class BigSlime : Enemy
     {
+        private Texture2D sprite;
+        private Rectangle frame = new Rectangle(0, 128, 96, 96);
+        private float bounce_counter = 0f;
+
+        public BigSlime(Vector2 pos, Level root)
+        {
+            this.pos = pos;
+            this.root = root;
+            hurtful = true;
+        }
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X - 48, (int)pos.Y - 48, 96, 96); } }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            bounce_counter += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (bounce_counter >= 4f)
+                bounce_counter = 0f;
+
+            frame.X = 96 * ((int)bounce_counter % 2);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+
+        }
+
+        public override void Damage()
+        {
+
+        }
+
+        public override Rectangle GetHitBox()
+        {
+            return new Rectangle(-100, -100, 0, 0);
+        }
+    }
+
+    public class Lukas_Tutorial : Enemy
+    {
         public override void LoadAssets(Texture2D sprite)
         {
             throw new NotImplementedException();

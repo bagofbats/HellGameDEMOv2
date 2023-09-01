@@ -74,6 +74,14 @@ namespace PERSIST
                                 enemy_types.Add("slime");
                             }
 
+                            if (l.objects[i].name == "big_slime")
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new BigSlime(temp, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("big_slime");
+                            }
+
                             if (l.objects[i].name == "breakable")
                             {
                                 int h_bound = (int)l.objects[i].x + (int)l.objects[i].width + t.location.X;
@@ -146,6 +154,7 @@ namespace PERSIST
 
             enemy_assets.Add(typeof(Slime), spr_slime);
             enemy_assets.Add(typeof(EyeSwitch), black);
+            enemy_assets.Add(typeof(BigSlime), spr_slime);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -209,6 +218,9 @@ namespace PERSIST
             {
                 if (enemy_types[i] == "slime")
                     AddEnemy(new Slime(enemy_locations[i], this));
+
+                if (enemy_types[i] == "big_slime")
+                    AddEnemy(new BigSlime(enemy_locations[i], this));
 
                 if (enemy_types[i] == "switch")
                 {
