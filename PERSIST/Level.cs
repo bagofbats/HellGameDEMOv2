@@ -501,6 +501,7 @@ namespace PERSIST
                     root.SimpleGoToLevel(active_check.root);
                     active_check.root.MiddleHandleDeath();
                     active_check.root.ResetUponDeath();
+                    root.blackout = true;
                 }
                     
 

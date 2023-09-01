@@ -21,6 +21,9 @@ namespace PERSIST
         private ProgressionManager progManager = new ProgressionManager();
         private FPSCounter fpsCounter = new FPSCounter();
 
+        public bool blackout
+        { get; set; }
+
         private Player player;
         public Level the_level
         { get; private set; }
@@ -129,6 +132,13 @@ namespace PERSIST
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             _spriteBatch.Draw(_nativeRenderTarget, _screenRectangle, Color.White);
+
+            if (blackout)
+            {
+                _spriteBatch.Draw(_nativeRenderTarget, _screenRectangle, Color.Black);
+                blackout = false;
+            }
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
