@@ -61,7 +61,7 @@ namespace PERSIST
 
         public SlimeFX(Vector2 pos, Texture2D img, Level root)
         {
-            this.pos = new Rectangle((int)pos.X, (int)pos.Y, 32, 32);
+            this.pos = new Rectangle((int)pos.X, (int)pos.Y + 16, 32, 32);
             this.root = root;
             this.img = img;
         }
