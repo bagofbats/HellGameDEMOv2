@@ -203,7 +203,7 @@ namespace PERSIST
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
-            spriteBatch.Draw(blue, HitBox, Color.White);
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -268,6 +268,8 @@ namespace PERSIST
         private Texture2D sprite;
         private Rectangle frame = new Rectangle(0, 128, 96, 96);
         private float bounce_counter = 0f;
+        private float vsp = 0f;
+        private float grav = 0.1f;
 
         public BigSlime(Vector2 pos, Level root)
         {
@@ -279,6 +281,9 @@ namespace PERSIST
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X - 48, (int)pos.Y - 48, 96, 96); } }
 
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X - 32, (int)pos.Y + 16, 64, 32); } }
+
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
@@ -286,11 +291,45 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            ActualUpdate(gameTime);
+        }
+
+        private void ActualUpdate(GameTime gameTime)
+        {
             bounce_counter += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (bounce_counter >= 4f)
                 bounce_counter = 0f;
 
             frame.X = 96 * ((int)bounce_counter % 2);
+
+            vsp += grav;
+
+            if (bounce_counter >= 3)
+                vsp = -3.3f;
+
+            float vsp_col_check = vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+            if (vsp_col_check > 0)
+                vsp_col_check += 1;
+            else
+                vsp_col_check -= 1;
+
+            Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
+
+
+            if (vcheck != null)
+            {
+                if (vsp < 0)
+                    pos.Y = vcheck.bounds.Bottom - 48;
+                else
+                    pos.Y = vcheck.bounds.Top - 48;
+                vsp = 0;
+            }
+            else
+            {
+                bounce_counter = 0;
+            }
+
+            pos.Y += vsp;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -300,7 +339,7 @@ namespace PERSIST
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
-
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
 
         public override void Damage()

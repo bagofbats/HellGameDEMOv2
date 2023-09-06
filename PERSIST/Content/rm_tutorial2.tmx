@@ -65,7 +65,7 @@
   <object id="205" name="switch" x="1736" y="304">
    <point/>
   </object>
-  <object id="226" name="switch_one" x="1144" y="536" width="32" height="32"/>
+  <object id="226" name="switch_one" x="1112" y="464" width="32" height="32"/>
   <object id="228" name="switch_two" x="1176" y="616" width="16" height="80"/>
   <object id="230" name="switch" x="1032" y="640">
    <point/>

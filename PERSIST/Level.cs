@@ -409,6 +409,9 @@ namespace PERSIST
                     if (c.bounds.Contains(player.HitBox.X, player.HitBox.Y))
                         c.Draw(_spriteBatch);
 
+                for (int i = enemies.Count - 1; i >= 0; i--)
+                    enemies[i].DebugDraw(_spriteBatch, black);
+
                 for (int i = 0; i < doors.Count; i++)
                     _spriteBatch.Draw(black, doors[i].location, Color.Blue * 0.2f);
             }
