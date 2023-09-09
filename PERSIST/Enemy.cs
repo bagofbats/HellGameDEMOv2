@@ -266,10 +266,12 @@ namespace PERSIST
     public class BigSlime : Enemy
     {
         private Texture2D sprite;
-        private Rectangle frame = new Rectangle(0, 128, 96, 96);
+        private Rectangle frame = new Rectangle(0, 128, 96, 64);
         private float bounce_counter = 0f;
         private float vsp = 0f;
         private float grav = 0.1f;
+        private int hdir = 1;
+        private float hspeed = 1f;
 
         public BigSlime(Vector2 pos, Level root)
         {
@@ -279,10 +281,13 @@ namespace PERSIST
         }
 
         public Rectangle PositionRectangle
-        { get { return new Rectangle((int)pos.X - 48, (int)pos.Y - 48, 96, 96); } }
+        { get { return new Rectangle((int)pos.X - 48, (int)pos.Y - 8, 96, 64); } }
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X - 32, (int)pos.Y + 16, 64, 32); } }
+
+        public Rectangle HurtBox
+        { get { return new Rectangle((int)pos.X - 36, (int)pos.Y + 12, 72, 36); } }
 
         public override void LoadAssets(Texture2D sprite)
         {
@@ -300,12 +305,10 @@ namespace PERSIST
             if (bounce_counter >= 4f)
                 bounce_counter = 0f;
 
-            frame.X = 96 * ((int)bounce_counter % 2);
-
             vsp += grav;
 
-            if (bounce_counter >= 3)
-                vsp = -3.3f;
+            if (bounce_counter >= 2)
+                vsp = -3.1f;
 
             float vsp_col_check = vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             if (vsp_col_check > 0)
@@ -319,14 +322,53 @@ namespace PERSIST
             if (vcheck != null)
             {
                 if (vsp < 0)
-                    pos.Y = vcheck.bounds.Bottom - 48;
+                    pos.Y = vcheck.bounds.Bottom - 16;
                 else
                     pos.Y = vcheck.bounds.Top - 48;
                 vsp = 0;
+
+                hdir = Math.Sign(root.player.HitBox.X - pos.X);
+                if (hdir == 0)
+                    hdir = 1;
+
+                frame.X = 96 * ((int)bounce_counter % 2);
+
+                if (hdir == -1)
+                    frame.Y = 192;
+                else
+                    frame.Y = 128;
             }
             else
             {
                 bounce_counter = 0;
+
+                frame.X = 192;
+
+                float x_displacement = hspeed * hdir;
+
+                float hsp_col_check = x_displacement * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+                if (hsp_col_check > 0)
+                    hsp_col_check += 1;
+                else
+                    hsp_col_check -= 1;
+
+                Wall hcheck = root.SimpleCheckCollision(new Rectangle((int)(HitBox.X + hsp_col_check), HitBox.Y, HitBox.Width, HitBox.Height));
+
+                if (hcheck != null)
+                {
+                    if (hdir == -1)
+                    {
+                        pos.X = hcheck.bounds.Right + 32;
+                    }
+                    else
+                    {
+                        pos.X = hcheck.bounds.Left - 32;
+                    }
+                }
+                else
+                {
+                    pos.X += x_displacement * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+                }
             }
 
             pos.Y += vsp;
@@ -339,6 +381,7 @@ namespace PERSIST
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
+            spriteBatch.Draw(blue, HurtBox, Color.Red * 0.3f);
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
 
