@@ -277,6 +277,9 @@ namespace PERSIST
         private bool wakeup_ready = false;
         private Rectangle wakeup_rectangle = new Rectangle(880, 720, 16, 32);
         new private TutorialLevel root;
+        private int hp = 22;
+        private bool damaged = false;
+        private float damaged_timer = 0f;
 
         public BigSlime(Vector2 pos, Player player, TutorialLevel root)
         {
@@ -351,6 +354,11 @@ namespace PERSIST
             {
                 bounce_counter = 0;
 
+                if (hdir == -1)
+                    frame.Y = 192;
+                else
+                    frame.Y = 128;
+
                 frame.X = 192;
 
                 float x_displacement = hspeed * hdir;
@@ -381,6 +389,13 @@ namespace PERSIST
             }
 
             pos.Y += vsp;
+
+            if (damaged)
+            {
+                damaged_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (damaged_timer > 0.1)
+                    damaged = false;
+            }
         }
 
         private void Sleep(GameTime gameTime)
@@ -396,7 +411,14 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            if (!damaged)
+                spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            else
+            {
+                var temp = new Rectangle(frame.X, frame.Y + 128, frame.Width, frame.Height);
+                spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White * 0.76f);
+                spriteBatch.Draw(sprite, PositionRectangle, temp, Color.White * 0.24f);
+            }
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -407,12 +429,14 @@ namespace PERSIST
 
         public override void Damage()
         {
-
+            hp -= 1;
+            damaged = true;
+            damaged_timer = 0;
         }
 
         public override Rectangle GetHitBox()
         {
-            return new Rectangle(-100, -100, 0, 0);
+            return HitBox;
         }
     }
 
