@@ -88,6 +88,8 @@ namespace PERSIST
         { get; private set; }
         
         // bosses and mini-bosses
+        public bool slime_started
+        { get; private set; }
         public bool slime_dead
         { get; private set; }
 
@@ -96,6 +98,7 @@ namespace PERSIST
             knife = true;
             ranged = true;
             slime_dead = false;
+            slime_started = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)

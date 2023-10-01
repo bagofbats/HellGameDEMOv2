@@ -272,10 +272,16 @@ namespace PERSIST
         private float grav = 0.1f;
         private int hdir = 1;
         private float hspeed = 1f;
+        public bool sleep = true;
+        private Player player;
+        private bool wakeup_ready = false;
+        private Rectangle wakeup_rectangle = new Rectangle(880, 720, 16, 32);
+        new private TutorialLevel root;
 
-        public BigSlime(Vector2 pos, Level root)
+        public BigSlime(Vector2 pos, Player player, TutorialLevel root)
         {
             this.pos = pos;
+            this.player = player;
             this.root = root;
             hurtful = true;
         }
@@ -296,7 +302,10 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            ActualUpdate(gameTime);
+            if (sleep)
+                Sleep(gameTime);
+            else
+                ActualUpdate(gameTime);
         }
 
         private void ActualUpdate(GameTime gameTime)
@@ -372,6 +381,17 @@ namespace PERSIST
             }
 
             pos.Y += vsp;
+        }
+
+        private void Sleep(GameTime gameTime)
+        {
+            frame.X = 192;
+            frame.Y = 0;
+
+            if (player.HitBox.Intersects(wakeup_rectangle))
+                wakeup_ready = true;
+            else if (wakeup_ready)
+                root.WakeUpSlime(this);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

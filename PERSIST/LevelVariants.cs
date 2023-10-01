@@ -84,7 +84,7 @@ namespace PERSIST
                             if (l.objects[i].name == "big_slime")
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
-                                AddEnemy(new BigSlime(temp, this));
+                                AddEnemy(new BigSlime(temp, player, this));
                                 enemy_locations.Add(temp);
                                 enemy_types.Add("big_slime");
                             }
@@ -227,7 +227,7 @@ namespace PERSIST
                     AddEnemy(new Slime(enemy_locations[i], this));
 
                 if (enemy_types[i] == "big_slime")
-                    AddEnemy(new BigSlime(enemy_locations[i], this));
+                    AddEnemy(new BigSlime(enemy_locations[i], player, this));
 
                 if (enemy_types[i] == "switch")
                 {
@@ -279,6 +279,11 @@ namespace PERSIST
             foreach (EyeSwitch s in switches)
                 if (s.GetHitBox().Intersects(r.bounds))
                     s.two = !two;
+        }
+
+        public void WakeUpSlime(BigSlime slime)
+        {
+            slime.sleep = false;
         }
     }
 }
