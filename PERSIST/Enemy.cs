@@ -19,6 +19,7 @@ namespace PERSIST
         public abstract void Draw(SpriteBatch spriteBatch);
         public abstract void DebugDraw(SpriteBatch spriteBatch, Texture2D blue);
         public abstract void Damage();
+        public abstract bool CheckCollision(Rectangle input);
 
         protected Level root;
         public Room room { get; set; }
@@ -212,6 +213,11 @@ namespace PERSIST
             if (sleep)
                 sleepFX.Draw(spriteBatch);
         }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return HitBox.Intersects(input);
+        }
     }
 
     public class EyeSwitch : Enemy
@@ -258,6 +264,11 @@ namespace PERSIST
         {
             return bounds;
         }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return bounds.Intersects(input);
+        }
     }
 
 
@@ -293,10 +304,7 @@ namespace PERSIST
         { get { return new Rectangle((int)pos.X - 48, (int)pos.Y - 8, 96, 64); } }
 
         public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X - 32, (int)pos.Y + 16, 64, 32); } }
-
-        public Rectangle HurtBox
-        { get { return new Rectangle((int)pos.X - 36, (int)pos.Y + 12, 72, 36); } }
+        { get { return new Rectangle((int)pos.X - 32, (int)pos.Y + 20, 64, 28); } }
 
         public override void LoadAssets(Texture2D sprite)
         {
@@ -423,8 +431,11 @@ namespace PERSIST
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
-            spriteBatch.Draw(blue, HurtBox, Color.Red * 0.3f);
+            // spriteBatch.Draw(blue, HurtBox, Color.Red * 0.3f);
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+            spriteBatch.Draw(blue, IdleHB1, Color.Blue * 0.3f);
+            spriteBatch.Draw(blue, IdleHB2, Color.Blue * 0.3f);
+            spriteBatch.Draw(blue, IdleHB3, Color.Blue * 0.3f);
         }
 
         public override void Damage()
@@ -438,6 +449,20 @@ namespace PERSIST
         {
             return HitBox;
         }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return HitBox.Intersects(input) || IdleHB1.Intersects(input) || IdleHB2.Intersects(input) || IdleHB3.Intersects(input);
+        }
+
+        public Rectangle IdleHB1
+        { get { return new Rectangle((int)pos.X - 18, (int)pos.Y + 10, 36, 10); } }
+
+        public Rectangle IdleHB2
+        { get { return new Rectangle((int)pos.X - 34, (int)pos.Y + 24, 70, 20); } }
+
+        public Rectangle IdleHB3
+        { get { return new Rectangle((int)pos.X - 24, (int)pos.Y + 14, 48, 6); } }
     }
 
     public class Lukas_Tutorial : Enemy
@@ -468,6 +493,11 @@ namespace PERSIST
         }
 
         public override Rectangle GetHitBox()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool CheckCollision(Rectangle input)
         {
             throw new NotImplementedException();
         }

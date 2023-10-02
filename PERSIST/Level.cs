@@ -316,8 +316,9 @@ namespace PERSIST
         {
             List<Enemy> ret = new List<Enemy>();
             for (int i = 0; i < enemies.Count(); i++)
-                if (enemies[i] != null && enemies[i].GetHitBox().Intersects(input))
-                    ret.Add(enemies[i]);
+                if (enemies[i] != null)
+                    if (enemies[i].CheckCollision(input))
+                        ret.Add(enemies[i]);
 
             return ret;
         }
