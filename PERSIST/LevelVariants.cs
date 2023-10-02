@@ -277,7 +277,7 @@ namespace PERSIST
                             }
 
             foreach (EyeSwitch s in switches)
-                if (s.GetHitBox().Intersects(r.bounds))
+                if (s.GetHitBox(new Rectangle(0,0,0,0)).Intersects(r.bounds))
                     s.two = !two;
         }
 

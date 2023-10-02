@@ -13,7 +13,9 @@ namespace PERSIST
 {
     public abstract class Enemy
     {
-        public abstract Rectangle GetHitBox();
+        // for enemies with only one HitBox, GetHitBox should just return the HitBox and ignore the input
+        // for enemies with multiple HitBoxes, GetHitBox should use the input to compute which one to return
+        public abstract Rectangle GetHitBox(Rectangle input);
         public abstract void LoadAssets(Texture2D sprite);
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch);
@@ -65,7 +67,7 @@ namespace PERSIST
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
 
-        public override Rectangle GetHitBox()
+        public override Rectangle GetHitBox(Rectangle input)
         {
             return HitBox;
         }
@@ -260,7 +262,7 @@ namespace PERSIST
             // two = !two;
         }
 
-        public override Rectangle GetHitBox()
+        public override Rectangle GetHitBox(Rectangle input)
         {
             return bounds;
         }
@@ -291,6 +293,7 @@ namespace PERSIST
         private int hp = 22;
         private bool damaged = false;
         private float damaged_timer = 0f;
+        private bool airborne = false;
 
         public BigSlime(Vector2 pos, Player player, TutorialLevel root)
         {
@@ -337,7 +340,7 @@ namespace PERSIST
                 vsp_col_check -= 1;
 
             Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
-
+            airborne = vcheck == null;
 
             if (vcheck != null)
             {
@@ -431,11 +434,24 @@ namespace PERSIST
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
-            // spriteBatch.Draw(blue, HurtBox, Color.Red * 0.3f);
-            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
-            spriteBatch.Draw(blue, IdleHB1, Color.Blue * 0.3f);
-            spriteBatch.Draw(blue, IdleHB2, Color.Blue * 0.3f);
-            spriteBatch.Draw(blue, IdleHB3, Color.Blue * 0.3f);
+            if (airborne)
+            {
+                spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+            }
+            else if ((int)bounce_counter % 2 == 0)
+            {
+                // spriteBatch.Draw(blue, HurtBox, Color.Red * 0.3f);
+                spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+                spriteBatch.Draw(blue, IdleHB1, Color.Blue * 0.3f);
+                spriteBatch.Draw(blue, IdleHB2, Color.Blue * 0.3f);
+                spriteBatch.Draw(blue, IdleHB3, Color.Blue * 0.3f);
+            }
+            else
+            {
+                spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+                spriteBatch.Draw(blue, SquishedHB1, Color.Blue * 0.3f);
+                spriteBatch.Draw(blue, SquishedHB2, Color.Blue * 0.3f);
+            }
         }
 
         public override void Damage()
@@ -445,24 +461,57 @@ namespace PERSIST
             damaged_timer = 0;
         }
 
-        public override Rectangle GetHitBox()
+        public override Rectangle GetHitBox(Rectangle input)
         {
-            return HitBox;
+            if (input == new Rectangle(0, 0, 0, 0))
+                return HitBox;
+
+            if (airborne)
+                return HitBox;
+            else if ((int)bounce_counter % 2 == 0)
+            {
+                if (input.Intersects(IdleHB1))
+                    return IdleHB1;
+                if (input.Intersects(IdleHB3))
+                    return IdleHB3;
+                if (input.Intersects(HitBox))
+                    return HitBox;
+                return IdleHB2;
+            }
+            else
+            {
+                if (input.Intersects(SquishedHB1))
+                    return SquishedHB1;
+                if (input.Intersects(HitBox))
+                    return HitBox;
+                return SquishedHB2;
+            }
         }
 
         public override bool CheckCollision(Rectangle input)
         {
-            return HitBox.Intersects(input) || IdleHB1.Intersects(input) || IdleHB2.Intersects(input) || IdleHB3.Intersects(input);
+            if (airborne)
+                return HitBox.Intersects(input);
+            else if ((int)bounce_counter % 2 == 0)
+                return HitBox.Intersects(input) || IdleHB1.Intersects(input) || IdleHB2.Intersects(input) || IdleHB3.Intersects(input);
+            else
+                return HitBox.Intersects(input) || SquishedHB1.Intersects(input) || SquishedHB2.Intersects(input);
         }
 
         public Rectangle IdleHB1
-        { get { return new Rectangle((int)pos.X - 18, (int)pos.Y + 10, 36, 10); } }
+        { get { return new Rectangle((int)pos.X - 18, (int)pos.Y + 8, 36, 12); } }
 
         public Rectangle IdleHB2
-        { get { return new Rectangle((int)pos.X - 34, (int)pos.Y + 24, 70, 20); } }
+        { get { return new Rectangle((int)pos.X - 35, (int)pos.Y + 24, 70, 20); } }
 
         public Rectangle IdleHB3
-        { get { return new Rectangle((int)pos.X - 24, (int)pos.Y + 14, 48, 6); } }
+        { get { return new Rectangle((int)pos.X - 24, (int)pos.Y + 12, 48, 8); } }
+
+        public Rectangle SquishedHB1
+        { get { return new Rectangle((int)pos.X - 23, (int)pos.Y + 14, 46, 14); } }
+
+        public Rectangle SquishedHB2
+        { get { return new Rectangle((int)pos.X - 37, (int)pos.Y + 26, 74, 16); } }
     }
 
     public class Lukas_Tutorial : Enemy
@@ -492,7 +541,7 @@ namespace PERSIST
             throw new NotImplementedException();
         }
 
-        public override Rectangle GetHitBox()
+        public override Rectangle GetHitBox(Rectangle input)
         {
             throw new NotImplementedException();
         }
