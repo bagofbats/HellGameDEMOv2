@@ -285,5 +285,20 @@ namespace PERSIST
         {
             slime.sleep = false;
         }
+
+        public void DefeatSime(BigSlime slime)
+        {
+            RemoveEnemy(slime);
+
+            Room temp = RealGetRoom(new Vector2(player.HitBox.X, player.HitBox.Y));
+
+            Rectangle r = temp.bounds;
+            Rectangle newbounds = new Rectangle(r.X, r.Y - 240, 320, 480);
+            temp.Resize(newbounds);
+
+            for (int i = rooms.Count - 1; i >= 0; i--)
+                if (rooms[i].name == "Fundamentals")
+                    rooms.Remove(rooms[i]);
+        }
     }
 }

@@ -460,6 +460,9 @@ namespace PERSIST
             hp -= 1;
             damaged = true;
             damaged_timer = 0;
+
+            if (hp == 0)
+                root.DefeatSime(this);
         }
 
         public override Rectangle GetHitBox(Rectangle input)

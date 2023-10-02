@@ -146,6 +146,8 @@ namespace PERSIST
                 }
                     
             }
+
+            screenwipe_rect.Y = (int)cam.GetPos().Y;
         }
 
         public virtual void Draw(SpriteBatch _spriteBatch)
@@ -535,6 +537,7 @@ namespace PERSIST
         {
             dead_timer = 0.7f;
             player_dead = true;
+            screenwipe_rect.Y = (int)cam.GetPos().Y;
         }
 
         public void PlayerGotoDoor(string code)
@@ -701,6 +704,11 @@ namespace PERSIST
         public void RemoveEnemy(Enemy enemy)
         {
             enemies.Remove(enemy);
+        }
+
+        public void Resize(Rectangle input)
+        {
+            bounds = input;
         }
     }
 
