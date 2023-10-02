@@ -437,6 +437,7 @@ namespace PERSIST
             if (airborne)
             {
                 spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+                spriteBatch.Draw(blue, JumpingHB1, Color.Blue * 0.3f);
             }
             else if ((int)bounce_counter % 2 == 0)
             {
@@ -491,7 +492,7 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             if (airborne)
-                return HitBox.Intersects(input);
+                return HitBox.Intersects(input) || JumpingHB1.Intersects(input);
             else if ((int)bounce_counter % 2 == 0)
                 return HitBox.Intersects(input) || IdleHB1.Intersects(input) || IdleHB2.Intersects(input) || IdleHB3.Intersects(input);
             else
@@ -512,6 +513,9 @@ namespace PERSIST
 
         public Rectangle SquishedHB2
         { get { return new Rectangle((int)pos.X - 37, (int)pos.Y + 26, 74, 16); } }
+
+        public Rectangle JumpingHB1
+        { get { return new Rectangle((int)pos.X - 28, (int)pos.Y, 56, 32); } }
     }
 
     public class Lukas_Tutorial : Enemy
