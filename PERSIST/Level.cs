@@ -54,10 +54,14 @@ namespace PERSIST
         protected bool player_dead = false;
         protected bool finish_player_dead = false;
         protected float dead_timer = 0;
+
         protected bool dialogue = false;
         protected string[] dialogue_txt;
         protected char dialogue_loc = 'c';
         protected int dialogue_num = 0;
+        protected float dialogue_letter = 0;
+        protected float dialogue_speed = 5f;
+
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
         public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name)
@@ -156,6 +160,13 @@ namespace PERSIST
             }
 
             screenwipe_rect.Y = (int)cam.GetPos().Y;
+
+            // dialogue stuff
+            if (dialogue)
+            {
+                dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_speed;
+                dialogue_letter = Math.Min(dialogue_letter, dialogue_txt[dialogue_num].Length);
+            }
         }
 
         public virtual void Draw(SpriteBatch _spriteBatch)
@@ -472,12 +483,12 @@ namespace PERSIST
             if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
                 if (dialogue)
                 {
-                    Vector2 textMiddlePoint = font.MeasureString(dialogue_txt[dialogue_num]) / 2;
+                    Vector2 textMiddlePoint = font.MeasureString(dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter)) / 2;
                     textMiddlePoint.X = (int)textMiddlePoint.X;
                     textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
                     Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 20);
-                    _spriteBatch.DrawString(font, dialogue_txt[dialogue_num], textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                    _spriteBatch.DrawString(font, dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter), textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                 }
                 
                 else if (current_room.name != null)
@@ -604,6 +615,7 @@ namespace PERSIST
         public void AdvanceDialogue()
         {
             dialogue_num++;
+            dialogue_letter = 0f;
             if (dialogue_num >= dialogue_txt.Length)
             {
                 player.LeaveDialogue();

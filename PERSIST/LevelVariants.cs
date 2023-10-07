@@ -306,6 +306,7 @@ namespace PERSIST
             dialogue_txt = dialogue_slime;
             dialogue_loc = 'c';
             dialogue_num = 0;
+            dialogue_speed = 10f;
             player.EnterDialogue();
         }
     }
