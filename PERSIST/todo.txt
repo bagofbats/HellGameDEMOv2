@@ -1,0 +1,12 @@
+﻿programming:
+ - health bar for bosses
+ - dialogue mode for player
+ - progression pickups (knife, ranged attacks)
+ - boss doors
+
+debugging:
+ - make text not look blurry
+
+art:
+ - boss doors
+ - level transitions

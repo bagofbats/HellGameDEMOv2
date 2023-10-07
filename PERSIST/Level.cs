@@ -12,7 +12,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TiledCS;
+using MonoGame.Extended;
 using static System.Net.Mime.MediaTypeNames;
+using MonoGame.Extended.BitmapFonts;
 
 namespace PERSIST
 {
@@ -25,6 +27,7 @@ namespace PERSIST
         public Texture2D black
         { get; protected set; }
         protected SpriteFont font;
+        protected BitmapFont bm_font;
         public Texture2D particle_img
         { get; protected set; }
         protected Texture2D spr_screenwipe;
@@ -79,6 +82,7 @@ namespace PERSIST
         {
             font = root.Content.Load<SpriteFont>("pixellocale");
             black = root.Content.Load<Texture2D>("black");
+            // bm_font = root.Content.Load<BitmapFont>("pixellocale");
         }
 
         public virtual void Update(GameTime gameTime)
@@ -425,16 +429,16 @@ namespace PERSIST
                 _spriteBatch.Draw(black, overlay_rect, Color.Black);
 
                 var current_room = RealGetRoom(cam.GetPos());
-                if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
-                    if (current_room.name != null)
-                    {
-                        Vector2 textMiddlePoint = font.MeasureString(current_room.name) / 2;
-                        textMiddlePoint.X = (int)textMiddlePoint.X;
-                        textMiddlePoint.Y = (int)textMiddlePoint.Y;
+                //if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
+                //    if (current_room.name != null)
+                //    {
+                //        Vector2 textMiddlePoint = font.MeasureString(current_room.name) / 2;
+                //        textMiddlePoint.X = (int)textMiddlePoint.X;
+                //        textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
-                        Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 4);
-                        _spriteBatch.DrawString(font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
-                    }
+                //        Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 4);
+                //        _spriteBatch.DrawString(font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                //    }
                 
             }
 
@@ -443,6 +447,29 @@ namespace PERSIST
 
             if (player_dead)
                 player.DrawDead(_spriteBatch, dead_timer);
+
+            _spriteBatch.End();
+        }
+
+        public void DrawText(SpriteBatch _spriteBatch)
+        {
+            if (!overlay)
+                return;
+
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied,
+                SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
+
+            var current_room = RealGetRoom(cam.GetPos());
+            if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
+                if (current_room.name != null)
+                {
+                    Vector2 textMiddlePoint = font.MeasureString(current_room.name) / 2;
+                    textMiddlePoint.X = (int)textMiddlePoint.X;
+                    textMiddlePoint.Y = (int)textMiddlePoint.Y;
+
+                    Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 4);
+                    _spriteBatch.DrawString(font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                }
 
             _spriteBatch.End();
         }

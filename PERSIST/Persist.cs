@@ -128,6 +128,8 @@ namespace PERSIST
 
             the_level.Draw(_spriteBatch);
 
+            the_level.DrawText(_spriteBatch);
+
             GraphicsDevice.SetRenderTarget(null);
 
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);

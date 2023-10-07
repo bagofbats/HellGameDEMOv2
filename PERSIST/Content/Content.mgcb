@@ -52,7 +52,7 @@
 #begin pixellocale.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
+/processorParam:PremultiplyAlpha=False
 /processorParam:TextureFormat=NoChange
 /build:pixellocale.spritefont
 
