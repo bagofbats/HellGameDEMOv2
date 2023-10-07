@@ -110,6 +110,11 @@ namespace PERSIST
         {
             return active_checkpoint;
         }
+
+        public void DefeatSlime()
+        {
+            slime_dead = true;
+        }
     }
 
     public class FPSCounter

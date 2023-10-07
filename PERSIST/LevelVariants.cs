@@ -226,7 +226,7 @@ namespace PERSIST
                 if (enemy_types[i] == "slime")
                     AddEnemy(new Slime(enemy_locations[i], this));
 
-                if (enemy_types[i] == "big_slime")
+                if (enemy_types[i] == "big_slime" && !prog_manager.slime_dead)
                     AddEnemy(new BigSlime(enemy_locations[i], player, this));
 
                 if (enemy_types[i] == "switch")
@@ -290,6 +290,8 @@ namespace PERSIST
         {
             RemoveEnemy(slime);
 
+            prog_manager.DefeatSlime();
+
             Room temp = RealGetRoom(new Vector2(player.HitBox.X, player.HitBox.Y));
 
             Rectangle r = temp.bounds;
@@ -302,12 +304,14 @@ namespace PERSIST
 
             string[] dialogue_slime = { "-- Defeated Mama Slime! --", "wario" };
 
-            dialogue = true;
-            dialogue_txt = dialogue_slime;
-            dialogue_loc = 'c';
-            dialogue_num = 0;
-            dialogue_speed = 10f;
-            player.EnterDialogue();
+            StartDialogue(dialogue_slime, 0, 'c', 10f);
+
+            //dialogue = true;
+            //dialogue_txt = dialogue_slime;
+            //dialogue_loc = 'c';
+            //dialogue_num = 0;
+            //dialogue_speed = 10f;
+            //player.EnterDialogue();
         }
     }
 }

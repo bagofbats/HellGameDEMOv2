@@ -612,6 +612,16 @@ namespace PERSIST
             }
         }
 
+        public void StartDialogue(string[] array, int start_index, char justification, float speed)
+        {
+            dialogue = true;
+            dialogue_txt = array;
+            dialogue_num = start_index;
+            dialogue_loc = justification;
+            dialogue_speed = speed;
+            player.EnterDialogue();
+        }
+
         public void AdvanceDialogue()
         {
             dialogue_num++;
