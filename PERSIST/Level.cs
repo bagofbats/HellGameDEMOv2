@@ -61,6 +61,7 @@ namespace PERSIST
         protected int dialogue_num = 0;
         protected float dialogue_letter = 0;
         protected float dialogue_speed = 5f;
+        protected bool dialogue_skippable = true;
 
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
@@ -612,18 +613,26 @@ namespace PERSIST
             }
         }
 
-        public void StartDialogue(string[] array, int start_index, char justification, float speed)
+        public void StartDialogue(string[] array, int start_index, char justification, float speed, bool skippable=true)
         {
             dialogue = true;
             dialogue_txt = array;
             dialogue_num = start_index;
             dialogue_loc = justification;
             dialogue_speed = speed;
+            dialogue_skippable = skippable;
             player.EnterDialogue();
         }
 
         public void AdvanceDialogue()
         {
+            if (dialogue_letter < dialogue_txt[dialogue_num].Length)
+            {
+                if (dialogue_skippable)
+                    dialogue_letter = dialogue_txt[dialogue_num].Length;
+                return;
+            }
+
             dialogue_num++;
             dialogue_letter = 0f;
             if (dialogue_num >= dialogue_txt.Length)

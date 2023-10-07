@@ -302,9 +302,9 @@ namespace PERSIST
                 if (rooms[i].name == "Fundamentals")
                     rooms.Remove(rooms[i]);
 
-            string[] dialogue_slime = { "-- Defeated Mama Slime! --", "wario" };
+            string[] dialogue_slime = { "-- Defeated Mama Slime! --", "wario", "ABCDEFGHI\r\nJKLMN\nOPQRSTUVWXYZ" };
 
-            StartDialogue(dialogue_slime, 0, 'c', 10f);
+            StartDialogue(dialogue_slime, 0, 'c', 10f, false);
 
             //dialogue = true;
             //dialogue_txt = dialogue_slime;
