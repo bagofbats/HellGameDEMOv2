@@ -65,6 +65,7 @@ namespace PERSIST
         private float pogo_float = 1.1f;
         private float coyote_time = 0.08f;
         private float coyote_timer = 0f;
+        private bool dialogue = false;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -109,30 +110,38 @@ namespace PERSIST
         public void Update(GameTime gameTime)
         {
             GetInput();
-            HandleMovementAndCollisions(gameTime);
 
-            if (progManager.knife)
+            if (!dialogue)
             {
-                if (progManager.ranged)
+                HandleMovementAndCollisions(gameTime);
+
+                if (progManager.knife)
                 {
-                    HandleAttacks(gameTime);
-                    HandleThrown(gameTime);
+                    if (progManager.ranged)
+                    {
+                        HandleAttacks(gameTime);
+                        HandleThrown(gameTime);
+                    }
+                    else
+                        HandleAttacksNoRanged(gameTime);
+                }
+
+                if (progManager.knife)
+                {
+                    if (attacking)
+                        AnimateAtk(gameTime);
+                    else
+                        AnimateNormal(gameTime);
                 }
                 else
-                    HandleAttacksNoRanged(gameTime);
+                    AnimateNoKnife(gameTime);
             }
-            
 
-            if (progManager.knife)
-            {
-                if (attacking)
-                    AnimateAtk(gameTime);
-                else
-                    AnimateNormal(gameTime);
-            }
             else
-                AnimateNoKnife(gameTime);
-            
+            {
+                if (contManager.ENTER_PRESSED)
+                    root.the_level.AdvanceDialogue();
+            }
 
             for (int i = attacks.Count - 1; i >= 0; i--)
                 attacks[i].Update(gameTime);
@@ -181,6 +190,16 @@ namespace PERSIST
                 _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
             }
 
+        }
+
+        public void EnterDialogue()
+        {
+            dialogue = true;
+        }
+
+        public void LeaveDialogue()
+        {
+            dialogue = false;
         }
 
 

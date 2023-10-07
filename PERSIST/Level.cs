@@ -54,6 +54,10 @@ namespace PERSIST
         protected bool player_dead = false;
         protected bool finish_player_dead = false;
         protected float dead_timer = 0;
+        protected bool dialogue = false;
+        protected string[] dialogue_txt;
+        protected char dialogue_loc = 'c';
+        protected int dialogue_num = 0;
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
         public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name)
@@ -440,6 +444,11 @@ namespace PERSIST
                 //        _spriteBatch.DrawString(font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                 //    }
                 
+                if (dialogue)
+                {
+                    var dialogue_rect = new Rectangle((int)cam.GetPos().X, (int)cam.GetPos().Y, 320, 48);
+                    _spriteBatch.Draw(black, dialogue_rect, Color.Black);
+                }
             }
 
             if ((player_dead || finish_player_dead) && dead_timer > 0.36)
@@ -461,7 +470,17 @@ namespace PERSIST
 
             var current_room = RealGetRoom(cam.GetPos());
             if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
-                if (current_room.name != null)
+                if (dialogue)
+                {
+                    Vector2 textMiddlePoint = font.MeasureString(dialogue_txt[dialogue_num]) / 2;
+                    textMiddlePoint.X = (int)textMiddlePoint.X;
+                    textMiddlePoint.Y = (int)textMiddlePoint.Y;
+
+                    Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 20);
+                    _spriteBatch.DrawString(font, dialogue_txt[dialogue_num], textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                }
+                
+                else if (current_room.name != null)
                 {
                     Vector2 textMiddlePoint = font.MeasureString(current_room.name) / 2;
                     textMiddlePoint.X = (int)textMiddlePoint.X;
@@ -579,6 +598,17 @@ namespace PERSIST
                         cam.SmartSetPos(new Vector2(dst.location.X, dst.location.Y));
                         break;
                     }
+            }
+        }
+
+        public void AdvanceDialogue()
+        {
+            dialogue_num++;
+            if (dialogue_num >= dialogue_txt.Length)
+            {
+                player.LeaveDialogue();
+                dialogue = false;
+                return;
             }
         }
     }

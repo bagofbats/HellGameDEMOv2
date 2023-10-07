@@ -299,6 +299,14 @@ namespace PERSIST
             for (int i = rooms.Count - 1; i >= 0; i--)
                 if (rooms[i].name == "Fundamentals")
                     rooms.Remove(rooms[i]);
+
+            string[] dialogue_slime = { "-- Defeated Mama Slime! --", "wario" };
+
+            dialogue = true;
+            dialogue_txt = dialogue_slime;
+            dialogue_loc = 'c';
+            dialogue_num = 0;
+            player.EnterDialogue();
         }
     }
 }
