@@ -26,7 +26,7 @@ namespace PERSIST
         protected Camera cam;
         public Texture2D black
         { get; protected set; }
-        protected SpriteFont font;
+        //protected SpriteFont font;
         protected BitmapFont bm_font;
         public Texture2D particle_img
         { get; protected set; }
@@ -89,9 +89,9 @@ namespace PERSIST
 
         public virtual void Load(string code="")
         {
-            font = root.Content.Load<SpriteFont>("pixellocale");
+            //font = root.Content.Load<SpriteFont>("pixellocale");
             black = root.Content.Load<Texture2D>("black");
-            // bm_font = root.Content.Load<BitmapFont>("pixellocale");
+            bm_font = root.Content.Load<BitmapFont>("pixellocale_bmp");
         }
 
         public virtual void Update(GameTime gameTime)
@@ -484,22 +484,22 @@ namespace PERSIST
             if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
                 if (dialogue)
                 {
-                    Vector2 textMiddlePoint = font.MeasureString(dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter)) / 2;
+                    Vector2 textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter)) / 2;
                     textMiddlePoint.X = (int)textMiddlePoint.X;
                     textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
-                    Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 20);
-                    _spriteBatch.DrawString(font, dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter), textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                    Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 21);
+                    _spriteBatch.DrawString(bm_font, dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter), textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                 }
                 
                 else if (current_room.name != null)
                 {
-                    Vector2 textMiddlePoint = font.MeasureString(current_room.name) / 2;
+                    Vector2 textMiddlePoint = bm_font.MeasureString(current_room.name) / 2;
                     textMiddlePoint.X = (int)textMiddlePoint.X;
                     textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
-                    Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 4);
-                    _spriteBatch.DrawString(font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                    Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 159, cam.GetPos().Y + 3);
+                    _spriteBatch.DrawString(bm_font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                 }
 
             _spriteBatch.End();

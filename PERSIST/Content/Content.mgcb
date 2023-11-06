@@ -10,6 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\..\..\..\.nuget\packages\monogame.extended.content.pipeline\3.8.0\tools\MonoGame.Extended.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -48,6 +49,23 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:black.png
+
+#begin pixellocale_bmp_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:pixellocale_bmp_0.png
+
+#begin pixellocale_bmp.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:pixellocale_bmp.fnt
 
 #begin pixellocale.spritefont
 /importer:FontDescriptionImporter
