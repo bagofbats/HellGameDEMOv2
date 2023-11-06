@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Gui.Controls;
 
 namespace PERSIST
 {
@@ -556,6 +557,58 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    // miscellaneous/weird cases
+
+    public class DeadGuy : Enemy
+    {
+        Rectangle loc;
+        Texture2D sprite;
+        Rectangle frame = new Rectangle(192, 64, 32, 32);
+        Rectangle hitbox;
+
+        public DeadGuy(Rectangle loc)
+        {
+            this.loc = loc;
+            hurtful = false;
+            hitbox = new Rectangle(loc.X + 8, loc.Y + 16, 13, 16);
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // nothing xd (for now)
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, loc, frame, Color.White);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, hitbox, Color.Blue * 0.3f);
+        }
+
+        public override void Damage()
+        {
+            // nothing xd
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(loc);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return hitbox;
         }
     }
 }

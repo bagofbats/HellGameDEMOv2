@@ -28,6 +28,8 @@ namespace PERSIST
 
         private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
 
+        private DeadGuy dead_guy;
+
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {
             foreach (TiledData t in tld)
@@ -129,6 +131,13 @@ namespace PERSIST
                                 enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
                                 enemy_types.Add("switch");
                             }
+
+                            if (l.objects[i].name == "knife_getter_guy")
+                            {
+                                var temp = new DeadGuy(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 32, 32));
+                                AddEnemy(temp);
+                                dead_guy = temp;
+                            }
                         }
 
                 }
@@ -162,6 +171,7 @@ namespace PERSIST
             enemy_assets.Add(typeof(Slime), spr_slime);
             enemy_assets.Add(typeof(EyeSwitch), black);
             enemy_assets.Add(typeof(BigSlime), spr_slime);
+            enemy_assets.Add(typeof(DeadGuy), spr_slime);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
