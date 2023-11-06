@@ -484,7 +484,8 @@ namespace PERSIST
             if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
                 if (dialogue)
                 {
-                    Vector2 textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter)) / 2;
+                    // Vector2 textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter)) / 2;
+                    Vector2 textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num]) / 2;
                     textMiddlePoint.X = (int)textMiddlePoint.X;
                     textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
@@ -613,7 +614,7 @@ namespace PERSIST
             }
         }
 
-        public void StartDialogue(string[] array, int start_index, char justification, float speed, bool skippable=true)
+        public void StartDialogue(string[] array, int start_index, char justification, float speed, bool skippable=true, bool lookforward=true)
         {
             dialogue = true;
             dialogue_txt = array;

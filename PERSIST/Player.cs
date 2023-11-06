@@ -81,6 +81,7 @@ namespace PERSIST
         private float thrown_timer = 0f;
         private float thrown_time = 0.2f;
         private float death_hsp = 0f;
+        private GameTime game_time;
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager, ProgressionManager progManager)
         {
@@ -111,30 +112,13 @@ namespace PERSIST
         {
             GetInput();
 
+            game_time = gameTime;
+
             if (!dialogue)
             {
                 HandleMovementAndCollisions(gameTime);
 
-                if (progManager.knife)
-                {
-                    if (progManager.ranged)
-                    {
-                        HandleAttacks(gameTime);
-                        HandleThrown(gameTime);
-                    }
-                    else
-                        HandleAttacksNoRanged(gameTime);
-                }
-
-                if (progManager.knife)
-                {
-                    if (attacking)
-                        AnimateAtk(gameTime);
-                    else
-                        AnimateNormal(gameTime);
-                }
-                else
-                    AnimateNoKnife(gameTime);
+                AnimateTree(gameTime);
             }
 
             else
@@ -142,6 +126,8 @@ namespace PERSIST
                 if (contManager.ENTER_PRESSED)
                     root.the_level.AdvanceDialogue();
             }
+
+            List<Enemy> e = root.the_level.CheckEnemyCollision(HitBox);
 
             for (int i = attacks.Count - 1; i >= 0; i--)
                 attacks[i].Update(gameTime);
@@ -192,9 +178,15 @@ namespace PERSIST
 
         }
 
-        public void EnterDialogue()
+        public void EnterDialogue(bool lookforward=true)
         {
             dialogue = true;
+            if (lookforward)
+            {
+                down = false;
+                AnimateTree(game_time);
+            }
+
         }
 
         public void LeaveDialogue()
@@ -363,7 +355,7 @@ namespace PERSIST
             pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             //  --------- end vertical movement ---------
 
-
+            
 
 
             // --------- horizontal movement ---------
@@ -398,6 +390,15 @@ namespace PERSIST
             // --------- end horizontal movement ---------
 
 
+
+
+            // --------- interactable dialogue ---------
+
+            if (e.Count > 0 && contManager.DOWN_PRESSED && wall_down)
+                foreach (Enemy temp in e)
+                    temp.Interact();
+
+            // --------- end interactable dialogue ---------
 
 
             // prep for next cycle
@@ -523,6 +524,30 @@ namespace PERSIST
         public void SetPos(Vector2 new_pos)
         {
             pos = new Vector2(new_pos.X - 16, new_pos.Y);
+        }
+
+        private void AnimateTree(GameTime gameTime)
+        {
+            if (progManager.knife)
+            {
+                if (progManager.ranged)
+                {
+                    HandleAttacks(gameTime);
+                    HandleThrown(gameTime);
+                }
+                else
+                    HandleAttacksNoRanged(gameTime);
+            }
+
+            if (progManager.knife)
+            {
+                if (attacking)
+                    AnimateAtk(gameTime);
+                else
+                    AnimateNormal(gameTime);
+            }
+            else
+                AnimateNoKnife(gameTime);
         }
 
         private void AnimateNormal(GameTime gameTime)

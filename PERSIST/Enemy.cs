@@ -23,6 +23,7 @@ namespace PERSIST
         public abstract void DebugDraw(SpriteBatch spriteBatch, Texture2D blue);
         public abstract void Damage();
         public abstract bool CheckCollision(Rectangle input);
+        public abstract void Interact();
 
         protected Level root;
         public Room room { get; set; }
@@ -221,6 +222,11 @@ namespace PERSIST
         {
             return HitBox.Intersects(input);
         }
+
+        public override void Interact()
+        {
+            // nothing xd
+        }
     }
 
     public class EyeSwitch : Enemy
@@ -271,6 +277,11 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             return bounds.Intersects(input);
+        }
+
+        public override void Interact()
+        {
+            // nothing xd
         }
     }
 
@@ -503,6 +514,11 @@ namespace PERSIST
                 return HitBox.Intersects(input) || SquishedHB1.Intersects(input) || SquishedHB2.Intersects(input);
         }
 
+        public override void Interact()
+        {
+            // nothing xd
+        }
+
         public Rectangle IdleHB1
         { get { return new Rectangle((int)pos.X - 18, (int)pos.Y + 8, 36, 12); } }
 
@@ -558,6 +574,11 @@ namespace PERSIST
         {
             throw new NotImplementedException();
         }
+
+        public override void Interact()
+        {
+            // nothing xd
+        }
     }
 
     // miscellaneous/weird cases
@@ -568,12 +589,24 @@ namespace PERSIST
         Texture2D sprite;
         Rectangle frame = new Rectangle(192, 64, 32, 32);
         Rectangle hitbox;
+        ProgressionManager progMan;
 
-        public DeadGuy(Rectangle loc)
+        string[] dialogue_deadguy;
+        string[] dia2;
+        string[] dia3;
+
+        int counter = 0;
+
+        public DeadGuy(Rectangle loc, string[] dialogue_deadguy, string[] dia2, string[] dia3, ProgressionManager progMan, Level root)
         {
             this.loc = loc;
             hurtful = false;
             hitbox = new Rectangle(loc.X + 8, loc.Y + 16, 13, 16);
+            this.dialogue_deadguy = dialogue_deadguy;
+            this.root = root;
+            this.progMan = progMan;
+            this.dia2 = dia2;
+            this.dia3 = dia3;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -609,6 +642,30 @@ namespace PERSIST
         public override Rectangle GetHitBox(Rectangle input)
         {
             return hitbox;
+        }
+
+        public override void Interact()
+        {
+            if (!progMan.knife)
+            {
+                root.StartDialogue(dialogue_deadguy, 0, 'c', 25f, true);
+                progMan.GetKnife();
+                frame.X += 32;
+                counter++;
+            }
+            else if (counter == 1)
+            {
+                root.StartDialogue(dia2, 0, 'c', 25f, false);
+                counter++;
+                frame.X = 192 + 32;
+            }
+            else
+            {
+                root.StartDialogue(dia3, 0, 'c', 25f, false);
+                frame.X = 192 + 32;
+            }
+                
+
         }
     }
 }

@@ -95,8 +95,8 @@ namespace PERSIST
 
         public ProgressionManager()
         {
-            knife = true;
-            ranged = true;
+            knife = false;
+            ranged = false;
             slime_dead = false;
             slime_started = false;
         }
@@ -109,6 +109,11 @@ namespace PERSIST
         public Checkpoint GetActiveCheckpoint()
         {
             return active_checkpoint;
+        }
+
+        public void GetKnife()
+        {
+            knife = true;
         }
 
         public void DefeatSlime()

@@ -30,6 +30,23 @@ namespace PERSIST
 
         private DeadGuy dead_guy;
 
+        string[] dialogue_slime = { 
+            "-- Defeated Mama Slime! --", 
+            "wario", 
+            "ABCDEFGHI\r\nJKLMN\nOPQRSTUVWXYZ" };
+
+        string[] dialogue_deadguy = {
+            "There is a knife stuck in the corpse's head.",
+            "Pull it out?\n    [YES]\n    [NO]",
+            "Obtained the Silver Blade."};
+
+        string[] dialogue_deadguy2 = {
+            "Like you, the corpse is wearing robes and a wooden mask.",
+            "There is a strange liquid leaking out of its skull."};
+
+        string[] dialogue_deadguy3 = {
+            "Don't think about it."};
+
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {
             foreach (TiledData t in tld)
@@ -134,9 +151,14 @@ namespace PERSIST
 
                             if (l.objects[i].name == "knife_getter_guy")
                             {
-                                var temp = new DeadGuy(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 32, 32));
+                                var temp = new DeadGuy(
+                                    new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 32, 32), 
+                                    dialogue_deadguy, dialogue_deadguy2, dialogue_deadguy3, 
+                                    prog_manager, this);
                                 AddEnemy(temp);
                                 dead_guy = temp;
+                                enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
+                                enemy_types.Add("deadguy");
                             }
                         }
 
@@ -245,6 +267,16 @@ namespace PERSIST
                     AddEnemy(temp);
                     switches.Add(temp);
                 }
+
+                if (enemy_types[i] == "deadguy")
+                {
+                    var temp = new DeadGuy(
+                                    new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 32, 32),
+                                    dialogue_deadguy, dialogue_deadguy2, dialogue_deadguy3,
+                                    prog_manager, this);
+                    AddEnemy(temp);
+                    dead_guy = temp;
+                }
                     
             }
                 
@@ -312,9 +344,7 @@ namespace PERSIST
                 if (rooms[i].name == "Fundamentals")
                     rooms.Remove(rooms[i]);
 
-            string[] dialogue_slime = { "-- Defeated Mama Slime! --", "wario", "ABCDEFGHI\r\nJKLMN\nOPQRSTUVWXYZ" };
-
-            StartDialogue(dialogue_slime, 0, 'c', 10f, false);
+            StartDialogue(dialogue_slime, 0, 'c', 10f, false, false);
 
             //dialogue = true;
             //dialogue_txt = dialogue_slime;

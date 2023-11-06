@@ -10,3 +10,53 @@ debugging:
 art:
  - boss doors
  - level transitions
+
+
+epic room names
+ - polyglot             |  someone who knows a lot of languages
+ - Esca                 |  An angler fish's glowing lure
+ - Knell                |  The sound of a bell (Death Knell)
+ - Gestalt              |  A whole that is larger than the sum of its parts (Gestalt Psychology)
+ - Scion                |  Descendant of a notable family
+ - Pthisis              |  Withering away. Also the personification of rot in Greco-Roman mythology
+ - Regicide             |  Killing a king
+ - Cosmocide            |  Death of the universe
+ - Deicide              |  Killing a God
+ - Multifarious         |  Having many varied parts/aspects
+ - Benthic              |  Lowest region of a body of water
+ - Ersatz               |  Not real/genuine
+ - Anamnesis            |  Recollection, sometimes of stuff from a previous life
+ - Extirpate            |  To root out and destroy completely
+ - Viscera              |  Internal organs
+ - Fumarole             |  An opening near a volcano that releases hot gass
+ - Fetters              |  Chains/restraints
+ - Penumbra             |  The gradiant part of a shadow - USE THIS BEFORE FINAL BOSS
+ - Confluence           |  The act or process of merging
+ - Excoriate            |  Damage/remove part of the surface of the skin. Also to heavily criticise something
+ - Exsanguinate         |  To drain a person or animal of blood
+ - Sigil                |  Inscribed/painted symbol of magical power
+ - Legerdemain          |  Sleight of hand
+ - Oubliette            |  Secret dungeon with a ceiling trapdoor as its only entrance
+ - Misericorde          |  Dagger used to mercy kill wounded soldiers
+ - Trypophobia          |  Fear of holes. Is more common than you think
+ - Lethe                |  Name of the Greek spirit of forgetfulness and oblivion. Associated with one of the five rivers of the underworld, and all those who drank from it would experience complete forgetfulness
+ - Death Rattle         |  gurgling sound that someone is approaching death
+ - Endling/Terminarch   |  The last organism of a species; once it dies the species is deemed extinct
+ - Relict               |  A thing that has survived from an earlier period of time
+ - Monomania            |  Obsession or preoccupation with one thing
+ - Pterion              |  Weakest part of the skull. Also where four bones in the skull are joined
+ - Ikejime              |  Method of killing fish that causes immediate brain death thus preventing the fish from undergoing reflex actions, preventing the production of ATP and preserving taste
+ - Rigor Mortis         |  stiffening of the joints and muscles of a body a few hours after death, usually lasting from one to four days.
+ - Luxeuil              |  A type of medival script
+ - Quasar               |  Supermassive black holes surrounded by gas that are at the center of galaxies and some of the most luminous phenomena in the universe
+ - Epitaph              |  a phrase or form of words written in memory of a person who has died, especially as an inscription on a tombstone. (Trigo?)
+ - Beyond the Pale      |  beyond extents or limits, usually in reference to inexcusable behavior
+ - Seance               |  ritual to commune with the dead
+ - Terminus             |  a final point in space or time; an end or extremity
+ - Quixotic             |  excessively idealistic; unrealistic and impractical
+ - Black Sheep          |  an odd or disreputable member of a group, especially within a family
+ - X factor             |  a variable in a given situation that could have the most significant impact on the outcome.
+ - Hemophobia           |  intense fear of blood
+ - Coda                 |  the concluding passage of a piece or movement, typically forming an addition to the basic structure
+ - Ignoramus            |  an ignorant or stupid person
+ - psychopomp           |  spirits whose responsibility is to escort newly deseased souls
