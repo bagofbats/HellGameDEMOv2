@@ -112,11 +112,14 @@ namespace PERSIST
             if (temp != null && (temp.visible || prog_manager.GetActiveCheckpoint() == null))
                 prog_manager.SetActiveCheckpoint(temp);
 
-            for (int i = 0; i < enemies.Count(); i++)
-                enemies[i].Update(gameTime);
+            if (!dialogue)
+            {
+                for (int i = 0; i < enemies.Count(); i++)
+                    enemies[i].Update(gameTime);
 
-            for (int i = special_walls.Count - 1; i >= 0; i--)
-                special_walls[i].Update(gameTime);
+                for (int i = special_walls.Count - 1; i >= 0; i--)
+                    special_walls[i].Update(gameTime);
+            }
 
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Update(gameTime);
