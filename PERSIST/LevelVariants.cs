@@ -30,22 +30,22 @@ namespace PERSIST
 
         private DeadGuy dead_guy;
 
-        string[] dialogue_slime = { 
-            "-- Defeated Mama Slime! --", 
-            "wario", 
-            "ABCDEFGHI\r\nJKLMN\nOPQRSTUVWXYZ" };
+        DialogueStruct[] dialogue_slime = { 
+            new DialogueStruct("-- Defeated Mama Slime! --", 'd', 'c'), 
+            new DialogueStruct("wario", 'd'), 
+            new DialogueStruct("ABCDEFGHI\r\nJKLMN\nOPQRSTUVWXYZ", 'd') };
 
-        string[] dialogue_deadguy = {
-            "There is a knife stuck in the corpse's head.",
-            "Pull it out?\n    [YES]\n    [NO]",
-            "Obtained the Silver Blade."};
+        DialogueStruct[] dialogue_deadguy = {
+            new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', 'c'),
+            new DialogueStruct("Pull it out.\nLeave it.", 'o', 'l'),
+            new DialogueStruct("Obtained the Silver Blade.", 'd', 'c')};
 
-        string[] dialogue_deadguy2 = {
-            "Like you, the corpse is wearing robes and a wooden mask.",
-            "There is a strange liquid leaking out of its skull."};
+        DialogueStruct[] dialogue_deadguy2 = {
+            new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', 'c'),
+            new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', 'c')};
 
-        string[] dialogue_deadguy3 = {
-            "Don't think about it."};
+        DialogueStruct[] dialogue_deadguy3 = {
+            new DialogueStruct("Best not to dwell on it.", 'd', 'c')};
 
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {

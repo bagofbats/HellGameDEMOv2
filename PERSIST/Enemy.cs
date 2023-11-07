@@ -591,13 +591,13 @@ namespace PERSIST
         Rectangle hitbox;
         ProgressionManager progMan;
 
-        string[] dialogue_deadguy;
-        string[] dia2;
-        string[] dia3;
+        DialogueStruct[] dialogue_deadguy;
+        DialogueStruct[] dia2;
+        DialogueStruct[] dia3;
 
         int counter = 0;
 
-        public DeadGuy(Rectangle loc, string[] dialogue_deadguy, string[] dia2, string[] dia3, ProgressionManager progMan, Level root)
+        public DeadGuy(Rectangle loc, DialogueStruct[] dialogue_deadguy, DialogueStruct[] dia2, DialogueStruct[] dia3, ProgressionManager progMan, Level root)
         {
             this.loc = loc;
             hurtful = false;

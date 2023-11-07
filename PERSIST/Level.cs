@@ -56,7 +56,7 @@ namespace PERSIST
         protected float dead_timer = 0;
 
         protected bool dialogue = false;
-        protected string[] dialogue_txt;
+        protected DialogueStruct[] dialogue_txt;
         protected char dialogue_loc = 'c';
         protected int dialogue_num = 0;
         protected float dialogue_letter = 0;
@@ -166,7 +166,7 @@ namespace PERSIST
             if (dialogue)
             {
                 dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_speed;
-                dialogue_letter = Math.Min(dialogue_letter, dialogue_txt[dialogue_num].Length);
+                dialogue_letter = Math.Min(dialogue_letter, dialogue_txt[dialogue_num].text.Length);
             }
         }
 
@@ -484,13 +484,24 @@ namespace PERSIST
             if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
                 if (dialogue)
                 {
-                    // Vector2 textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter)) / 2;
-                    Vector2 textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num]) / 2;
+                    dialogue_loc = dialogue_txt[dialogue_num].loc;
+
+                    // default is to left-justify text, no portrait
+                    Vector2 textMiddlePoint = new Vector2(0, 0);
+                    Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 12, cam.GetPos().Y + 2);
+
+                    if (dialogue_loc == 'c')
+                    {
+                        // center justify
+                        textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num].text) / 2;
+                        // Vector2 textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter)) / 2;
+                        textDrawPoint = new Vector2(cam.GetPos().X + 159, cam.GetPos().Y + 21);
+                    }
+
                     textMiddlePoint.X = (int)textMiddlePoint.X;
                     textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
-                    Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 21);
-                    _spriteBatch.DrawString(bm_font, dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter), textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                    _spriteBatch.DrawString(bm_font, dialogue_txt[dialogue_num].text.Substring(0, (int)dialogue_letter), textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                 }
                 
                 else if (current_room.name != null)
@@ -614,7 +625,7 @@ namespace PERSIST
             }
         }
 
-        public void StartDialogue(string[] array, int start_index, char justification, float speed, bool skippable=true, bool lookforward=true)
+        public void StartDialogue(DialogueStruct[] array, int start_index, char justification, float speed, bool skippable=true, bool lookforward=true)
         {
             dialogue = true;
             dialogue_txt = array;
@@ -627,10 +638,10 @@ namespace PERSIST
 
         public void AdvanceDialogue()
         {
-            if (dialogue_letter < dialogue_txt[dialogue_num].Length)
+            if (dialogue_letter < dialogue_txt[dialogue_num].text.Length)
             {
                 if (dialogue_skippable)
-                    dialogue_letter = dialogue_txt[dialogue_num].Length;
+                    dialogue_letter = dialogue_txt[dialogue_num].text.Length;
                 return;
             }
 
@@ -990,5 +1001,21 @@ namespace PERSIST
 
         public string map;
         public string tileset;
+    }
+
+    public struct DialogueStruct
+    {
+        public DialogueStruct(string text, char type, char loc='l', int portrait_x=0, int portrait_y=0)
+        {
+            this.text = text;
+            this.type = type;
+            this.loc = loc;
+            portrait = new Rectangle(portrait_x, portrait_y, 45, 45);
+        }
+
+        public string text;
+        public char type;
+        public char loc;
+        public Rectangle portrait;
     }
 }

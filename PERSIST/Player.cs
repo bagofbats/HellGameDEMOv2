@@ -394,7 +394,7 @@ namespace PERSIST
 
             // --------- interactable dialogue ---------
 
-            if (e.Count > 0 && contManager.DOWN_PRESSED && wall_down)
+            if (e.Count > 0 && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED)
                 foreach (Enemy temp in e)
                     temp.Interact();
 
