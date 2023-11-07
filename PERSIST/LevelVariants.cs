@@ -30,6 +30,10 @@ namespace PERSIST
 
         private DeadGuy dead_guy;
 
+        DialogueStruct[] dialogue_ck = {
+            new DialogueStruct("The torch lights up at your presence.", 'd', 'c'),
+            new DialogueStruct("It soothes you.", 'd', 'c')};
+
         DialogueStruct[] dialogue_slime = { 
             new DialogueStruct("-- Defeated Mama Slime! --", 'd', 'c'), 
             new DialogueStruct("wario", 'd'), 
@@ -49,6 +53,8 @@ namespace PERSIST
 
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {
+            dialogue_checkpoint = dialogue_ck;
+
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
                 {

@@ -65,6 +65,9 @@ namespace PERSIST
 
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
+        public DialogueStruct[] dialogue_checkpoint = {
+            new DialogueStruct("The torch lights up at your presence.", 'd', 'c')};
+
         public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name)
         {
             this.root = root;

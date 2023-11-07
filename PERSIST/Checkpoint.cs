@@ -53,5 +53,11 @@ namespace PERSIST
             if (visible)
                 _spriteBatch.Draw(sprite, box, frame, Color.White);
         }
+
+        public void Interact()
+        {
+            if (visible)
+                root.StartDialogue(root.dialogue_checkpoint, 0, 'c', 25f, true);
+        }
     }
 }

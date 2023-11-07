@@ -398,6 +398,11 @@ namespace PERSIST
                 foreach (Enemy temp in e)
                     temp.Interact();
 
+            Checkpoint C = root.the_level.CheckpointCheckCollision(HitBox);
+            if (C != null && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED)
+                C.Interact();
+
+
             // --------- end interactable dialogue ---------
 
 
