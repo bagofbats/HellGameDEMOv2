@@ -964,6 +964,45 @@ namespace PERSIST
         }
     }
 
+    public class BossBlock : Wall
+    {
+        private Level root;
+        private Rectangle draw_rectangle;
+        private Rectangle frame = new Rectangle(48, 112, 16, 16);
+        private Texture2D img;
+        private Texture2D black;
+        private float spawn_timer = 0;
+        private bool white = true;
+
+        public BossBlock(Rectangle bounds, Level root) : base(bounds)
+        {
+            this.root = root;
+            draw_rectangle = bounds;
+        }
+
+        public override void Load(Texture2D img)
+        {
+            this.img = img;
+            this.black = root.black;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (white)
+                spriteBatch.Draw(black, draw_rectangle, frame, Color.White);
+            else
+                spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (white)
+                spawn_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (spawn_timer > 0.08f)
+                white = false;
+        }
+    }
+
     public class TiledData
     {
         public Rectangle location

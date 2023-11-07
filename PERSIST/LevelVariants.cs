@@ -332,6 +332,21 @@ namespace PERSIST
         public void WakeUpSlime(BigSlime slime)
         {
             slime.sleep = false;
+
+            BossBlock temp1 = new BossBlock(new Rectangle(888, 720, 16, 16), this);
+            BossBlock temp2 = new BossBlock(new Rectangle(888, 736, 16, 16), this);
+            BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 720, 16, 16), this);
+            BossBlock temp4 = new BossBlock(new Rectangle(888 - 16, 736, 16, 16), this);
+
+            temp1.Load(tst_tutorial);
+            temp2.Load(tst_tutorial);
+            temp3.Load(tst_tutorial);
+            temp4.Load(tst_tutorial);
+
+            AddSpecialWall(temp1);
+            AddSpecialWall(temp2);
+            AddSpecialWall(temp3);
+            AddSpecialWall(temp4);
         }
 
         public void DefeatSime(BigSlime slime)

@@ -531,6 +531,11 @@ namespace PERSIST
             pos = new Vector2(new_pos.X - 16, new_pos.Y);
         }
 
+        public Vector2 GetPos()
+        {
+            return pos;
+        }
+
         private void AnimateTree(GameTime gameTime)
         {
             if (progManager.knife)

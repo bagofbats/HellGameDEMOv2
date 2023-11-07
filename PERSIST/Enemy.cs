@@ -300,7 +300,7 @@ namespace PERSIST
         public bool sleep = true;
         private Player player;
         private bool wakeup_ready = false;
-        private Rectangle wakeup_rectangle = new Rectangle(880, 720, 16, 32);
+        private Rectangle wakeup_rectangle = new Rectangle(880, 720, 24, 32);
         new private TutorialLevel root;
         private int hp = 22;
         private bool damaged = false;
@@ -428,8 +428,10 @@ namespace PERSIST
 
             if (player.HitBox.Intersects(wakeup_rectangle))
                 wakeup_ready = true;
-            else if (wakeup_ready)
+            else if (wakeup_ready && player.GetPos().X > wakeup_rectangle.X)
                 root.WakeUpSlime(this);
+            else if (wakeup_ready)
+                wakeup_ready = false;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
