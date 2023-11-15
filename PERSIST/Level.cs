@@ -66,7 +66,7 @@ namespace PERSIST
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
         public DialogueStruct[] dialogue_checkpoint = {
-            new DialogueStruct("The torch lights up at your presence.", 'd', 'c')};
+            new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c')};
 
         public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name)
         {
@@ -507,7 +507,7 @@ namespace PERSIST
                     textMiddlePoint.X = (int)textMiddlePoint.X;
                     textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
-                    _spriteBatch.DrawString(bm_font, dialogue_txt[dialogue_num].text.Substring(0, (int)dialogue_letter), textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                    _spriteBatch.DrawString(bm_font, dialogue_txt[dialogue_num].text.Substring(0, (int)dialogue_letter), textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                 }
                 
                 else if (current_room.name != null)
@@ -1050,11 +1050,12 @@ namespace PERSIST
 
     public struct DialogueStruct
     {
-        public DialogueStruct(string text, char type, char loc='l', int portrait_x=0, int portrait_y=0)
+        public DialogueStruct(string text, char type, Color color, char loc ='l', int portrait_x=0, int portrait_y=0)
         {
             this.text = text;
             this.type = type;
             this.loc = loc;
+            this.color = color;
             portrait = new Rectangle(portrait_x, portrait_y, 45, 45);
         }
 
@@ -1062,5 +1063,6 @@ namespace PERSIST
         public char type;
         public char loc;
         public Rectangle portrait;
+        public Color color;
     }
 }

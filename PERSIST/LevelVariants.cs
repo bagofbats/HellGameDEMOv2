@@ -33,25 +33,25 @@ namespace PERSIST
         private int slime_counter = 4;
 
         DialogueStruct[] dialogue_ck = {
-            new DialogueStruct("The torch lights up at your presence.", 'd', 'c'),
-            new DialogueStruct("It soothes you.", 'd', 'c')};
+            new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
+            new DialogueStruct("It soothes you.", 'd', Color.White, 'c')};
 
         DialogueStruct[] dialogue_slime = { 
-            new DialogueStruct("-- Defeated Mama Slime! --", 'd', 'c'), 
-            new DialogueStruct("wario", 'd'), 
-            new DialogueStruct("ABCDEFGHI\r\nJKLMN\nOPQRSTUVWXYZ", 'd') };
+            new DialogueStruct("-- Defeated Mama Slime! --", 'd', Color.White, 'c'), 
+            new DialogueStruct("wario", 'd', Color.White), 
+            new DialogueStruct("ABCDEFGHI\r\nJKLMN\nOPQRSTUVWXYZ", 'd', Color.White) };
 
         DialogueStruct[] dialogue_deadguy = {
-            new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', 'c'),
-            new DialogueStruct("Pull it out.\nLeave it.", 'o', 'l'),
-            new DialogueStruct("Obtained the Silver Blade.", 'd', 'c')};
+            new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', Color.White, 'c'),
+            new DialogueStruct("Pull it out.\nLeave it.", 'o', Color.White, 'l'),
+            new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c')};
 
         DialogueStruct[] dialogue_deadguy2 = {
-            new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', 'c'),
-            new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', 'c')};
+            new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c')};
 
         DialogueStruct[] dialogue_deadguy3 = {
-            new DialogueStruct("Best not to dwell on it.", 'd', 'c')};
+            new DialogueStruct("Best not to dwell on it.", 'd', Color.Red, 'c')};
 
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {
@@ -405,6 +405,19 @@ namespace PERSIST
             bbslime.SetSpeed(0.6f + (float)rnd.NextDouble()/3);
             bbslime.SetTimer(2f + (0.7f * (float)rnd.NextDouble()));
             AddEnemy(bbslime);
+
+
+            // also make some vfx
+            SlimeFX particle = new SlimeFX(new Vector2(slime.Pos.X, slime.Pos.Y), particle_img, this);
+            AddFX(particle);
+            particle = new SlimeFX(new Vector2(slime.Pos.X - 8 - rnd.Next(0, 6), slime.Pos.Y - 4), particle_img, this);
+            AddFX(particle);
+            particle = new SlimeFX(new Vector2(slime.Pos.X + 7 + rnd.Next(0, 6), slime.Pos.Y - 8), particle_img, this);
+            AddFX(particle);
+            particle = new SlimeFX(new Vector2(slime.Pos.X + 15 + rnd.Next(0, 3), slime.Pos.Y - 2), particle_img, this);
+            AddFX(particle);
+            particle = new SlimeFX(new Vector2(slime.Pos.X - 16 - rnd.Next(0, 4), slime.Pos.Y - 3), particle_img, this);
+            AddFX(particle);
         }
     }
 }
