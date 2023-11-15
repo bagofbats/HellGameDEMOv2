@@ -30,6 +30,8 @@ namespace PERSIST
 
         private DeadGuy dead_guy;
 
+        private int slime_counter = 4;
+
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The torch lights up at your presence.", 'd', 'c'),
             new DialogueStruct("It soothes you.", 'd', 'c')};
@@ -349,9 +351,12 @@ namespace PERSIST
             AddSpecialWall(temp4);
         }
 
-        public void DefeatSime(BigSlime slime)
+        public void DefeatSime()
         {
-            RemoveEnemy(slime);
+            slime_counter--;
+
+            if (slime_counter != 0)
+                return;
 
             prog_manager.DefeatSlime();
 
@@ -366,13 +371,40 @@ namespace PERSIST
                     rooms.Remove(rooms[i]);
 
             StartDialogue(dialogue_slime, 0, 'c', 10f, false, false);
+        }
 
-            //dialogue = true;
-            //dialogue_txt = dialogue_slime;
-            //dialogue_loc = 'c';
-            //dialogue_num = 0;
-            //dialogue_speed = 10f;
-            //player.EnterDialogue();
+        public void SplitSlime(BigSlime slime)
+        {
+            Random rnd = new Random();
+
+            RemoveEnemy(slime);
+
+            slime_counter = 4;
+
+            // create four baby slimes with different speeds and bounce intervals
+            var bbslime = new BabySlime(new Vector2(slime.Pos.X + rnd.Next(0, 3) - 8, slime.Pos.Y - 28), this, this);
+            bbslime.LoadAssets(spr_slime);
+            bbslime.SetSpeed(0.6f + (float)rnd.NextDouble()/3);
+            bbslime.SetTimer(2f + (0.7f * (float)rnd.NextDouble()));
+            AddEnemy(bbslime);
+
+            bbslime = new BabySlime(new Vector2(slime.Pos.X + 13 + rnd.Next(0, 6) - 8, slime.Pos.Y - 22), this, this);
+            bbslime.LoadAssets(spr_slime);
+            bbslime.SetSpeed(0.6f + (float)rnd.NextDouble()/3);
+            bbslime.SetTimer(2f + (0.7f * (float)rnd.NextDouble()));
+            AddEnemy(bbslime);
+
+            bbslime = new BabySlime(new Vector2(slime.Pos.X - 17 - rnd.Next(0, 6) - 8, slime.Pos.Y - 16), this, this);
+            bbslime.LoadAssets(spr_slime);
+            bbslime.SetSpeed(0.6f + (float)rnd.NextDouble()/3);
+            bbslime.SetTimer(2f + (0.7f * (float)rnd.NextDouble()));
+            AddEnemy(bbslime);
+
+            bbslime = new BabySlime(new Vector2(slime.Pos.X - 8 - rnd.Next(0, 6) - 8, slime.Pos.Y - 4), this, this);
+            bbslime.LoadAssets(spr_slime);
+            bbslime.SetSpeed(0.6f + (float)rnd.NextDouble()/3);
+            bbslime.SetTimer(2f + (0.7f * (float)rnd.NextDouble()));
+            AddEnemy(bbslime);
         }
     }
 }

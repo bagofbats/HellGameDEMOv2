@@ -37,21 +37,23 @@ namespace PERSIST
     public class Slime : Enemy
     {
         Texture2D sprite;
-        private int hp = 4;
+        protected int hp = 4;
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
-        private float vsp = 0f;
+        protected float vsp = 0f;
         private float grav = 0.12f;
         private float hspeed = 1f;
-        private float bounce_counter = 2f;
-        private int hdir = 1;
+        protected float bounce_counter = 2f;
+        private float bounce_threshhold = 3f;
+        protected int hdir = 1;
         private int h_oset = 8;
         private int v_oset = 20;
-        private bool damaged = false;
-        private float damaged_timer = 0f;
+        protected bool damaged = false;
+        protected float damaged_timer = 0f;
         private Random rnd = new Random();
 
         private SleepFX sleepFX;
         private bool sleep;
+        protected bool sleep_possible = true;
 
         public Slime(Vector2 pos, Level root)
         {
@@ -89,7 +91,7 @@ namespace PERSIST
 
             vsp += grav;
 
-            if (bounce_counter >= 3)
+            if (bounce_counter >= bounce_threshhold)
             {
                 vsp = -3;
             }
@@ -102,7 +104,7 @@ namespace PERSIST
 
             Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
 
-            sleep = (dist_x > 100 || dist_y > 70) && vcheck != null;
+            sleep = (dist_x > 100 || dist_y > 70) && vcheck != null && sleep_possible;
 
             if (vcheck != null)
             {
@@ -183,7 +185,7 @@ namespace PERSIST
             }
             else
                 sleepFX.ResetZs();
-            
+
         }
 
         public override void Damage()
@@ -195,7 +197,7 @@ namespace PERSIST
                 SlimeFX particle = new SlimeFX(new Vector2(PositionRectangle.X, PositionRectangle.Y), root.particle_img, root);
                 root.AddFX(particle);
             }
-                
+
             bounce_counter = 1;
             vsp = -1;
             hdir = -Math.Sign(root.player.HitBox.X - pos.X - 8);
@@ -226,6 +228,16 @@ namespace PERSIST
         public override void Interact()
         {
             // nothing xd
+        }
+
+        public void SetSpeed(float speed)
+        {
+            hspeed = speed;
+        }
+
+        public void SetTimer(float timer)
+        {
+            bounce_threshhold = timer;
         }
     }
 
@@ -476,7 +488,10 @@ namespace PERSIST
             damaged_timer = 0;
 
             if (hp == 0)
-                root.DefeatSime(this);
+            {
+                //root.DefeatSime(this);
+                root.SplitSlime(this);
+            }
         }
 
         public override Rectangle GetHitBox(Rectangle input)
@@ -538,6 +553,42 @@ namespace PERSIST
 
         public Rectangle JumpingHB1
         { get { return new Rectangle((int)pos.X - 28, (int)pos.Y, 56, 32); } }
+    }
+
+    public class BabySlime : Slime
+    {
+        TutorialLevel tut_root;
+
+        public BabySlime(Vector2 pos, Level root, TutorialLevel tut_root) : base(pos, root)
+        {
+            this.tut_root = tut_root;
+
+            sleep_possible = false;
+            hdir = -Math.Sign(root.player.HitBox.X - pos.X - 8);
+            if (hdir == 0)
+                hdir = 1;
+        }
+
+        public override void Damage()
+        {
+            hp -= 1;
+            if (hp <= 0)
+            {
+                root.RemoveEnemy(this);
+                SlimeFX particle = new SlimeFX(new Vector2(PositionRectangle.X, PositionRectangle.Y), root.particle_img, root);
+                root.AddFX(particle);
+                tut_root.DefeatSime();
+            }
+
+            bounce_counter = 1;
+            vsp = -1;
+            hdir = -Math.Sign(root.player.HitBox.X - pos.X - 8);
+            if (hdir == 0)
+                hdir = 1;
+
+            damaged = true;
+            damaged_timer = 0;
+        }
     }
 
     public class Lukas_Tutorial : Enemy
@@ -609,6 +660,9 @@ namespace PERSIST
             this.progMan = progMan;
             this.dia2 = dia2;
             this.dia3 = dia3;
+
+            if (progMan.knife)
+                frame.X += 32;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -638,7 +692,7 @@ namespace PERSIST
 
         public override bool CheckCollision(Rectangle input)
         {
-            return input.Intersects(loc);
+            return input.Intersects(hitbox);
         }
 
         public override Rectangle GetHitBox(Rectangle input)
@@ -657,13 +711,13 @@ namespace PERSIST
             }
             else if (counter == 1)
             {
-                root.StartDialogue(dia2, 0, 'c', 25f, false);
+                root.StartDialogue(dia2, 0, 'c', 25f, true);
                 counter++;
                 frame.X = 192 + 32;
             }
             else
             {
-                root.StartDialogue(dia3, 0, 'c', 25f, false);
+                root.StartDialogue(dia3, 0, 'c', 25f, true);
                 frame.X = 192 + 32;
             }
                 

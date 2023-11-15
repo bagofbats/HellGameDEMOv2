@@ -119,6 +119,7 @@ namespace PERSIST
         public void DefeatSlime()
         {
             slime_dead = true;
+            ranged = true;
         }
     }
 

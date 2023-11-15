@@ -84,7 +84,7 @@ namespace PERSIST
             Camera cam = new Camera(this);
             the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug, "rm_tutorial1");
 
-            Window.Title = "Persist [DEMO]";
+            Window.Title = "HELLGAME [DEMO]";
         }
 
         protected override void Initialize()
