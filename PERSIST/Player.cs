@@ -50,6 +50,7 @@ namespace PERSIST
         private bool wall_right = false;
         private bool wall_up = false;
         private bool wall_down = false;
+        private bool wall_inside = false;
         private bool wallslide = false;
         private bool old_wallslide = false;
         private List<Attack> attacks = new List<Attack>();
@@ -235,12 +236,13 @@ namespace PERSIST
 
         private void HandleMovementAndCollisions(GameTime gameTime)
         {
-            (Wall left, Wall right, Wall up, Wall down) = root.the_level.FullCheckCollision(HitBox);
+            (Wall left, Wall right, Wall up, Wall down, Wall inside) = root.the_level.FullCheckCollision(HitBox);
 
             wall_left = left != null;
             wall_right = right != null;
             wall_up = up != null;
             wall_down = down != null;
+            wall_inside = inside != null;
 
             wallslide = !wall_down && !wall_up && (wall_left || wall_right);
 
@@ -250,14 +252,27 @@ namespace PERSIST
             List<Enemy> e = root.the_level.CheckEnemyCollision(HurtBox);
 
             if (o != null)
+            {
                 Die(gameTime);
+                return;
+            }
+                
             else if (e.Count > 0)
                 foreach (Enemy temp in e)
                     if (temp.hurtful)
                     {
                         Die(gameTime);
-                        break;
+                        return;
                     }
+
+            if (wall_inside)
+                if (inside.GetType() == typeof(SwitchBlock))
+                {
+                    Die(gameTime);
+                    return;
+                }
+                    
+
             // --------- end death ---------
 
 

@@ -299,7 +299,7 @@ namespace PERSIST
             return null;
         }
 
-        public (Wall, Wall, Wall, Wall) FullCheckCollision(Rectangle input)
+        public (Wall, Wall, Wall, Wall, Wall) FullCheckCollision(Rectangle input)
         {
             Rectangle in_left = input;
             in_left.X -= 1;
@@ -316,12 +316,13 @@ namespace PERSIST
             Wall right = null;
             Wall up = null;
             Wall down = null;
+            Wall inside = null;
 
             for (int i = 0; i < chunks.Count(); i++)
             {
                 if (col_checker.Intersects(chunks[i].bounds))
                 {
-                    (Wall ltemp, Wall rtemp, Wall utemp, Wall dtemp) = chunks[i].FullCheckCollision(in_left, in_right, in_up, in_down);
+                    (Wall ltemp, Wall rtemp, Wall utemp, Wall dtemp, Wall itemp) = chunks[i].FullCheckCollision(in_left, in_right, in_up, in_down, input);
 
                     if (ltemp != null)
                         left = ltemp;
@@ -331,13 +332,15 @@ namespace PERSIST
                         up = utemp;
                     if (dtemp != null)
                         down = dtemp;
+                    if (itemp != null)
+                        inside = itemp;
 
                     if (left != null && right != null && up != null && down != null)
                         break;
                 }
             }
 
-            return (left, right, up, down);
+            return (left, right, up, down, inside);
         }
 
         public List<Enemy> CheckEnemyCollision(Rectangle input)
@@ -736,12 +739,13 @@ namespace PERSIST
             return null;
         }
 
-        public (Wall, Wall, Wall, Wall) FullCheckCollision(Rectangle in_left, Rectangle in_right, Rectangle in_up, Rectangle in_down)
+        public (Wall, Wall, Wall, Wall, Wall) FullCheckCollision(Rectangle in_left, Rectangle in_right, Rectangle in_up, Rectangle in_down, Rectangle in_inside)
         {
             Wall left = null;
             Wall right = null;
             Wall up = null;
             Wall down = null;
+            Wall inside = null;
 
             for (int i = 0; i < walls.Count(); i++)
             {
@@ -749,9 +753,10 @@ namespace PERSIST
                 if (walls[i].bounds.Intersects(in_right)) right = walls[i];
                 if (walls[i].bounds.Intersects(in_up)) up = walls[i];
                 if (walls[i].bounds.Intersects(in_down)) down = walls[i];
+                if (walls[i].bounds.Intersects(in_inside)) inside = walls[i]; 
             }
 
-            return (left, right, up, down);
+            return (left, right, up, down, inside);
         }
 
         public void Draw(SpriteBatch _spriteBatch)
