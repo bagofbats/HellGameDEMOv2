@@ -473,7 +473,7 @@ namespace PERSIST
             }
 
             if ((player_dead || finish_player_dead) && dead_timer > 0.36)
-                _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.White);
+                _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.Black);
 
             if (player_dead)
                 player.DrawDead(_spriteBatch, dead_timer);
