@@ -50,7 +50,7 @@ namespace PERSIST
 
             player = new Player(this, new Vector2(100, 100), contManager, progManager);
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial2.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
