@@ -34,7 +34,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
-            new DialogueStruct("It soothes you.", 'd', Color.White, 'c')};
+            new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true)};
 
         DialogueStruct[] dialogue_slime = { 
             new DialogueStruct("-- Defeated Mama Slime! --", 'd', Color.White, 'c'), 
@@ -44,14 +44,11 @@ namespace PERSIST
         DialogueStruct[] dialogue_deadguy = {
             new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', Color.White, 'c'),
             new DialogueStruct("Pull it out.\nLeave it.", 'o', Color.White, 'l'),
-            new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c')};
-
-        DialogueStruct[] dialogue_deadguy2 = {
+            new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c', true),
             new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', Color.White, 'c'),
-            new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c')};
-
-        DialogueStruct[] dialogue_deadguy3 = {
-            new DialogueStruct("Best not to dwell on it.", 'd', Color.Red, 'c')};
+            new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c', true),
+            new DialogueStruct("Best not to dwell on it.", 'd', Color.Red, 'c', true)
+        };
 
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {
@@ -161,8 +158,7 @@ namespace PERSIST
                             {
                                 var temp = new DeadGuy(
                                     new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 32, 32), 
-                                    dialogue_deadguy, dialogue_deadguy2, dialogue_deadguy3, 
-                                    prog_manager, this);
+                                    dialogue_deadguy, prog_manager, this);
                                 AddEnemy(temp);
                                 dead_guy = temp;
                                 enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
@@ -280,8 +276,7 @@ namespace PERSIST
                 {
                     var temp = new DeadGuy(
                                     new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 32, 32),
-                                    dialogue_deadguy, dialogue_deadguy2, dialogue_deadguy3,
-                                    prog_manager, this);
+                                    dialogue_deadguy, prog_manager, this);
                     AddEnemy(temp);
                     dead_guy = temp;
                 }

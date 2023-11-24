@@ -645,12 +645,10 @@ namespace PERSIST
         ProgressionManager progMan;
 
         DialogueStruct[] dialogue_deadguy;
-        DialogueStruct[] dia2;
-        DialogueStruct[] dia3;
 
         int counter = 0;
 
-        public DeadGuy(Rectangle loc, DialogueStruct[] dialogue_deadguy, DialogueStruct[] dia2, DialogueStruct[] dia3, ProgressionManager progMan, Level root)
+        public DeadGuy(Rectangle loc, DialogueStruct[] dialogue_deadguy, ProgressionManager progMan, Level root)
         {
             this.loc = loc;
             hurtful = false;
@@ -658,8 +656,6 @@ namespace PERSIST
             this.dialogue_deadguy = dialogue_deadguy;
             this.root = root;
             this.progMan = progMan;
-            this.dia2 = dia2;
-            this.dia3 = dia3;
 
             if (progMan.knife)
                 frame.X += 32;
@@ -711,13 +707,13 @@ namespace PERSIST
             }
             else if (counter == 1)
             {
-                root.StartDialogue(dia2, 0, 'c', 25f, true);
+                root.StartDialogue(dialogue_deadguy, 3, 'c', 25f, true);
                 counter++;
                 frame.X = 192 + 32;
             }
             else
             {
-                root.StartDialogue(dia3, 0, 'c', 25f, true);
+                root.StartDialogue(dialogue_deadguy, 5, 'c', 25f, true);
                 frame.X = 192 + 32;
             }
                 

@@ -66,7 +66,7 @@ namespace PERSIST
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
         public DialogueStruct[] dialogue_checkpoint = {
-            new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c')};
+            new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c', true)};
 
         public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name)
         {
@@ -656,7 +656,7 @@ namespace PERSIST
 
             dialogue_num++;
             dialogue_letter = 0f;
-            if (dialogue_num >= dialogue_txt.Length)
+            if (dialogue_num >= dialogue_txt.Length || dialogue_txt[dialogue_num - 1].end)
             {
                 player.LeaveDialogue();
                 dialogue = false;
@@ -1055,12 +1055,13 @@ namespace PERSIST
 
     public struct DialogueStruct
     {
-        public DialogueStruct(string text, char type, Color color, char loc ='l', int portrait_x=0, int portrait_y=0)
+        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, int portrait_x =0, int portrait_y=0)
         {
             this.text = text;
             this.type = type;
             this.loc = loc;
             this.color = color;
+            this.end = end;
             portrait = new Rectangle(portrait_x, portrait_y, 45, 45);
         }
 
@@ -1069,5 +1070,6 @@ namespace PERSIST
         public char loc;
         public Rectangle portrait;
         public Color color;
+        public bool end;
     }
 }
