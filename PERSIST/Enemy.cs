@@ -246,12 +246,15 @@ namespace PERSIST
         private Texture2D sprite;
         private Rectangle bounds;
         public bool two = true;
+        private Rectangle eye = new Rectangle(0, 0, 3, 3);
+        private Player player;
 
-        public EyeSwitch(Rectangle bounds, Level root)
+        public EyeSwitch(Rectangle bounds, Player player, Level root)
         {
             this.bounds = bounds;
             this.root = root;
             hurtful = false;
+            this.player = player;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -263,11 +266,21 @@ namespace PERSIST
         public override void Update(GameTime gameTime)
         {
             // throw new NotImplementedException();
+            var temp = player.GetPos();
+            int xdiff = bounds.X + 2 + (int)(0.13f * (temp.X + 16 - bounds.X + 6));
+            int ydiff = bounds.Y + 4 + (int)(0.13f * (temp.Y + 16 - bounds.Y + 6));
+
+            eye.X = xdiff;
+            eye.Y = ydiff;
+
+            eye.X = Math.Clamp(eye.X, bounds.X + 1, bounds.X + bounds.Width - 1 - eye.Width);
+            eye.Y = Math.Clamp(eye.Y, bounds.Y + 1, bounds.Y + bounds.Width - 1 - eye.Width);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, bounds, Color.Red);
+            spriteBatch.Draw(sprite, eye, Color.DarkRed);
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)

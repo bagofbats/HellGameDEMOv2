@@ -147,7 +147,7 @@ namespace PERSIST
 
                             if (l.objects[i].name == "switch")
                             {
-                                var temp = new EyeSwitch(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 12, 12), this);
+                                var temp = new EyeSwitch(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 12, 12), player, this);
                                 AddEnemy(temp);
                                 switches.Add(temp);
                                 enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
@@ -267,7 +267,7 @@ namespace PERSIST
 
                 if (enemy_types[i] == "switch")
                 {
-                    var temp = new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 12, 12), this);
+                    var temp = new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 12, 12), player, this);
                     AddEnemy(temp);
                     switches.Add(temp);
                 }
