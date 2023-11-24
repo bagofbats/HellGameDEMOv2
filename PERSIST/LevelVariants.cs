@@ -34,12 +34,12 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
-            new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true)};
+            new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true)
+        };
 
         DialogueStruct[] dialogue_slime = { 
-            new DialogueStruct("-- Defeated Mama Slime! --", 'd', Color.White, 'c'), 
-            new DialogueStruct("wario", 'd', Color.White), 
-            new DialogueStruct("ABCDEFGHI\r\nJKLMN\nOPQRSTUVWXYZ", 'd', Color.White) };
+            new DialogueStruct("-- Defeated Mama Slime! --", 'd', Color.White, 'c', true), 
+        };
 
         DialogueStruct[] dialogue_deadguy = {
             new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', Color.White, 'c'),
@@ -330,10 +330,10 @@ namespace PERSIST
         {
             slime.sleep = false;
 
-            BossBlock temp1 = new BossBlock(new Rectangle(888, 720, 16, 16), this);
-            BossBlock temp2 = new BossBlock(new Rectangle(888, 736, 16, 16), this);
-            BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 720, 16, 16), this);
-            BossBlock temp4 = new BossBlock(new Rectangle(888 - 16, 736, 16, 16), this);
+            BossBlock temp1 = new BossBlock(new Rectangle(888, 960, 16, 16), this);
+            BossBlock temp2 = new BossBlock(new Rectangle(888, 976, 16, 16), this);
+            BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 960, 16, 16), this);
+            BossBlock temp4 = new BossBlock(new Rectangle(888 - 16, 976, 16, 16), this);
 
             temp1.Load(tst_tutorial);
             temp2.Load(tst_tutorial);

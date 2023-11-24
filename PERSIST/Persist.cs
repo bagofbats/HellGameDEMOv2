@@ -82,7 +82,7 @@ namespace PERSIST
             _graphics.ApplyChanges();
 
             Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug, "rm_tutorial1");
+            the_level = new TutorialLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, debug, "rm_tutorial1");
 
             Window.Title = "HellGame [DEMO]";
         }
@@ -165,7 +165,7 @@ namespace PERSIST
             List<TiledData> tld = new List<TiledData> { data };
 
             Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, 2080, 960), player, tld, cam, progManager, debug, destination);
+            the_level = new TutorialLevel(this, new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight), player, tld, cam, progManager, debug, destination);
 
             the_level.Load(code);
         }
