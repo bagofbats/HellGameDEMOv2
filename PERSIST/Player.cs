@@ -627,7 +627,7 @@ namespace PERSIST
                         frame.X = 160;
                         frame.Y = 832;
                     }
-                    if (wall_right)
+                    else if (wall_right)
                     {
                         frame.X = 160;
                         frame.Y = 864;
