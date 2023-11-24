@@ -249,6 +249,11 @@ namespace PERSIST
         private Rectangle eye = new Rectangle(0, 0, 3, 3);
         private Player player;
 
+        private Color drawColor = Color.Red;
+        private Color pupilColor = Color.DarkRed;
+        private bool damaged = false;
+        private float dmg_timer = 0f;
+
         public EyeSwitch(Rectangle bounds, Player player, Level root)
         {
             this.bounds = bounds;
@@ -265,7 +270,7 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            // throw new NotImplementedException();
+            // animate the pupil
             var temp = player.GetPos();
             int xdiff = bounds.X + 2 + (int)(0.13f * (temp.X + 16 - bounds.X + 6));
             int ydiff = bounds.Y + 4 + (int)(0.13f * (temp.Y + 16 - bounds.Y + 6));
@@ -275,12 +280,32 @@ namespace PERSIST
 
             eye.X = Math.Clamp(eye.X, bounds.X + 1, bounds.X + bounds.Width - 1 - eye.Width);
             eye.Y = Math.Clamp(eye.Y, bounds.Y + 1, bounds.Y + bounds.Width - 1 - eye.Width);
+
+
+            // flash white when damaged
+            if (damaged)
+            {
+                drawColor = Color.White;
+                pupilColor = Color.Blue;
+
+                dmg_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (dmg_timer >= 0.08f)
+                {
+                    damaged = false;
+                    dmg_timer = 0;
+                }    
+            }
+            else
+            {
+                drawColor = Color.Red;
+                pupilColor = Color.DarkRed;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, bounds, Color.Red);
-            spriteBatch.Draw(sprite, eye, Color.DarkRed);
+            spriteBatch.Draw(sprite, bounds, drawColor);
+            spriteBatch.Draw(sprite, eye, pupilColor);
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -291,6 +316,7 @@ namespace PERSIST
         public override void Damage()
         {
             root.Switch(room, two);
+            damaged = true;
             // two = !two;
         }
 

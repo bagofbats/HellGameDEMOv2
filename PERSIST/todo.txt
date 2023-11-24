@@ -2,10 +2,10 @@
  - health bar for bosses
  - cutscene mode for player
  - progression pickups (ranged attacks)
- - boss doors
 
 art:
  - level transitions
+ - more advanced dust animation when blocks switch?
 
 
 epic room names
