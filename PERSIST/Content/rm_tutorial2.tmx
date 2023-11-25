@@ -54,7 +54,7 @@
    <point/>
   </object>
   <object id="152" name="switch_one" x="1512" y="400" width="16" height="32"/>
-  <object id="176" name="switch" x="1752" y="416">
+  <object id="176" name="switch" x="1752" y="408">
    <point/>
   </object>
   <object id="186" name="checkpoint" x="1360" y="736">

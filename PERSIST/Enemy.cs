@@ -354,6 +354,7 @@ namespace PERSIST
         private Rectangle wakeup_rectangle = new Rectangle(880, 960, 24, 32);
         new private TutorialLevel root;
         private int hp = 22;
+        private int max_hp = 22;
         private bool damaged = false;
         private float damaged_timer = 0f;
         private bool airborne = false;
@@ -387,6 +388,8 @@ namespace PERSIST
 
         private void ActualUpdate(GameTime gameTime)
         {
+            root.GetBossHP(hp, max_hp);
+
             bounce_counter += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (bounce_counter >= 4f)
                 bounce_counter = 0f;
@@ -530,6 +533,7 @@ namespace PERSIST
             {
                 //root.DefeatSime(this);
                 root.SplitSlime(this);
+                root.ResetBossHP();
             }
         }
 

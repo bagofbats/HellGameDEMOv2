@@ -63,6 +63,9 @@ namespace PERSIST
         protected float dialogue_speed = 5f;
         protected bool dialogue_skippable = true;
 
+        protected int boss_hp = 0;
+        protected int boss_max_hp = 0;
+
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
         public DialogueStruct[] dialogue_checkpoint = {
@@ -470,6 +473,9 @@ namespace PERSIST
                     var dialogue_rect = new Rectangle((int)cam.GetPos().X, (int)cam.GetPos().Y, 320, 48);
                     _spriteBatch.Draw(black, dialogue_rect, Color.Black);
                 }
+
+                if (boss_max_hp != 0)
+                    DrawBossHP(_spriteBatch, boss_hp, boss_max_hp);
             }
 
             if ((player_dead || finish_player_dead) && dead_timer > 0.36)
@@ -526,6 +532,15 @@ namespace PERSIST
             _spriteBatch.End();
         }
 
+        public void DrawBossHP(SpriteBatch _spriteBatch, int HP, int maxHP)
+        {
+            Rectangle bar_pos = new Rectangle((int)cam.GetPos().X + 10, (int)cam.GetPos().Y + 220, 300, 10);
+            Rectangle health_pos = new Rectangle((int)cam.GetPos().X + 12, (int)cam.GetPos().Y + 222, 296 * HP / maxHP, 6);
+
+            _spriteBatch.Draw(black, bar_pos, Color.Black);
+            _spriteBatch.Draw(black, health_pos, Color.Red);
+        }
+
         private void DrawLayerOnScreen(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, Camera cam)
         {
             if (layer.data == null)
@@ -574,6 +589,8 @@ namespace PERSIST
         {
             if (dead_timer == 0)
                 player_dead = true;
+
+            ResetBossHP();
 
             dead_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -662,6 +679,18 @@ namespace PERSIST
                 dialogue = false;
                 return;
             }
+        }
+
+        public void GetBossHP(int HP, int HP_max)
+        {
+            boss_hp = HP;
+            boss_max_hp = HP_max;
+        }
+
+        public void ResetBossHP()
+        {
+            boss_hp = 0;
+            boss_max_hp = 0;
         }
     }
 

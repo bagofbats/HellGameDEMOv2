@@ -2,6 +2,11 @@
  - health bar for bosses
  - cutscene mode for player
  - progression pickups (ranged attacks)
+ - dialogue options
+ - pause menu
+ - customizable controls
+ - main menu
+ - saving/reloading
 
 art:
  - level transitions
