@@ -534,8 +534,8 @@ namespace PERSIST
 
         public void DrawBossHP(SpriteBatch _spriteBatch, int HP, int maxHP)
         {
-            Rectangle bar_pos = new Rectangle((int)cam.GetPos().X + 10, (int)cam.GetPos().Y + 220, 300, 10);
-            Rectangle health_pos = new Rectangle((int)cam.GetPos().X + 12, (int)cam.GetPos().Y + 222, 296 * HP / maxHP, 6);
+            Rectangle bar_pos = new Rectangle((int)cam.GetPos().X + 10, (int)cam.GetPos().Y + 220, 300, 8);
+            Rectangle health_pos = new Rectangle((int)cam.GetPos().X + 12, (int)cam.GetPos().Y + 222, 296 * HP / maxHP, 4);
 
             _spriteBatch.Draw(black, bar_pos, Color.Black);
             _spriteBatch.Draw(black, health_pos, Color.Red);
