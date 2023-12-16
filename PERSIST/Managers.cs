@@ -25,6 +25,9 @@ namespace PERSIST
         private bool new_enter;
         private bool enter_pressed;
         private bool enter_released;
+        private bool old_up;
+        private bool up_pressed;
+        private bool up_released;
         private bool old_down;
         private bool down_released;
         private bool down_pressed;
@@ -41,6 +44,11 @@ namespace PERSIST
         { get { return new_space; } }
         public bool ENTER
         { get { return new_enter; } }
+
+        public bool UP_PRESSED
+        { get { return up_pressed; } }
+        public bool UP_RELEASED
+        { get { return up_released; } }
 
         public bool DOWN_PRESSED
         { get { return down_pressed; } }
@@ -65,6 +73,8 @@ namespace PERSIST
             right = key.IsKeyDown(Keys.D);
             new_space = key.IsKeyDown(Keys.Space);
             new_enter = key.IsKeyDown(Keys.Enter);
+            up_released = !up && old_up;
+            up_pressed = up && !old_up;
             down_released = !down && old_down;
             down_pressed = down && !old_down;
             space_released = !new_space && old_space;
@@ -74,6 +84,7 @@ namespace PERSIST
 
             old_space = new_space;
             old_enter = new_enter;
+            old_up = up;
             old_down = down;
         }
     }

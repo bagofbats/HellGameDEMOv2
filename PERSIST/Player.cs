@@ -551,6 +551,23 @@ namespace PERSIST
             return pos;
         }
 
+        public int HandleDialogueOptions(int option, int max_options)
+        {
+            if (contManager.DOWN_PRESSED)
+            {
+                option += 1;
+                option = option % max_options;
+            }
+            else if (contManager.UP_PRESSED)
+            {
+                option -= 1;
+                if (option < 0)
+                    option = max_options - 1;
+            }
+
+            return option;
+        }
+
         private void AnimateTree(GameTime gameTime)
         {
             if (progManager.knife)

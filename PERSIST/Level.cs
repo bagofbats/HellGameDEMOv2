@@ -62,6 +62,7 @@ namespace PERSIST
         protected float dialogue_letter = 0;
         protected float dialogue_speed = 5f;
         protected bool dialogue_skippable = true;
+        protected int opts_highlighted = 0;
 
         protected int boss_hp = 0;
         protected int boss_max_hp = 0;
@@ -525,7 +526,7 @@ namespace PERSIST
                         string[] opts = dialogue_txt[dialogue_num].text.Split('\n');
                         int opts_num = opts.Length;
 
-                        int opts_highlighted = 0;
+                        opts_highlighted = player.HandleDialogueOptions(opts_highlighted, opts_num);
 
                         for (int i = 0; i < opts_num; i++)
                         {
@@ -699,6 +700,8 @@ namespace PERSIST
 
             dialogue_num++;
             dialogue_letter = 0f;
+            opts_highlighted = 0;
+
             if (dialogue_num >= dialogue_txt.Length || dialogue_txt[dialogue_num - 1].end)
             {
                 player.LeaveDialogue();
