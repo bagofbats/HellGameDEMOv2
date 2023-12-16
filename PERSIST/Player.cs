@@ -128,8 +128,6 @@ namespace PERSIST
                     root.the_level.AdvanceDialogue();
             }
 
-            List<Enemy> e = root.the_level.CheckEnemyCollision(HitBox);
-
             for (int i = attacks.Count - 1; i >= 0; i--)
                 attacks[i].Update(gameTime);
         }

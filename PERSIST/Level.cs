@@ -496,10 +496,14 @@ namespace PERSIST
                 SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
 
             var current_room = RealGetRoom(cam.GetPos());
+
             if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
+
+
                 if (dialogue)
                 {
                     dialogue_loc = dialogue_txt[dialogue_num].loc;
+                    char dialogue_type = dialogue_txt[dialogue_num].type;
 
                     // default is to left-justify text, no portrait
                     Vector2 textMiddlePoint = new Vector2(0, 0);
@@ -516,9 +520,31 @@ namespace PERSIST
                     textMiddlePoint.X = (int)textMiddlePoint.X;
                     textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
-                    _spriteBatch.DrawString(bm_font, dialogue_txt[dialogue_num].text.Substring(0, (int)dialogue_letter), textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                    if (dialogue_type == 'o')
+                    {
+                        string[] opts = dialogue_txt[dialogue_num].text.Split('\n');
+                        int opts_num = opts.Length;
+
+                        int opts_highlighted = 0;
+
+                        for (int i = 0; i < opts_num; i++)
+                        {
+                            textDrawPoint = new Vector2(cam.GetPos().X + 12, cam.GetPos().Y + 2 + (12 * i));
+
+                            if (i == opts_highlighted)
+                                _spriteBatch.DrawString(bm_font, opts[i], textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                            else
+                                _spriteBatch.DrawString(bm_font, opts[i], textDrawPoint, Color.Gray, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                        }
+                    }
+
+                    else
+                    {
+                        _spriteBatch.DrawString(bm_font, dialogue_txt[dialogue_num].text.Substring(0, (int)dialogue_letter), textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                    }
                 }
                 
+
                 else if (current_room.name != null)
                 {
                     Vector2 textMiddlePoint = bm_font.MeasureString(current_room.name) / 2;

@@ -95,8 +95,8 @@ namespace PERSIST
 
         public ProgressionManager()
         {
-            knife = true;
-            ranged = true;
+            knife = false;
+            ranged = false;
             slime_dead = false;
             slime_started = false;
         }
