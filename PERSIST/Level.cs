@@ -195,6 +195,11 @@ namespace PERSIST
             // nothing
         }
 
+        public virtual void HandleDialogueOption(string opt_code, int choice)
+        {
+            // nothing
+        }
+
         // -----------------------------------------------
 
 
@@ -523,6 +528,8 @@ namespace PERSIST
 
                     if (dialogue_type == 'o')
                     {
+                        dialogue_letter = dialogue_txt[dialogue_num].text.Length;
+
                         string[] opts = dialogue_txt[dialogue_num].text.Split('\n');
                         int opts_num = opts.Length;
 
@@ -695,6 +702,13 @@ namespace PERSIST
             {
                 if (dialogue_skippable)
                     dialogue_letter = dialogue_txt[dialogue_num].text.Length;
+                return;
+            }
+
+            char dialogue_type = dialogue_txt[dialogue_num].type;
+            if (dialogue_type == 'o')
+            {
+                HandleDialogueOption(dialogue_txt[dialogue_num].opt_code, opts_highlighted);
                 return;
             }
 
@@ -1113,7 +1127,7 @@ namespace PERSIST
 
     public struct DialogueStruct
     {
-        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, int portrait_x =0, int portrait_y=0)
+        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, string opt_code="", int portrait_x =0, int portrait_y=0)
         {
             this.text = text;
             this.type = type;
@@ -1121,6 +1135,7 @@ namespace PERSIST
             this.color = color;
             this.end = end;
             portrait = new Rectangle(portrait_x, portrait_y, 45, 45);
+            this.opt_code = opt_code;
         }
 
         public string text;
@@ -1129,5 +1144,6 @@ namespace PERSIST
         public Rectangle portrait;
         public Color color;
         public bool end;
+        public string opt_code;
     }
 }

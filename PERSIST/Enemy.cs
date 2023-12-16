@@ -744,9 +744,6 @@ namespace PERSIST
             if (!progMan.knife)
             {
                 root.StartDialogue(dialogue_deadguy, 0, 'c', 25f, true);
-                progMan.GetKnife();
-                frame.X += 32;
-                counter++;
             }
             else if (counter == 1)
             {
@@ -761,6 +758,13 @@ namespace PERSIST
             }
                 
 
+        }
+
+        public void GetKnife()
+        {
+            progMan.GetKnife();
+            counter++;
+            frame.X += 32;
         }
     }
 }

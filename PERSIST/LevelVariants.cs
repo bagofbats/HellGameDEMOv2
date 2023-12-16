@@ -43,7 +43,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_deadguy = {
             new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', Color.White, 'c'),
-            new DialogueStruct("Pull it out.\nLeave it.\nwario", 'o', Color.White, 'l'),
+            new DialogueStruct("Pull it out.\nLeave it.\nwario", 'o', Color.White, 'l', false, "pull |exit 0 |exit 0"),
             new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c', true),
             new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', Color.White, 'c'),
             new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c', true),
@@ -324,6 +324,36 @@ namespace PERSIST
             foreach (EyeSwitch s in switches)
                 if (s.GetHitBox(new Rectangle(0,0,0,0)).Intersects(r.bounds))
                     s.two = !two;
+        }
+
+        public override void HandleDialogueOption(string opt_code, int choice)
+        {
+            if (opt_code == "")
+                return;
+
+            string[] opts = opt_code.Split('|');
+
+            if (choice >= opts.Length)
+                return;
+
+            string[] code = opts[choice].Split(' ');
+
+            if (code[0] == "exit")
+            {
+                player.LeaveDialogue();
+                dialogue = false;
+                dialogue_letter = 0f;
+                dialogue_num = 0;
+                return;
+            }
+
+            else if (code[0] == "pull")
+            {
+                dead_guy.GetKnife();
+                dialogue_num++;
+                dialogue_letter = 0f;
+                opts_highlighted = 0;
+            }
         }
 
         public void WakeUpSlime(BigSlime slime)
