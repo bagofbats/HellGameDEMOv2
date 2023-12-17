@@ -68,6 +68,10 @@ namespace PERSIST
         protected int boss_hp = 0;
         protected int boss_max_hp = 0;
 
+        protected bool cutscene = false;
+        protected float cutscene_timer = 0f;
+        protected string[] cutscene_code;
+
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
 
         public DialogueStruct[] dialogue_checkpoint = {
@@ -111,6 +115,15 @@ namespace PERSIST
             if (player_dead || finish_player_dead)
                 HandleDeath(gameTime);
 
+
+            // cutscene nonsense
+            if (cutscene)
+            {
+                cutscene_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                HandleCutscene("");
+            }
+
+
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].DontAnimate(gameTime);
 
@@ -119,7 +132,7 @@ namespace PERSIST
             if (temp != null && (temp.visible || prog_manager.GetActiveCheckpoint() == null))
                 prog_manager.SetActiveCheckpoint(temp);
 
-            if (!dialogue)
+            if (!dialogue && !cutscene)
             {
                 for (int i = 0; i < enemies.Count(); i++)
                     enemies[i].Update(gameTime);
@@ -137,8 +150,14 @@ namespace PERSIST
             // door nonsense idk
             for (int i = 0; i < doors.Count(); i++)
                 if (doors[i] != null)
-                    if (doors[i].location.Intersects(player.HitBox) && player.contManager.DOWN_PRESSED)
-                        root.GoToLevel(doors[i].destination, doors[i].code);
+                    if (doors[i].location.Intersects(player.HitBox) && player.contManager.DOWN_PRESSED && !cutscene)
+                    {
+                        //player.EnterCutscene();
+                        //cutscene = true;
+                        //root.GoToLevel(doors[i].destination, doors[i].code);
+                        HandleCutscene("door|" + doors[i].destination + "|" + doors[i].code, true);
+                    }
+                        
 
             // camera following
             Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
@@ -199,6 +218,11 @@ namespace PERSIST
         }
 
         public virtual void HandleDialogueOption(string opt_code, int choice)
+        {
+            // nothing
+        }
+
+        public virtual void HandleCutscene (string code, bool start=false)
         {
             // nothing
         }
@@ -474,7 +498,7 @@ namespace PERSIST
                     var dialogue_rect = new Rectangle(cam_x, cam_y, 320, 48);
                     _spriteBatch.Draw(black, dialogue_rect, Color.Black);
                 }
-                else if (!(player_dead || finish_player_dead))
+                else if (!(player_dead || finish_player_dead) && !cutscene)
                 {
                     // draw the player's hp bar
 
@@ -512,7 +536,7 @@ namespace PERSIST
 
         public void DrawText(SpriteBatch _spriteBatch)
         {
-            if (!overlay)
+            if (!overlay || (cutscene && !dialogue))
                 return;
 
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied,

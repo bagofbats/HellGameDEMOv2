@@ -203,7 +203,7 @@ namespace PERSIST
             cutscene = true;
         }
 
-        public void LeaveCutscene()
+        public void ExitCutscene()
         {
             cutscene = false;
         }

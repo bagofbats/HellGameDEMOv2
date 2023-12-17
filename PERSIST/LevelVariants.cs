@@ -356,6 +356,27 @@ namespace PERSIST
             }
         }
 
+        public override void HandleCutscene(string code, bool start)
+        {
+            if (start)
+            {
+                cutscene_code = code.Split('|');
+
+                player.EnterCutscene();
+                cutscene = true;
+                cutscene_timer = 0f;
+            }
+
+
+            // transitions between levels
+            if (cutscene_code[0] == "door" && cutscene_timer > 5f)
+            {
+                root.GoToLevel(cutscene_code[1], cutscene_code[2]);
+                player.ExitCutscene();
+                cutscene = false;
+            }
+        }
+
         public void WakeUpSlime(BigSlime slime)
         {
             slime.sleep = false;
