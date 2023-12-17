@@ -53,6 +53,7 @@ namespace PERSIST
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {
             dialogue_checkpoint = dialogue_ck;
+            door_trans_color = new Color(36, 0, 0);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
@@ -365,15 +366,25 @@ namespace PERSIST
                 player.EnterCutscene();
                 cutscene = true;
                 cutscene_timer = 0f;
+
+                door_trans_rect.X = (int)cam.GetPos().X - 960;
+                door_trans_rect.Y = (int)cam.GetPos().Y;
             }
 
 
             // transitions between levels
-            if (cutscene_code[0] == "door" && cutscene_timer > 5f)
+            if (cutscene_code[0] == "door")
             {
-                root.GoToLevel(cutscene_code[1], cutscene_code[2]);
-                player.ExitCutscene();
-                cutscene = false;
+                door_trans = true;
+
+                if (cutscene_timer > 5f)
+                {
+                    root.GoToLevel(cutscene_code[1], cutscene_code[2]);
+                    player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                }
+                door_trans_rect.X = (int)(cam.GetPos().X - 960 + (200 * cutscene_timer));
             }
         }
 

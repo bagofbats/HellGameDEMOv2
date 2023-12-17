@@ -72,7 +72,11 @@ namespace PERSIST
         protected float cutscene_timer = 0f;
         protected string[] cutscene_code;
 
+        protected bool door_trans = false;
+        protected Color door_trans_color = Color.DarkRed;
+
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
+        protected Rectangle door_trans_rect = new Rectangle(0, 0, 960, 240);
 
         public DialogueStruct[] dialogue_checkpoint = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c', true)};
@@ -527,6 +531,9 @@ namespace PERSIST
 
             if ((player_dead || finish_player_dead) && dead_timer > 0.36)
                 _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.Black);
+
+            if (door_trans)
+                _spriteBatch.Draw(spr_screenwipe, door_trans_rect, door_trans_color);
 
             if (player_dead)
                 player.DrawDead(_spriteBatch, dead_timer);
