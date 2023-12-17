@@ -99,7 +99,7 @@ namespace PERSIST
         {
             //font = root.Content.Load<SpriteFont>("pixellocale");
             black = root.Content.Load<Texture2D>("black");
-            bm_font = root.Content.Load<BitmapFont>("pixellocale_bmp");
+            bm_font = root.Content.Load<BitmapFont>("fonts/pixellocale_bmp");
 
             this.spr_ui = spr_ui;
         }
@@ -474,8 +474,10 @@ namespace PERSIST
                     var dialogue_rect = new Rectangle(cam_x, cam_y, 320, 48);
                     _spriteBatch.Draw(black, dialogue_rect, Color.Black);
                 }
-                else
+                else if (!(player_dead || finish_player_dead))
                 {
+                    // draw the player's hp bar
+
                     (int hp, int max_hp) = player.GetHP();
                     int pos = 2;
 

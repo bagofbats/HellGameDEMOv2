@@ -14,7 +14,7 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin bg_brick.png
+#begin bgs/bg_brick2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -24,19 +24,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:bg_brick.png
-
-#begin bg_brick2.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:bg_brick2.png
+/build:bgs/bg_brick2.png
 
 #begin black.png
 /importer:TextureImporter
@@ -50,7 +38,7 @@
 /processorParam:TextureFormat=Color
 /build:black.png
 
-#begin pixellocale_bmp_0.png
+#begin fonts/pixellocale_bmp_0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -60,21 +48,14 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:pixellocale_bmp_0.png
+/build:fonts/pixellocale_bmp_0.png
 
-#begin pixellocale_bmp.fnt
+#begin fonts/pixellocale_bmp.fnt
 /importer:BitmapFontImporter
 /processor:BitmapFontProcessor
-/build:pixellocale_bmp.fnt
+/build:fonts/pixellocale_bmp.fnt
 
-#begin pixellocale.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=False
-/processorParam:TextureFormat=NoChange
-/build:pixellocale.spritefont
-
-#begin spr_atk_ranged.png
+#begin sprites/spr_atk_ranged.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -84,9 +65,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_atk_ranged.png
+/build:sprites/spr_atk_ranged.png
 
-#begin spr_atk.png
+#begin sprites/spr_atk.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -96,9 +77,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_atk.png
+/build:sprites/spr_atk.png
 
-#begin spr_breakable.png
+#begin sprites/spr_checkpoint.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -108,9 +89,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_breakable.png
+/build:sprites/spr_checkpoint.png
 
-#begin spr_checkpoint.png
+#begin sprites/spr_particlefx.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -120,9 +101,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_checkpoint.png
+/build:sprites/spr_particlefx.png
 
-#begin spr_particlefx.png
+#begin sprites/spr_screenwipe.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -132,9 +113,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_particlefx.png
+/build:sprites/spr_screenwipe.png
 
-#begin spr_screenwipe.png
+#begin sprites/spr_slime.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -144,9 +125,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_screenwipe.png
+/build:sprites/spr_slime.png
 
-#begin spr_slime.png
+#begin sprites/spr_trigo_fullspritesheet.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -156,9 +137,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_slime.png
+/build:sprites/spr_trigo_fullspritesheet.png
 
-#begin spr_trigo_fullspritesheet.png
+#begin sprites/spr_ui.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -168,9 +149,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_trigo_fullspritesheet.png
+/build:sprites/spr_ui.png
 
-#begin spr_ui.png
+#begin tilesets/tst_tutorial.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -180,17 +161,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:spr_ui.png
-
-#begin tst_tutorial.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:tst_tutorial.png
+/build:tilesets/tst_tutorial.png
 

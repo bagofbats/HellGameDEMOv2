@@ -32,6 +32,12 @@ namespace PERSIST
         private bool enter_pressed;
         private bool enter_released;
 
+        // state fields
+        private bool dialogue = false;
+        private bool cutscene = false;
+        private bool pogoed = false;
+        private bool attacking = false;
+
         // gameplay fields
         private Vector2 pos;
         private float hsp = 0f;
@@ -61,12 +67,10 @@ namespace PERSIST
         private float pogo_target = 0f;
         private float pogo_timer = 0f;
         private float pogo_time = 0.4f;
-        private bool pogoed = false;
         private float pogo_float_timer = 0.05f;
         private float pogo_float = 1.1f;
         private float coyote_time = 0.08f;
         private float coyote_timer = 0f;
-        private bool dialogue = false;
         private int hp = 1;
         private int max_hp = 1;
 
@@ -77,7 +81,6 @@ namespace PERSIST
         private Texture2D spr_atk;
         private Texture2D spr_ranged;
         private float walk_timer = 0;
-        private bool attacking = false;
         private bool atk_dir = true;
         private char atk_type = 'r';
         private bool thrown = false;
@@ -106,9 +109,9 @@ namespace PERSIST
         // core functions
         public void Load()
         {
-            sheet = root.Content.Load<Texture2D>("spr_trigo_fullspritesheet");
-            spr_atk = root.Content.Load<Texture2D>("spr_atk");
-            spr_ranged = root.Content.Load<Texture2D>("spr_atk_ranged");
+            sheet = root.Content.Load<Texture2D>("sprites/spr_trigo_fullspritesheet");
+            spr_atk = root.Content.Load<Texture2D>("sprites/spr_atk");
+            spr_ranged = root.Content.Load<Texture2D>("sprites/spr_atk_ranged");
         }
 
         public void Update(GameTime gameTime)
@@ -117,14 +120,14 @@ namespace PERSIST
 
             game_time = gameTime;
 
-            if (!dialogue)
+            if (!dialogue && !cutscene)
             {
                 HandleMovementAndCollisions(gameTime);
 
                 AnimateTree(gameTime);
             }
 
-            else
+            else if (dialogue)
             {
                 if (contManager.ENTER_PRESSED)
                     root.the_level.AdvanceDialogue();
@@ -193,6 +196,16 @@ namespace PERSIST
         public void LeaveDialogue()
         {
             dialogue = false;
+        }
+
+        public void EnterCutscene()
+        {
+            cutscene = true;
+        }
+
+        public void LeaveCutscene()
+        {
+            cutscene = false;
         }
 
 

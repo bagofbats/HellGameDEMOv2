@@ -11,6 +11,7 @@
 art:
  - level transitions
  - more advanced dust animation when blocks switch?
+ - particle effects on wall slide
 
 
 epic room names

@@ -104,7 +104,7 @@ namespace PERSIST
 
             // TODO: use this.Content to load your game content here
 
-            spr_ui = Content.Load<Texture2D>("spr_ui");
+            spr_ui = Content.Load<Texture2D>("sprites/spr_ui");
 
             player.Load();
             the_level.Load(spr_ui);

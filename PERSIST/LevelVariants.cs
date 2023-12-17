@@ -186,12 +186,12 @@ namespace PERSIST
 
             base.Load(spr_ui);
 
-            Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
-            particle_img = root.Content.Load<Texture2D>("spr_particlefx");
-            tst_tutorial = root.Content.Load<Texture2D>("tst_tutorial");
-            spr_slime = root.Content.Load<Texture2D>("spr_slime");
-            spr_screenwipe = root.Content.Load<Texture2D>("spr_screenwipe");
-            bg_brick = root.Content.Load<Texture2D>("bg_brick2");
+            Texture2D checkpoint = root.Content.Load<Texture2D>("sprites/spr_checkpoint");
+            particle_img = root.Content.Load<Texture2D>("sprites/spr_particlefx");
+            tst_tutorial = root.Content.Load<Texture2D>("tilesets/tst_tutorial");
+            spr_slime = root.Content.Load<Texture2D>("sprites/spr_slime");
+            spr_screenwipe = root.Content.Load<Texture2D>("sprites/spr_screenwipe");
+            bg_brick = root.Content.Load<Texture2D>("bgs/bg_brick2");
             // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
 
             enemy_assets.Add(typeof(Slime), spr_slime);
