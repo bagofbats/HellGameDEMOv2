@@ -191,7 +191,6 @@ namespace PERSIST
             particle_img = root.Content.Load<Texture2D>("sprites/spr_particlefx");
             tst_tutorial = root.Content.Load<Texture2D>("tilesets/tst_tutorial");
             spr_slime = root.Content.Load<Texture2D>("sprites/spr_slime");
-            spr_screenwipe = root.Content.Load<Texture2D>("sprites/spr_screenwipe");
             bg_brick = root.Content.Load<Texture2D>("bgs/bg_brick2");
             // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
 
@@ -367,24 +366,30 @@ namespace PERSIST
                 cutscene = true;
                 cutscene_timer = 0f;
 
-                door_trans_rect.X = (int)cam.GetPos().X - 960;
-                door_trans_rect.Y = (int)cam.GetPos().Y;
+                door_trans_rect_1.X = (int)cam.GetPos().X - door_trans_rect_1.Width;
+                door_trans_rect_1.Y = (int)cam.GetPos().Y;
+
+                door_trans_rect_2.X = (int)cam.GetPos().X + 320;
+                door_trans_rect_2.Y = (int)cam.GetPos().Y;
             }
 
 
             // transitions between levels
             if (cutscene_code[0] == "door")
             {
+                int wipe_width = door_trans_rect_1.Width;
+
                 door_trans = true;
 
-                if (cutscene_timer > 5f)
+                if (cutscene_timer > 0.76f)
                 {
                     root.GoToLevel(cutscene_code[1], cutscene_code[2]);
                     player.ExitCutscene();
                     cutscene = false;
                     door_trans = false;
                 }
-                door_trans_rect.X = (int)(cam.GetPos().X - 960 + (200 * cutscene_timer));
+                door_trans_rect_1.X = (int)(cam.GetPos().X - wipe_width + (400 * cutscene_timer));
+                door_trans_rect_2.X = (int)(cam.GetPos().X + 320 - (400 * cutscene_timer));
             }
         }
 

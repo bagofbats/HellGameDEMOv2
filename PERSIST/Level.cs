@@ -32,6 +32,7 @@ namespace PERSIST
         { get; protected set; }
         protected Texture2D spr_ui;
         protected Texture2D spr_screenwipe;
+        protected Texture2D spr_doorwipe;
         protected bool debug;
         protected ProgressionManager prog_manager;
         protected bool overlay = true;
@@ -76,7 +77,8 @@ namespace PERSIST
         protected Color door_trans_color = Color.DarkRed;
 
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
-        protected Rectangle door_trans_rect = new Rectangle(0, 0, 960, 240);
+        protected Rectangle door_trans_rect_1 = new Rectangle(0, 0, 400, 240);
+        protected Rectangle door_trans_rect_2 = new Rectangle(0, 0, 400, 240);
 
         public DialogueStruct[] dialogue_checkpoint = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c', true)};
@@ -108,6 +110,9 @@ namespace PERSIST
             //font = root.Content.Load<SpriteFont>("pixellocale");
             black = root.Content.Load<Texture2D>("black");
             bm_font = root.Content.Load<BitmapFont>("fonts/pixellocale_bmp");
+            spr_screenwipe = root.Content.Load<Texture2D>("sprites/spr_screenwipe");
+            spr_doorwipe = root.Content.Load<Texture2D>("sprites/spr_doorwipe");
+
 
             this.spr_ui = spr_ui;
         }
@@ -533,7 +538,11 @@ namespace PERSIST
                 _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.Black);
 
             if (door_trans)
-                _spriteBatch.Draw(spr_screenwipe, door_trans_rect, door_trans_color);
+            {
+                _spriteBatch.Draw(spr_doorwipe, door_trans_rect_1, new Rectangle(0, 0, 400, 240), door_trans_color);
+                _spriteBatch.Draw(spr_doorwipe, door_trans_rect_2, new Rectangle(0, 240, 400, 240), door_trans_color);
+            }
+                
 
             if (player_dead)
                 player.DrawDead(_spriteBatch, dead_timer);
