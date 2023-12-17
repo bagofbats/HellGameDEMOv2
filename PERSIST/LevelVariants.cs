@@ -43,7 +43,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_deadguy = {
             new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', Color.White, 'c'),
-            new DialogueStruct("Pull it out.\nLeave it.\nwario", 'o', Color.White, 'l', false, "pull |exit 0 |exit 0"),
+            new DialogueStruct("Leave it.\nPull it out.", 'o', Color.White, 'l', false, "exit 0|pull"),
             new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c', true),
             new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', Color.White, 'c'),
             new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c', true),
@@ -169,7 +169,7 @@ namespace PERSIST
                 }
         }
 
-        public override void Load(string code="")
+        public override void Load(Texture2D spr_ui, string code="")
         {
             if (code != "")
             {
@@ -184,7 +184,7 @@ namespace PERSIST
 
             cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
 
-            base.Load();
+            base.Load(spr_ui);
 
             Texture2D checkpoint = root.Content.Load<Texture2D>("spr_checkpoint");
             particle_img = root.Content.Load<Texture2D>("spr_particlefx");

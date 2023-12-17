@@ -30,6 +30,7 @@ namespace PERSIST
         protected BitmapFont bm_font;
         public Texture2D particle_img
         { get; protected set; }
+        protected Texture2D spr_ui;
         protected Texture2D spr_screenwipe;
         protected bool debug;
         protected ProgressionManager prog_manager;
@@ -94,11 +95,13 @@ namespace PERSIST
         // override these in child classes
         // (only Update and Load have any code in the parent class -- the rest are blank functions to be overwritten)
 
-        public virtual void Load(string code="")
+        public virtual void Load(Texture2D spr_ui, string code="")
         {
             //font = root.Content.Load<SpriteFont>("pixellocale");
             black = root.Content.Load<Texture2D>("black");
             bm_font = root.Content.Load<BitmapFont>("pixellocale_bmp");
+
+            this.spr_ui = spr_ui;
         }
 
         public virtual void Update(GameTime gameTime)
@@ -459,25 +462,37 @@ namespace PERSIST
 
             if (overlay)
             {
-                var overlay_rect = new Rectangle((int)cam.GetPos().X, (int)cam.GetPos().Y, 320, 12);
+                int cam_x = (int)cam.GetPos().X;
+                int cam_y = (int)cam.GetPos().Y;
+
+
+                var overlay_rect = new Rectangle(cam_x, cam_y, 320, 12);
                 _spriteBatch.Draw(black, overlay_rect, Color.Black);
-
-                var current_room = RealGetRoom(cam.GetPos());
-                //if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
-                //    if (current_room.name != null)
-                //    {
-                //        Vector2 textMiddlePoint = font.MeasureString(current_room.name) / 2;
-                //        textMiddlePoint.X = (int)textMiddlePoint.X;
-                //        textMiddlePoint.Y = (int)textMiddlePoint.Y;
-
-                //        Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 4);
-                //        _spriteBatch.DrawString(font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
-                //    }
                 
                 if (dialogue)
                 {
-                    var dialogue_rect = new Rectangle((int)cam.GetPos().X, (int)cam.GetPos().Y, 320, 48);
+                    var dialogue_rect = new Rectangle(cam_x, cam_y, 320, 48);
                     _spriteBatch.Draw(black, dialogue_rect, Color.Black);
+                }
+                else
+                {
+                    (int hp, int max_hp) = player.GetHP();
+                    int pos = 2;
+
+                    for (int i = 0; i < hp; i++)
+                    {
+                        Rectangle heart_loc = new Rectangle(cam_x + pos, cam_y + 2, 10, 8);
+                        _spriteBatch.Draw(spr_ui, heart_loc, new Rectangle(0, 0, 10, 8), Color.White);
+                        pos += 11;
+                    }
+
+                    for (int i = hp; i < max_hp; i++)
+                    {
+                        Rectangle heart_loc = new Rectangle(cam_x + pos, cam_y + 2, 10, 8);
+                        _spriteBatch.Draw(spr_ui, heart_loc, new Rectangle(11, 0, 10, 8), Color.White);
+                        pos += 11;
+                    }
+
                 }
 
                 if (boss_max_hp != 0)
@@ -540,7 +555,7 @@ namespace PERSIST
                             textDrawPoint = new Vector2(cam.GetPos().X + 12, cam.GetPos().Y + 2 + (12 * i));
 
                             if (i == opts_highlighted)
-                                _spriteBatch.DrawString(bm_font, opts[i], textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                                _spriteBatch.DrawString(bm_font, " > " + opts[i], textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                             else
                                 _spriteBatch.DrawString(bm_font, opts[i], textDrawPoint, Color.Gray, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                         }

@@ -21,6 +21,8 @@ namespace PERSIST
         private ProgressionManager progManager = new ProgressionManager();
         private FPSCounter fpsCounter = new FPSCounter();
 
+        private Texture2D spr_ui;
+
         public bool blackout
         { get; set; }
 
@@ -102,8 +104,10 @@ namespace PERSIST
 
             // TODO: use this.Content to load your game content here
 
+            spr_ui = Content.Load<Texture2D>("spr_ui");
+
             player.Load();
-            the_level.Load();
+            the_level.Load(spr_ui);
         }
 
         protected override void Update(GameTime gameTime)
@@ -167,7 +171,7 @@ namespace PERSIST
             Camera cam = new Camera(this);
             the_level = new TutorialLevel(this, new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight), player, tld, cam, progManager, debug, destination);
 
-            the_level.Load(code);
+            the_level.Load(spr_ui, code);
         }
 
         public void SimpleGoToLevel(Level destination)

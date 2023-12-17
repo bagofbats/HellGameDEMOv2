@@ -67,6 +67,8 @@ namespace PERSIST
         private float coyote_time = 0.08f;
         private float coyote_timer = 0f;
         private bool dialogue = false;
+        private int hp = 1;
+        private int max_hp = 1;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -549,6 +551,11 @@ namespace PERSIST
         public Vector2 GetPos()
         {
             return pos;
+        }
+
+        public (int, int) GetHP()
+        {
+            return (hp, max_hp);
         }
 
         public int HandleDialogueOptions(int option, int max_options)
