@@ -103,7 +103,7 @@ namespace PERSIST
         // -----------------------------------------------
 
         // override these in child classes
-        // (only Update and Load have any code in the parent class -- the rest are blank functions to be overwritten)
+        // (only Update, Load, and Cutscene Handler have any code in the parent class -- the rest are blank functions to be overwritten)
 
         public virtual void Load(Texture2D spr_ui, string code="")
         {
@@ -231,9 +231,64 @@ namespace PERSIST
             // nothing
         }
 
+
+        // comes pre-loaded with code to handle room transitions
+        // override everything else
         public virtual void HandleCutscene (string code, bool start=false)
         {
-            // nothing
+            if (start)
+            {
+                cutscene_code = code.Split('|');
+
+                player.EnterCutscene();
+                cutscene = true;
+                cutscene_timer = 0f;
+
+                if (cutscene_code[0] == "finish_door")
+                {
+                    root.bbuffer_color = door_trans_color;
+                    //root.blackout = true;
+                }
+            }
+
+
+            // transitions between levels
+            if (cutscene_code[0] == "door")
+            {
+                int wipe_width = door_trans_rect_1.Width;
+
+                door_trans = true;
+
+                if (cutscene_timer > 0.7f)
+                {
+                    root.GoToLevel(cutscene_code[1], cutscene_code[2], "finish_door");
+                    //player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                }
+                door_trans_rect_1.X = (int)(cam.GetPos().X - wipe_width + (516 * cutscene_timer));
+                door_trans_rect_2.X = (int)(cam.GetPos().X + 320 - (516 * cutscene_timer));
+
+                door_trans_rect_1.Y = (int)cam.GetPos().Y;
+                door_trans_rect_2.Y = (int)cam.GetPos().Y;
+            }
+
+            if (cutscene_code[0] == "finish_door")
+            {
+                door_trans = true;
+
+                if (cutscene_timer > 0.7f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                }
+                door_trans_rect_1.X = (int)(cam.GetPos().X - 128 - (516 * cutscene_timer));
+                door_trans_rect_2.X = (int)(cam.GetPos().X + 48 + (516 * cutscene_timer));
+
+                door_trans_rect_1.Y = (int)cam.GetPos().Y;
+                door_trans_rect_2.Y = (int)cam.GetPos().Y;
+            }
         }
 
         // -----------------------------------------------
@@ -460,7 +515,7 @@ namespace PERSIST
             for (int i = enemies.Count - 1; i >= 0; i--)
                 enemies[i].Draw(_spriteBatch);
 
-            if (!player_dead)
+            if (!player_dead && !door_trans)
                 player.Draw(_spriteBatch);
 
             foreach (TiledData t in tld)
@@ -735,7 +790,7 @@ namespace PERSIST
                     if (doors[i].code == code)
                     {
                         Door dst = doors[i];
-                        player.SetPos(new Vector2(dst.location.X, dst.location.Y));
+                        player.SetPos(new Vector2(dst.location.X + 6, dst.location.Y - 8));
                         cam.SmartSetPos(new Vector2(dst.location.X, dst.location.Y));
                         break;
                     }
