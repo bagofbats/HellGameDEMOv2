@@ -366,11 +366,11 @@ namespace PERSIST
                 cutscene = true;
                 cutscene_timer = 0f;
 
-                door_trans_rect_1.X = (int)cam.GetPos().X - door_trans_rect_1.Width;
-                door_trans_rect_1.Y = (int)cam.GetPos().Y;
-
-                door_trans_rect_2.X = (int)cam.GetPos().X + 320;
-                door_trans_rect_2.Y = (int)cam.GetPos().Y;
+                if (cutscene_code[0] == "finish_door")
+                {
+                    root.bbuffer_color = door_trans_color;
+                    //root.blackout = true;
+                }
             }
 
 
@@ -381,15 +381,35 @@ namespace PERSIST
 
                 door_trans = true;
 
-                if (cutscene_timer > 0.76f)
+                if (cutscene_timer > 0.7f)
                 {
-                    root.GoToLevel(cutscene_code[1], cutscene_code[2]);
+                    root.GoToLevel(cutscene_code[1], cutscene_code[2], "finish_door");
+                    //player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                }
+                door_trans_rect_1.X = (int)(cam.GetPos().X - wipe_width + (516 * cutscene_timer));
+                door_trans_rect_2.X = (int)(cam.GetPos().X + 320 - (516 * cutscene_timer));
+
+                door_trans_rect_1.Y = (int)cam.GetPos().Y;
+                door_trans_rect_2.Y = (int)cam.GetPos().Y;
+            }
+
+            if (cutscene_code[0] == "finish_door")
+            {
+                door_trans = true;
+
+                if (cutscene_timer > 0.7f)
+                {
                     player.ExitCutscene();
                     cutscene = false;
                     door_trans = false;
                 }
-                door_trans_rect_1.X = (int)(cam.GetPos().X - wipe_width + (400 * cutscene_timer));
-                door_trans_rect_2.X = (int)(cam.GetPos().X + 320 - (400 * cutscene_timer));
+                door_trans_rect_1.X = (int)(cam.GetPos().X - 128 - (516 * cutscene_timer));
+                door_trans_rect_2.X = (int)(cam.GetPos().X + 48 + (516 * cutscene_timer));
+
+                door_trans_rect_1.Y = (int)cam.GetPos().Y;
+                door_trans_rect_2.Y = (int)cam.GetPos().Y;
             }
         }
 

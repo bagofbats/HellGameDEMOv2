@@ -25,6 +25,8 @@ namespace PERSIST
 
         public bool blackout
         { get; set; }
+        public Color bbuffer_color
+        { get; set; }
 
         private Player player;
         public Level the_level
@@ -41,6 +43,7 @@ namespace PERSIST
             Content.RootDirectory = "Content";
             _graphics.GraphicsProfile = GraphicsProfile.HiDef; // <---- look up what this does cuz idfk
             IsMouseVisible = true;
+            bbuffer_color = Color.DarkSalmon;
 
 
             level_map = new Dictionary<(string, string), LevelStruct>()
@@ -128,7 +131,7 @@ namespace PERSIST
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.SetRenderTarget(_nativeRenderTarget);
-            GraphicsDevice.Clear(Color.DarkSalmon);
+            GraphicsDevice.Clear(bbuffer_color);
 
             the_level.Draw(_spriteBatch);
 
@@ -148,14 +151,18 @@ namespace PERSIST
             _spriteBatch.End();
 
             base.Draw(gameTime);
+
+            bbuffer_color = Color.DarkSalmon;
         }
 
-        public void GoToLevel(string destination, string code)
+        public void GoToLevel(string destination, string code, string cutscene="")
         {
             if (progManager.GetActiveCheckpoint().root.name == destination)
             {
                 SimpleGoToLevel(progManager.GetActiveCheckpoint().root);
                 progManager.GetActiveCheckpoint().root.PlayerGotoDoor(code);
+                if (cutscene != "")
+                    the_level.HandleCutscene(cutscene, true);
                 return;
             }
 
@@ -172,6 +179,9 @@ namespace PERSIST
             the_level = new TutorialLevel(this, new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight), player, tld, cam, progManager, debug, destination);
 
             the_level.Load(spr_ui, code);
+
+            if (cutscene != "")
+                the_level.HandleCutscene(cutscene, true);
         }
 
         public void SimpleGoToLevel(Level destination)
