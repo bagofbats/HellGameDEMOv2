@@ -634,21 +634,44 @@ namespace PERSIST
                     }
                     else
                     {
-                        frame.X = 128;
-                        if (hdir == -1 || last_hdir == -1)
-                            frame.Y = 800;
+                        if (!up)
+                        {
+                            frame.X = 128;
+                            if (hdir == -1 || last_hdir == -1)
+                                frame.Y = 800;
+                            else
+                                frame.Y = 768;
+                        }
                         else
-                            frame.Y = 768;
+                        {
+                            frame.X = 0;
+                            if (hdir == -1 || last_hdir == -1)
+                                frame.Y = 1184;
+                            else
+                                frame.Y = 1152;
+                        }
                     }
                     
                 }
                 else
                 {
-                    frame.X = 192;
-                    if (hdir == -1 || last_hdir == -1)
-                        frame.Y = 736;
+                    if (!up)
+                    {
+                        frame.X = 192;
+                        if (hdir == -1 || last_hdir == -1)
+                            frame.Y = 736;
+                        else
+                            frame.Y = 704;
+                    }
                     else
-                        frame.Y = 704;
+                    {
+                        frame.X = 64;
+                        if (hdir == -1 || last_hdir == -1)
+                            frame.Y = 1184;
+                        else
+                            frame.Y = 1152;
+                    }
+                    
                 }
                 return;
             }
@@ -667,7 +690,7 @@ namespace PERSIST
                         frame.X = 160;
                         frame.Y = 864;
                     }
-                    else
+                    else if (!up)
                     {
                         frame.X = 160;
                         if (hdir == -1 || last_hdir == -1)
@@ -675,15 +698,35 @@ namespace PERSIST
                         else
                             frame.Y = 768;
                     }
+                    else
+                    {
+                        frame.X = 32;
+                        if (hdir == -1 || last_hdir == -1)
+                            frame.Y = 1184;
+                        else
+                            frame.Y = 1152;
+                    }
                     
                 }
                 else
                 {
-                    frame.X = 224;
-                    if (hdir == -1 || last_hdir == -1)
-                        frame.Y = 736;
+                    if (!up)
+                    {
+                        frame.X = 224;
+                        if (hdir == -1 || last_hdir == -1)
+                            frame.Y = 736;
+                        else
+                            frame.Y = 704;
+                    }
                     else
-                        frame.Y = 704;
+                    {
+                        frame.X = 96;
+                        if (hdir == -1 || last_hdir == -1)
+                            frame.Y = 1184;
+                        else
+                            frame.Y = 1152;
+                    }
+                    
                 }
                 return;
             }

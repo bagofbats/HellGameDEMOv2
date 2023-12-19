@@ -43,7 +43,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_deadguy = {
             new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', Color.White, 'c'),
-            new DialogueStruct("Leave it alone.\nPull the blade out.", 'o', Color.White, 'l', false, "exit 0|pull"),
+            new DialogueStruct("Leave it alone.\nPull it out.", 'o', Color.White, 'l', false, "exit 0|pull"),
             new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c', true),
             new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', Color.White, 'c'),
             new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c', true),
