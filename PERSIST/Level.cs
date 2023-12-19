@@ -74,7 +74,7 @@ namespace PERSIST
         protected string[] cutscene_code;
 
         protected bool door_trans = false;
-        protected Color door_trans_color = Color.DarkRed;
+        protected Color door_trans_color = Color.Black;
 
         protected Rectangle screenwipe_rect = new Rectangle(0, 0, 960, 240);
         protected Rectangle door_trans_rect_1 = new Rectangle(0, 0, 400, 240);
@@ -246,8 +246,8 @@ namespace PERSIST
 
                 if (cutscene_code[0] == "finish_door")
                 {
-                    root.bbuffer_color = door_trans_color;
-                    //root.blackout = true;
+                    //root.bbuffer_color = door_trans_color;
+                    root.blackout = true;
                 }
             }
 

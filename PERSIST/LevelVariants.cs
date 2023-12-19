@@ -43,7 +43,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_deadguy = {
             new DialogueStruct("There is a knife stuck in the corpse's head.", 'd', Color.White, 'c'),
-            new DialogueStruct("Leave it.\nPull it out.", 'o', Color.White, 'l', false, "exit 0|pull"),
+            new DialogueStruct("Leave it alone.\nPull the blade out.", 'o', Color.White, 'l', false, "exit 0|pull"),
             new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c', true),
             new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', Color.White, 'c'),
             new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c', true),
@@ -53,7 +53,7 @@ namespace PERSIST
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
         {
             dialogue_checkpoint = dialogue_ck;
-            door_trans_color = new Color(36, 0, 0);
+            door_trans_color = Color.Black; // new Color(36, 0, 0);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
