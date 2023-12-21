@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Gui.Controls;
+using MonoGame.Extended.Timers;
 
 namespace PERSIST
 {
@@ -360,6 +361,7 @@ namespace PERSIST
         private bool airborne = false;
         public bool shake = false;
         private Random rnd = new Random();
+        private SleepFX sleepFX;
 
         public BigSlime(Vector2 pos, Player player, TutorialLevel root)
         {
@@ -378,6 +380,7 @@ namespace PERSIST
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
+            sleepFX = new SleepFX(root.particle_img, root, this);
         }
 
         public override void Update(GameTime gameTime)
@@ -488,6 +491,8 @@ namespace PERSIST
                 root.WakeUpSlime(this, gameTime);
             else if (wakeup_ready)
                 wakeup_ready = false;
+
+            sleepFX.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -508,6 +513,9 @@ namespace PERSIST
                 spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White * 0.76f);
                 spriteBatch.Draw(sprite, PositionRectangle, temp, Color.White * 0.24f);
             }
+
+            if (sleep)
+                sleepFX.Draw(spriteBatch);
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -545,6 +553,11 @@ namespace PERSIST
                 root.SplitSlime(this);
                 root.ResetBossHP();
             }
+        }
+
+        public void UpdateSleepFX(GameTime gameTime)
+        {
+            sleepFX.Update(gameTime);
         }
 
         public override Rectangle GetHitBox(Rectangle input)

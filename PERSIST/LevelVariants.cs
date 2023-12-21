@@ -364,24 +364,27 @@ namespace PERSIST
 
             if (cutscene_code[0] == "wakeslime")
             {
-                if (cutscene_timer > 0.3f)
+                if (cutscene_timer > 0f)
+                    slimeboss.UpdateSleepFX(gameTime);
+
+                if (cutscene_timer > 0.7f)
                 {
                     slimeboss.shake = true;
                 }
                 
-                if (cutscene_timer > 0.6f)
+                if (cutscene_timer > 1f)
                 {
                     slimeboss.shake = false;
                 }
                     
 
-                if (cutscene_timer > 1f && slimeboss.sleep)
+                if (cutscene_timer > 1.4f && slimeboss.sleep)
                 {
                     slimeboss.sleep = false;
                     slimeboss.Update(gameTime);
                 }
 
-                if (cutscene_timer > 2f)
+                if (cutscene_timer > 2.7f)
                 {
                     if (cutscene_code[1] == "")
                     {
@@ -409,7 +412,7 @@ namespace PERSIST
                     }
                 }
 
-                if (cutscene_timer > 3f)
+                if (cutscene_timer > 3.2f)
                 {
                     player.ExitCutscene();
                     cutscene = false;

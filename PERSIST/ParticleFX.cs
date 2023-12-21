@@ -85,7 +85,7 @@ namespace PERSIST
     {
         // private Rectangle frame = new Rectangle(0, 80, 16, 16);
         private Texture2D img;
-        private Slime host;
+        private Enemy host;
 
         private float max_diff = 72f;
 
@@ -109,7 +109,7 @@ namespace PERSIST
 
         
 
-        public SleepFX(Texture2D img, Level root, Slime host)
+        public SleepFX(Texture2D img, Level root, Enemy host)
         {
             this.root = root;
             this.img = img;
@@ -119,8 +119,8 @@ namespace PERSIST
         public override void Update(GameTime gameTime)
         {
             // z_one
-            z_one.X = host.HitBox.X + (int)z_one_xdiff;
-            z_one.Y = host.HitBox.Y - 12 + (int)z_one_diff;
+            z_one.X = host.GetHitBox(new Rectangle(0, 0, 0, 0)).X + (int)z_one_xdiff;
+            z_one.Y = host.GetHitBox(new Rectangle(0, 0, 0, 0)).Y - 12 + (int)z_one_diff;
 
             z_one_diff -= 0.5f * (float)(gameTime.ElapsedGameTime.TotalSeconds * 60);
             z_one_diff = z_one_diff % max_diff;
@@ -132,8 +132,8 @@ namespace PERSIST
                 z_one_transparency = z_one_diff / -10;
 
             // z_two
-            z_two.X = host.HitBox.X + (int)z_two_xdiff;
-            z_two.Y = host.HitBox.Y - 12 + (int)z_two_diff;
+            z_two.X = host.GetHitBox(new Rectangle(0, 0, 0, 0)).X + (int)z_two_xdiff;
+            z_two.Y = host.GetHitBox(new Rectangle(0, 0, 0, 0)).Y - 12 + (int)z_two_diff;
 
             z_two_diff -= 0.5f * (float)(gameTime.ElapsedGameTime.TotalSeconds * 60);
             z_two_diff = z_two_diff % max_diff;
@@ -145,8 +145,8 @@ namespace PERSIST
                 z_two_transparency = z_two_diff / -10;
 
             // z_three
-            z_three.X = host.HitBox.X + (int)z_three_xdiff;
-            z_three.Y = host.HitBox.Y - 12 + (int)z_three_diff;
+            z_three.X = host.GetHitBox(new Rectangle(0, 0, 0, 0)).X + (int)z_three_xdiff;
+            z_three.Y = host.GetHitBox(new Rectangle(0, 0, 0, 0)).Y - 12 + (int)z_three_diff;
 
             z_three_diff -= 0.5f * (float)(gameTime.ElapsedGameTime.TotalSeconds * 60);
             z_three_diff = z_three_diff % max_diff;
