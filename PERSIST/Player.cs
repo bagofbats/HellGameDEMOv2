@@ -794,6 +794,10 @@ namespace PERSIST
                 if (last_hdir == -1) { frame.Y = 608; }
                 else { frame.Y = 576; }
             }
+
+            // mask
+            if (progManager.mask)
+                frame.X += 256;
         }
 
         private void AnimateAtk(GameTime gameTime)

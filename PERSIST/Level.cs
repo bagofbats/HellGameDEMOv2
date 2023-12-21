@@ -129,7 +129,7 @@ namespace PERSIST
             if (cutscene)
             {
                 cutscene_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                HandleCutscene("");
+                HandleCutscene("", gameTime);
             }
 
 
@@ -164,7 +164,7 @@ namespace PERSIST
                         //player.EnterCutscene();
                         //cutscene = true;
                         //root.GoToLevel(doors[i].destination, doors[i].code);
-                        HandleCutscene("door|" + doors[i].destination + "|" + doors[i].code, true);
+                        HandleCutscene("door|" + doors[i].destination + "|" + doors[i].code, gameTime, true);
                     }
                         
 
@@ -234,7 +234,7 @@ namespace PERSIST
 
         // comes pre-loaded with code to handle room transitions
         // override everything else
-        public virtual void HandleCutscene (string code, bool start=false)
+        public virtual void HandleCutscene (string code, GameTime gameTime, bool start=false)
         {
             if (start)
             {
@@ -585,7 +585,7 @@ namespace PERSIST
 
                 }
 
-                if (boss_max_hp != 0)
+                if (boss_max_hp != 0 && !cutscene)
                     DrawBossHP(_spriteBatch, boss_hp, boss_max_hp);
             }
 

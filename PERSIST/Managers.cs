@@ -97,6 +97,8 @@ namespace PERSIST
         { get; private set; }
         public bool ranged
         { get; private set; }
+        public bool mask
+        { get; private set; }
         
         // bosses and mini-bosses
         public bool slime_started
@@ -106,10 +108,11 @@ namespace PERSIST
 
         public ProgressionManager()
         {
-            knife = false;
+            knife = true;
             ranged = false;
             slime_dead = false;
             slime_started = false;
+            mask = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)

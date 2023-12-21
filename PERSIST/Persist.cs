@@ -162,7 +162,7 @@ namespace PERSIST
                 SimpleGoToLevel(progManager.GetActiveCheckpoint().root);
                 progManager.GetActiveCheckpoint().root.PlayerGotoDoor(code);
                 if (cutscene != "")
-                    the_level.HandleCutscene(cutscene, true);
+                    the_level.HandleCutscene(cutscene, null, true);
                 return;
             }
 
@@ -181,7 +181,7 @@ namespace PERSIST
             the_level.Load(spr_ui, code);
 
             if (cutscene != "")
-                the_level.HandleCutscene(cutscene, true);
+                the_level.HandleCutscene(cutscene, null, true);
         }
 
         public void SimpleGoToLevel(Level destination)

@@ -483,7 +483,7 @@ namespace PERSIST
             if (player.HitBox.Intersects(wakeup_rectangle))
                 wakeup_ready = true;
             else if (wakeup_ready && player.GetPos().X > wakeup_rectangle.X)
-                root.WakeUpSlime(this);
+                root.WakeUpSlime(this, gameTime);
             else if (wakeup_ready)
                 wakeup_ready = false;
         }
