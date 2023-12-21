@@ -358,6 +358,8 @@ namespace PERSIST
         private bool damaged = false;
         private float damaged_timer = 0f;
         private bool airborne = false;
+        public bool shake = false;
+        private Random rnd = new Random();
 
         public BigSlime(Vector2 pos, Player player, TutorialLevel root)
         {
@@ -490,7 +492,15 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (!damaged)
+            if (shake)
+            {
+                Rectangle draw_rectangle = new Rectangle(PositionRectangle.X + (int)(rnd.Next(0, 6) - 3f) * 2,
+                                                         PositionRectangle.Y + (int)(rnd.Next(0, 2) - 0.5f) * 2,
+                                                         PositionRectangle.Width,
+                                                         PositionRectangle.Height);
+                spriteBatch.Draw(sprite, draw_rectangle, frame, Color.White);
+            }
+            else if (!damaged)
                 spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
             else
             {

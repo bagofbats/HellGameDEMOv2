@@ -49,7 +49,7 @@ namespace PERSIST
             new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c', true),
             new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', Color.White, 'c'),
             new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c', true),
-            new DialogueStruct("Best not to dwell on it.", 'd', Color.Red, 'c', true)
+            new DialogueStruct("Best not to dwell on it.", 'd', Color.White, 'c', true)
         };
 
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
@@ -364,6 +364,17 @@ namespace PERSIST
 
             if (cutscene_code[0] == "wakeslime")
             {
+                if (cutscene_timer > 0.3f)
+                {
+                    slimeboss.shake = true;
+                }
+                
+                if (cutscene_timer > 0.6f)
+                {
+                    slimeboss.shake = false;
+                }
+                    
+
                 if (cutscene_timer > 1f && slimeboss.sleep)
                 {
                     slimeboss.sleep = false;
