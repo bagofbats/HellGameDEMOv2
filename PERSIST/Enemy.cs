@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -56,6 +57,8 @@ namespace PERSIST
         private bool sleep;
         protected bool sleep_possible = true;
 
+        private bool airborne = false;
+
         public Slime(Vector2 pos, Level root)
         {
             this.pos = pos;
@@ -106,6 +109,7 @@ namespace PERSIST
             Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
 
             sleep = (dist_x > 100 || dist_y > 70) && vcheck != null && sleep_possible;
+            airborne = vcheck == null;
 
             if (vcheck != null)
             {
@@ -229,7 +233,7 @@ namespace PERSIST
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
             if (sleep)
                 sleepFX.Draw(spriteBatch);
-            else if (!sleepFX.trailed_off)
+            else if (!sleepFX.trailed_off && !airborne)
                 sleepFX.Draw(spriteBatch);
         }
 
@@ -581,7 +585,7 @@ namespace PERSIST
                 sleepFX.trail_off = true;
             }
         }
-
+        
         public override Rectangle GetHitBox(Rectangle input)
         {
             if (input == new Rectangle(0, 0, 0, 0))

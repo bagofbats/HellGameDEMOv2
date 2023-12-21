@@ -130,6 +130,11 @@ namespace PERSIST
             knife = true;
         }
 
+        public void EncounterSlime()
+        {
+            slime_started = true;
+        }
+        
         public void DefeatSlime()
         {
             slime_dead = true;
