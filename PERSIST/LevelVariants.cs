@@ -369,6 +369,7 @@ namespace PERSIST
 
                 if (cutscene_timer > 0.7f)
                 {
+                    slimeboss.sleep = false;
                     slimeboss.shake = true;
                 }
                 
@@ -378,10 +379,10 @@ namespace PERSIST
                 }
                     
 
-                if (cutscene_timer > 1.4f && slimeboss.sleep)
+                if (cutscene_timer > 1.4f && !slimeboss.up)
                 {
-                    slimeboss.sleep = false;
                     slimeboss.Update(gameTime);
+                    slimeboss.up = true;
                 }
 
                 if (cutscene_timer > 2.7f)

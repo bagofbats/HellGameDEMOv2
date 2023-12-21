@@ -86,6 +86,10 @@ namespace PERSIST
         // private Rectangle frame = new Rectangle(0, 80, 16, 16);
         private Texture2D img;
         private Enemy host;
+        public bool trail_off
+        { get; set; }
+        public bool trailed_off
+        { get; private set; }
 
         private float max_diff = 72f;
 
@@ -107,6 +111,8 @@ namespace PERSIST
         private float z_three_xdiff = 0;
         private float z_three_transparency = 0f;
 
+        private float trail_off_transparency = 0f;
+
         
 
         public SleepFX(Texture2D img, Level root, Enemy host)
@@ -114,6 +120,9 @@ namespace PERSIST
             this.root = root;
             this.img = img;
             this.host = host;
+
+            trail_off = false;
+            trailed_off = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -137,7 +146,7 @@ namespace PERSIST
 
             z_two_diff -= 0.5f * (float)(gameTime.ElapsedGameTime.TotalSeconds * 60);
             z_two_diff = z_two_diff % max_diff;
-
+            
             z_two_xdiff = 8 * (float)Math.Sin(z_two_diff / 4);
 
             z_two_transparency = 0.42f + (z_two_diff / 100);
@@ -156,6 +165,22 @@ namespace PERSIST
             z_three_transparency = 0.42f + (z_three_diff / 100);
             if (z_three_diff >= -5f)
                 z_three_transparency = z_three_diff / -10;
+
+
+            if (trail_off)
+            {
+                trail_off_transparency += 0.018f * (float)(gameTime.ElapsedGameTime.TotalSeconds * 60);
+                z_one_transparency -= trail_off_transparency;
+                z_two_transparency -= trail_off_transparency;
+                z_three_transparency -= trail_off_transparency;
+
+                trailed_off = z_one_transparency < 0 && z_two_transparency < 0 && z_three_transparency < 0;
+            }
+            else
+            {
+                trail_off_transparency = 0;
+                trailed_off = false;
+            }
         }
 
         public void ResetZs()

@@ -177,6 +177,8 @@ namespace PERSIST
 
             if (sleep)
             {
+                sleepFX.trail_off = false;
+
                 sleepFX.Update(gameTime);
                 frame.X = 64;
                 if (hdir == 1)
@@ -184,8 +186,16 @@ namespace PERSIST
                 else
                     frame.Y = 32;
             }
+            else if (!sleepFX.trailed_off)
+            {
+                sleepFX.Update(gameTime);
+                sleepFX.trail_off = true;
+            }
             else
+            {
                 sleepFX.ResetZs();
+            }
+                
 
         }
 
@@ -218,6 +228,8 @@ namespace PERSIST
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
             if (sleep)
+                sleepFX.Draw(spriteBatch);
+            else if (!sleepFX.trailed_off)
                 sleepFX.Draw(spriteBatch);
         }
 
@@ -362,6 +374,7 @@ namespace PERSIST
         public bool shake = false;
         private Random rnd = new Random();
         private SleepFX sleepFX;
+        public bool up = false;
 
         public BigSlime(Vector2 pos, Player player, TutorialLevel root)
         {
@@ -493,6 +506,7 @@ namespace PERSIST
                 wakeup_ready = false;
 
             sleepFX.Update(gameTime);
+            sleepFX.trail_off = false;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -515,6 +529,8 @@ namespace PERSIST
             }
 
             if (sleep)
+                sleepFX.Draw(spriteBatch);
+            else if (!sleepFX.trailed_off)
                 sleepFX.Draw(spriteBatch);
         }
 
@@ -557,7 +573,13 @@ namespace PERSIST
 
         public void UpdateSleepFX(GameTime gameTime)
         {
-            sleepFX.Update(gameTime);
+            if (sleep)
+                sleepFX.Update(gameTime);
+            else if (!sleepFX.trailed_off)
+            {
+                sleepFX.Update(gameTime);
+                sleepFX.trail_off = true;
+            }
         }
 
         public override Rectangle GetHitBox(Rectangle input)
