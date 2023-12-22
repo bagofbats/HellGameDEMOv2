@@ -96,25 +96,9 @@ namespace PERSIST
                                 checkpoints[checkpoints.Count - 1].visible = false;
                             }
                                 
-
                             if (l.objects[i].name == "door")
                                 doors.Add(new Door(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), l.objects[i].properties[1].value, l.objects[i].properties[0].value));
-
-                            if (l.objects[i].name == "slime")
-                            {
-                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
-                                AddEnemy(new Slime(temp, this));
-                                enemy_locations.Add(temp);
-                                enemy_types.Add("slime");
-                            }
-
-                            if (l.objects[i].name == "big_slime")
-                            {
-                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
-                                AddEnemy(new BigSlime(temp, player, this));
-                                enemy_locations.Add(temp);
-                                enemy_types.Add("big_slime");
-                            }
+                            
 
                             if (l.objects[i].name == "breakable")
                             {
@@ -155,6 +139,34 @@ namespace PERSIST
                                 switches.Add(temp);
                                 enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
                                 enemy_types.Add("switch");
+                            }
+
+                            if (l.objects[i].name == "switch_boss")
+                            {
+                                var temp = new EyeSwitch(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 12, 12), player, this);
+                                AddEnemy(temp);
+                                switches.Add(temp);
+                                enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
+                                enemy_types.Add("switch_boss");
+
+                                if (!prog_manager.slime_dead)
+                                    temp.SetDisabled(true);
+                            }
+
+                            if (l.objects[i].name == "slime")
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Slime(temp, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("slime");
+                            }
+
+                            if (l.objects[i].name == "big_slime")
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new BigSlime(temp, player, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("big_slime");
                             }
 
                             if (l.objects[i].name == "knife_getter_guy")
@@ -267,11 +279,22 @@ namespace PERSIST
                 if (enemy_types[i] == "big_slime" && !prog_manager.slime_dead)
                     AddEnemy(new BigSlime(enemy_locations[i], player, this));
 
+
                 if (enemy_types[i] == "switch")
                 {
                     var temp = new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 12, 12), player, this);
                     AddEnemy(temp);
                     switches.Add(temp);
+                }
+
+                if (enemy_types[i] == "switch_boss")
+                {
+                    var temp = new EyeSwitch(new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 12, 12), player, this);
+                    AddEnemy(temp);
+                    switches.Add(temp);
+
+                    if (!prog_manager.slime_dead)
+                        temp.SetDisabled(true);
                 }
 
                 if (enemy_types[i] == "deadguy")
@@ -471,6 +494,10 @@ namespace PERSIST
             for (int i = rooms.Count - 1; i >= 0; i--)
                 if (rooms[i].name == "Fundamentals")
                     rooms.Remove(rooms[i]);
+
+            foreach (EyeSwitch s in switches)
+                if (s.disabled)
+                    s.SetDisabled(false);
 
             StartDialogue(dialogue_slime, 0, 'c', 10f, false, false);
         }

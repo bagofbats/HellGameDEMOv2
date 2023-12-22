@@ -13,6 +13,9 @@ art:
  - more advanced dust animation when blocks switch?
  - particle effects on wall slide
 
+ bugs:
+  - disable switch while fighting slime boss
+
 
 epic room names
  - polyglot             |  someone who knows a lot of languages

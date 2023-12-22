@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="270" height="128" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="524">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="270" height="128" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="525">
  <tileset firstgid="1" source="tst_tutorial.tsx"/>
  <objectgroup id="9" name="rooms">
   <object id="1" name="The Bounce Brothers" x="0" y="304" width="560" height="240"/>
@@ -70,9 +70,6 @@
   </object>
   <object id="226" name="switch_one" x="1144" y="776" width="32" height="32"/>
   <object id="228" name="switch_two" x="1176" y="856" width="16" height="80"/>
-  <object id="230" name="switch" x="1032" y="880">
-   <point/>
-  </object>
   <object id="233" name="checkpoint" x="848" y="728">
    <point/>
   </object>
@@ -155,6 +152,9 @@
    <point/>
   </object>
   <object id="516" name="switch_two" x="2048" y="336" width="16" height="16"/>
+  <object id="524" name="switch_boss" x="1032" y="880">
+   <point/>
+  </object>
  </objectgroup>
  <layer id="6" name="background_lower" width="270" height="128">
   <data encoding="csv">

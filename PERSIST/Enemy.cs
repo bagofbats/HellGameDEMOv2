@@ -271,6 +271,9 @@ namespace PERSIST
         private bool damaged = false;
         private float dmg_timer = 0f;
 
+        public bool disabled
+        { get; private set; }
+
         public EyeSwitch(Rectangle bounds, Player player, Level root)
         {
             this.bounds = bounds;
@@ -312,6 +315,11 @@ namespace PERSIST
                     dmg_timer = 0;
                 }    
             }
+            else if (disabled)
+            {
+                drawColor = Color.Black;
+                pupilColor = Color.Black;
+            }
             else
             {
                 drawColor = Color.Red;
@@ -332,6 +340,9 @@ namespace PERSIST
 
         public override void Damage()
         {
+            if (disabled)
+                return;
+
             root.Switch(room, two);
             damaged = true;
             // two = !two;
@@ -350,6 +361,11 @@ namespace PERSIST
         public override void Interact()
         {
             // nothing xd
+        }
+
+        public void SetDisabled(bool d)
+        {
+            disabled = d;
         }
     }
 
