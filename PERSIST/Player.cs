@@ -324,6 +324,8 @@ namespace PERSIST
                     hoset = -3.0f;
                 else
                     hoset = 3.0f;
+
+                //hsp = (hsp_max * hdir);
             }
             // --------- end wall jumping ---------
 
@@ -394,12 +396,20 @@ namespace PERSIST
             else
                 hsp_max = hsp_max_default;
 
-            hsp = (hsp_max * hdir) + (hoset * Math.Abs(Math.Sign(hoset) - hdir));
+            float hsp_abs = (hsp_max * hdir);
+            float hsp_ratio = 3/8f;
+
+            hsp += hsp_abs * hsp_ratio;
+
+            if (Math.Abs(hsp) > Math.Abs(hsp_abs))
+                hsp = hsp_abs;
+
+            float hsp_final = hsp + (hoset * Math.Abs(Math.Sign(hoset) - hdir));
 
             if (wallslide && hoset == 0)
-                hsp = 0;
+                hsp_final = 0;
 
-            float hsp_col_check = hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+            float hsp_col_check = hsp_final * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             if (hsp_col_check > 0)
                 hsp_col_check += 1;
             else
@@ -409,14 +419,15 @@ namespace PERSIST
 
             if (hcheck != null)
             {
-                if (hsp > 0)
+                if (hsp_final > 0)
                     pos.X = hcheck.bounds.Left - 23;
-                else if (hsp < 0)
+                else if (hsp_final < 0)
                     pos.X = hcheck.bounds.Right - 9;
+                hsp_final = 0;
                 hsp = 0;
             }
 
-            pos.X += hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+            pos.X += hsp_final * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             // --------- end horizontal movement ---------
 
 
