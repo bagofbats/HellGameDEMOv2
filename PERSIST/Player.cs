@@ -46,6 +46,8 @@ namespace PERSIST
         private int last_hdir = 1;
         private float hsp_max = 2.4f;
         private float hsp_max_default = 2.4f;
+        private float hsp_ratio = 3 / 8f;
+        private float hsp_ratio_default = 3 / 8f;
         private float grav = 0.211f;
         private float grav_default = 0.211f;
         private float grav_max = 5f;
@@ -325,7 +327,7 @@ namespace PERSIST
                 else
                     hoset = 3.0f;
 
-                //hsp = (hsp_max * hdir);
+                hsp_ratio = 1f;
             }
             // --------- end wall jumping ---------
 
@@ -397,9 +399,11 @@ namespace PERSIST
                 hsp_max = hsp_max_default;
 
             float hsp_abs = (hsp_max * hdir);
-            float hsp_ratio = 3/8f;
-
             hsp += hsp_abs * hsp_ratio;
+
+            // reset hsp_ratio if it was changed for whatever reason
+            // (right now only wall jumping has the power to do that)
+            hsp_ratio = hsp_ratio_default;
 
             if (Math.Abs(hsp) > Math.Abs(hsp_abs))
                 hsp = hsp_abs;
