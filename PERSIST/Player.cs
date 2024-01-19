@@ -444,7 +444,7 @@ namespace PERSIST
                     temp.Interact();
 
             Checkpoint C = root.the_level.CheckpointCheckCollision(HitBox);
-            if (C != null && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED)
+            if (C != null && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED && !contManager.LEFT && !contManager.RIGHT)
                 C.Interact();
 
 

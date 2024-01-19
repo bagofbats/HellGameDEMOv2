@@ -427,6 +427,8 @@ namespace PERSIST
         private void ActualUpdate(GameTime gameTime)
         {
             root.GetBossHP(hp, max_hp);
+            sleepFX.trail_off = true;
+            sleepFX.Update(gameTime);
 
             bounce_counter += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (bounce_counter >= 4f)
