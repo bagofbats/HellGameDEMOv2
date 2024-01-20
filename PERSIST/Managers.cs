@@ -32,6 +32,9 @@ namespace PERSIST
         private bool down_released;
         private bool down_pressed;
 
+        private bool multiple_atk_buttons = true;
+        private bool multiple_down_buttons = true;
+
         public bool UP
         { get { return up; } }
         public bool DOWN
@@ -67,12 +70,45 @@ namespace PERSIST
 
         public void GetInputs(KeyboardState key)
         {
+            GamePadCapabilities capabilities = GamePad.GetCapabilities(PlayerIndex.One);
+
             up = key.IsKeyDown(Keys.W);
             down = key.IsKeyDown(Keys.S);
             left = key.IsKeyDown(Keys.A);
             right = key.IsKeyDown(Keys.D);
             new_space = key.IsKeyDown(Keys.Space);
             new_enter = key.IsKeyDown(Keys.Enter);
+
+            if (capabilities.IsConnected)
+            {
+                GamePadState state = GamePad.GetState(PlayerIndex.One);
+
+                if (capabilities.HasLeftXThumbStick)
+                {
+                    left = left || state.ThumbSticks.Left.X < -0.3f;
+                    right = right || state.ThumbSticks.Left.X > 0.3f;
+                }
+
+                if (capabilities.HasLeftYThumbStick)
+                {
+                    up = up || state.ThumbSticks.Left.Y > 0.4f;
+                    down = down || state.ThumbSticks.Left.Y < -0.4f;
+                }
+
+                if (capabilities.GamePadType == GamePadType.GamePad)
+                {
+                    new_space = new_space || state.IsButtonDown(Buttons.A);
+                    new_enter = new_enter || state.IsButtonDown(Buttons.X);
+
+                    if (multiple_atk_buttons)
+                        new_enter = new_enter || state.IsButtonDown(Buttons.RightTrigger);
+
+                    if (multiple_down_buttons)
+                        down = down || state.IsButtonDown(Buttons.LeftTrigger);
+                }
+            }
+
+
             up_released = !up && old_up;
             up_pressed = up && !old_up;
             down_released = !down && old_down;
@@ -108,7 +144,7 @@ namespace PERSIST
 
         public ProgressionManager()
         {
-            knife = true;
+            knife = false;
             ranged = false;
             slime_dead = false;
             slime_started = false;

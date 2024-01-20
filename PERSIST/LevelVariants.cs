@@ -390,25 +390,25 @@ namespace PERSIST
                 if (cutscene_timer > 0f)
                     slimeboss.UpdateSleepFX(gameTime);
 
-                if (cutscene_timer > 0.7f)
+                if (cutscene_timer > 1.7f)
                 {
                     slimeboss.sleep = false;
                     slimeboss.shake = true;
                 }
                 
-                if (cutscene_timer > 1f)
+                if (cutscene_timer > 2f)
                 {
                     slimeboss.shake = false;
                 }
                     
 
-                if (cutscene_timer > 1.4f && !slimeboss.up)
+                if (cutscene_timer > 2.4f && !slimeboss.up)
                 {
                     slimeboss.Update(gameTime);
                     slimeboss.up = true;
                 }
 
-                if (cutscene_timer > 2.7f)
+                if (cutscene_timer > 3.7f)
                 {
                     if (cutscene_code[1] == "")
                     {
@@ -436,7 +436,7 @@ namespace PERSIST
                     }
                 }
 
-                if (cutscene_timer > 3.2f)
+                if (cutscene_timer > 4.2f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
