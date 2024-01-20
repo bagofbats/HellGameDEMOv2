@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,6 +32,8 @@ namespace PERSIST
         private bool old_down;
         private bool down_released;
         private bool down_pressed;
+
+        private Dictionary<string, Keys> key_map;
 
         private bool multiple_atk_buttons = true;
         private bool multiple_down_buttons = true;
@@ -68,16 +71,29 @@ namespace PERSIST
         public bool ENTER_RELEASED
         { get { return enter_released; } }
 
+        public ControllerManager()
+        {
+            key_map = new Dictionary<string, Keys>
+            {
+                {"up", Keys.W },
+                {"down", Keys.S },
+                {"left", Keys.A },
+                {"right", Keys.D },
+                {"jump", Keys.None },
+                {"attack", Keys.None }
+            };
+        }
+
         public void GetInputs(KeyboardState key)
         {
             GamePadCapabilities capabilities = GamePad.GetCapabilities(PlayerIndex.One);
 
-            up = key.IsKeyDown(Keys.W);
-            down = key.IsKeyDown(Keys.S);
-            left = key.IsKeyDown(Keys.A);
-            right = key.IsKeyDown(Keys.D);
-            new_space = key.IsKeyDown(Keys.Space);
-            new_enter = key.IsKeyDown(Keys.Enter);
+            up = key.IsKeyDown(Keys.Up) || key.IsKeyDown(key_map["up"]);
+            down = key.IsKeyDown(Keys.Down) || key.IsKeyDown(key_map["down"]);
+            left = key.IsKeyDown(Keys.Left) || key.IsKeyDown(key_map["left"]);
+            right = key.IsKeyDown(Keys.Right) || key.IsKeyDown(key_map["right"]);
+            new_space = key.IsKeyDown(Keys.Space) || key.IsKeyDown(key_map["jump"]);
+            new_enter = key.IsKeyDown(Keys.Enter) || key.IsKeyDown(key_map["attack"]);
 
             if (capabilities.IsConnected)
             {
@@ -99,6 +115,11 @@ namespace PERSIST
                 {
                     new_space = new_space || state.IsButtonDown(Buttons.A);
                     new_enter = new_enter || state.IsButtonDown(Buttons.X);
+
+                    up = up || state.IsButtonDown(Buttons.DPadUp);
+                    down = down || state.IsButtonDown(Buttons.DPadDown);
+                    left = left || state.IsButtonDown(Buttons.DPadLeft);
+                    right = right || state.IsButtonDown(Buttons.DPadRight);
 
                     if (multiple_atk_buttons)
                         new_enter = new_enter || state.IsButtonDown(Buttons.RightTrigger);
