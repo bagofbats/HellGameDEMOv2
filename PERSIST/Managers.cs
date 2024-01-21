@@ -37,7 +37,8 @@ namespace PERSIST
         private bool esc_pressed;
         private bool esc_released;
 
-        private Dictionary<string, Keys> key_map;
+        public Dictionary<string, Keys> key_map;
+        public Dictionary<string, Keys> key_defaults;
 
         private bool multiple_atk_buttons = true;
         private bool multiple_down_buttons = true;
@@ -90,6 +91,16 @@ namespace PERSIST
                 {"right", Keys.D },
                 {"jump", Keys.None },
                 {"attack", Keys.None }
+            };
+
+            key_defaults = new Dictionary<string, Keys>
+            {
+                {"up", Keys.Up },
+                {"down", Keys.Down },
+                {"left", Keys.Left },
+                {"right", Keys.Right },
+                {"jump", Keys.Space },
+                {"attack", Keys.Enter }
             };
         }
 

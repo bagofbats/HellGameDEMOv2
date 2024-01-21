@@ -14,6 +14,7 @@ namespace PERSIST
         private bool debug = false;
 
         private bool pause = false;
+        private bool options = false;
         private int pause_selection = 0;
         private string[] pause_options =
         {
@@ -136,6 +137,7 @@ namespace PERSIST
             {
                 pause = !pause;
                 pause_selection = 0;
+                options = false;
             }
                 
 
@@ -143,7 +145,7 @@ namespace PERSIST
                 the_level.Update(gameTime);
 
             // pause menu
-            else 
+            else if (!options)
             {
                 if (contManager.DOWN_PRESSED)
                     pause_selection = (pause_selection + 1) % pause_options.Length;
@@ -160,10 +162,20 @@ namespace PERSIST
                     if (pause_options[pause_selection] == "Resume")
                         pause = !pause;
 
+                    if (pause_options[pause_selection] == "Options")
+                        options = true;
+
                     if (pause_options[pause_selection] == "Quit")
                         Exit();
                 }
                     
+            }
+
+            // options menu
+            else
+            {
+                if (contManager.ENTER_PRESSED || contManager.SPACE_PRESSED)
+                    options = false;
             }
 
             // fpsCounter.Update(gameTime);
@@ -192,36 +204,7 @@ namespace PERSIST
             }
 
             if (pause)
-            {
-                _spriteBatch.Draw(_nativeRenderTarget, _screenRectangle, Color.Black * 0.4f);
-
-                string pause_msg = "[ PAUSED ]";
-                Vector2 textMiddlePoint = bm_font.MeasureString(pause_msg) / 2;
-                textMiddlePoint.X = (int)textMiddlePoint.X;
-                textMiddlePoint.Y = (int)textMiddlePoint.Y;
-                
-                _spriteBatch.DrawString(bm_font, pause_msg, 
-                                        new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2), _screenRectangle.Y + (_screenRectangle.Height / 3.4f)), 
-                                        Color.Gray * 0.7f, 0, textMiddlePoint, scale * 2f, SpriteEffects.None, 0f
-                                        );
-
-                for (int i = 0; i < pause_options.Length; i++) 
-                {
-                    pause_msg = pause_options[i];
-                    Color text_color = Color.Gray;
-
-                    if (i == pause_selection)
-                    {
-                        text_color = Color.White;
-                        pause_msg = "> " + pause_msg;
-                    }
-
-                    _spriteBatch.DrawString(bm_font, pause_msg,
-                                            new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2.4f), _screenRectangle.Y + (_screenRectangle.Height / 3) + (24 * (i + 1) * scale)),
-                                            text_color, 0, new Vector2(0,0), scale, SpriteEffects.None, 0f
-                                            );
-                }
-            }
+                DrawPause(_spriteBatch);
 
             _spriteBatch.End();
 
@@ -262,6 +245,78 @@ namespace PERSIST
         public void SimpleGoToLevel(Level destination)
         {
             the_level = destination;
+        }
+
+        private void DrawPause(SpriteBatch _spriteBatch)
+        {
+            _spriteBatch.Draw(_nativeRenderTarget, _screenRectangle, Color.Black * 0.5f);
+
+            if (!options)
+            {
+                string pause_msg = "[ PAUSED ]";
+                Vector2 textMiddlePoint = bm_font.MeasureString(pause_msg) / 2;
+                textMiddlePoint.X = (int)textMiddlePoint.X;
+                textMiddlePoint.Y = (int)textMiddlePoint.Y;
+
+                _spriteBatch.DrawString(bm_font, pause_msg,
+                                        new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2), _screenRectangle.Y + (_screenRectangle.Height / 3.4f)),
+                                        Color.Gray * 0.7f, 0, textMiddlePoint, scale * 2f, SpriteEffects.None, 0f
+                                        );
+
+                for (int i = 0; i < pause_options.Length; i++)
+                {
+                    pause_msg = pause_options[i];
+                    Color text_color = Color.Gray;
+
+                    if (i == pause_selection)
+                    {
+                        text_color = Color.White;
+                        pause_msg = "> " + pause_msg;
+                    }
+
+                    _spriteBatch.DrawString(bm_font, pause_msg,
+                                            new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2.36f), _screenRectangle.Y + (_screenRectangle.Height / 3) + (24 * (i + 1) * scale)),
+                                            text_color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0f
+                                            );
+                }
+            }
+
+            else
+            {
+                string pause_msg = "[ OPTIONS ]";
+                Vector2 textMiddlePoint = bm_font.MeasureString(pause_msg) / 2;
+                textMiddlePoint.X = (int)textMiddlePoint.X;
+                textMiddlePoint.Y = (int)textMiddlePoint.Y;
+
+                _spriteBatch.DrawString(bm_font, pause_msg,
+                                        new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2), _screenRectangle.Y + (_screenRectangle.Height / 4f)),
+                                        Color.Gray * 0.7f, 0, textMiddlePoint, scale * 2f, SpriteEffects.None, 0f
+                                        );
+
+                string[] keys =
+                {
+                    "UP", "DOWN", "LEFT", "RIGHT", "JUMP", "ATTACK"
+                };
+
+                for (int i = 0; i < contManager.key_map.Keys.Count; i++)
+                {
+                    string padded = keys[i];
+                    for (int j = 8; j > keys[i].Length; j--)
+                        padded += "_";
+
+                    pause_msg = padded + " | " + contManager.key_defaults[keys[i].ToLower()].ToString();
+                    Color text_color = Color.Gray;
+
+                    string key = contManager.key_map[keys[i].ToLower()].ToString();
+                    if (key != "None")
+                        pause_msg += " or " + contManager.key_map[keys[i].ToLower()].ToString();
+
+                    _spriteBatch.DrawString(bm_font, pause_msg,
+                                            new Vector2(_screenRectangle.X + (_screenRectangle.Width / 3f), _screenRectangle.Y + (_screenRectangle.Height / 3) + (12 * i * scale)),
+                                            text_color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0f
+                                            );
+                }
+            }
         }
     }
 }
