@@ -32,6 +32,10 @@ namespace PERSIST
         private bool old_down;
         private bool down_released;
         private bool down_pressed;
+        private bool new_esc;
+        private bool old_esc;
+        private bool esc_pressed;
+        private bool esc_released;
 
         private Dictionary<string, Keys> key_map;
 
@@ -71,6 +75,11 @@ namespace PERSIST
         public bool ENTER_RELEASED
         { get { return enter_released; } }
 
+        public bool ESC_PRESSED
+        { get { return esc_pressed; } }
+        public bool ESC_RELEASED
+        { get { return esc_released; } }
+
         public ControllerManager()
         {
             key_map = new Dictionary<string, Keys>
@@ -94,6 +103,7 @@ namespace PERSIST
             right = key.IsKeyDown(Keys.Right) || key.IsKeyDown(key_map["right"]);
             new_space = key.IsKeyDown(Keys.Space) || key.IsKeyDown(key_map["jump"]);
             new_enter = key.IsKeyDown(Keys.Enter) || key.IsKeyDown(key_map["attack"]);
+            new_esc = key.IsKeyDown(Keys.Escape);
 
             if (capabilities.IsConnected)
             {
@@ -101,8 +111,8 @@ namespace PERSIST
 
                 if (capabilities.HasLeftXThumbStick)
                 {
-                    left = left || state.ThumbSticks.Left.X < -0.3f;
-                    right = right || state.ThumbSticks.Left.X > 0.3f;
+                    left = left || state.ThumbSticks.Left.X < -0.4f;
+                    right = right || state.ThumbSticks.Left.X > 0.4f;
                 }
 
                 if (capabilities.HasLeftYThumbStick)
@@ -115,6 +125,7 @@ namespace PERSIST
                 {
                     new_space = new_space || state.IsButtonDown(Buttons.A);
                     new_enter = new_enter || state.IsButtonDown(Buttons.X);
+                    new_esc = new_esc || state.IsButtonDown(Buttons.Start);
 
                     up = up || state.IsButtonDown(Buttons.DPadUp);
                     down = down || state.IsButtonDown(Buttons.DPadDown);
@@ -138,11 +149,14 @@ namespace PERSIST
             space_pressed = new_space && !old_space;
             enter_released = !new_enter && old_enter;
             enter_pressed = new_enter && !old_enter;
+            esc_released = !new_esc && old_esc;
+            esc_pressed = new_esc && !old_esc;
 
             old_space = new_space;
             old_enter = new_enter;
             old_up = up;
             old_down = down;
+            old_esc = new_esc;
         }
     }
 

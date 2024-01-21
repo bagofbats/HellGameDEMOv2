@@ -131,7 +131,7 @@ namespace PERSIST
 
             else if (dialogue)
             {
-                if (contManager.ENTER_PRESSED)
+                if (contManager.ENTER_PRESSED || contManager.SPACE_PRESSED)
                     root.the_level.AdvanceDialogue();
             }
 

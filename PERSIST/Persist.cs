@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,17 +12,20 @@ namespace PERSIST
     public class Persist : Game
     {
         private bool debug = false;
+        private bool pause = false;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Rectangle _screenRectangle;
         private RenderTarget2D _nativeRenderTarget;
+        private int scale = 1;
 
         private ControllerManager contManager = new ControllerManager();
         private ProgressionManager progManager = new ProgressionManager();
         private FPSCounter fpsCounter = new FPSCounter();
 
         private Texture2D spr_ui;
+        private BitmapFont bm_font;
 
         public bool blackout
         { get; set; }
@@ -71,7 +75,7 @@ namespace PERSIST
 
             int target_w = 320;
             int target_h = 240;
-            int scale = 1;
+            
 
             while (target_w * (scale + 1) < w && target_h * (scale + 1) < h)
                 scale++;
@@ -108,6 +112,7 @@ namespace PERSIST
             // TODO: use this.Content to load your game content here
 
             spr_ui = Content.Load<Texture2D>("sprites/spr_ui");
+            bm_font = Content.Load<BitmapFont>("fonts/pixellocale_bmp");
 
             player.Load();
             the_level.Load(spr_ui);
@@ -115,13 +120,15 @@ namespace PERSIST
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             // TODO: Add your update logic here
 
             contManager.GetInputs(Keyboard.GetState());
-            the_level.Update(gameTime);
+
+            if (contManager.ESC_PRESSED)
+                pause = !pause;
+
+            if (!pause)
+                the_level.Update(gameTime);
 
             // fpsCounter.Update(gameTime);
 
@@ -146,6 +153,21 @@ namespace PERSIST
             {
                 _spriteBatch.Draw(_nativeRenderTarget, _screenRectangle, Color.Black);
                 blackout = false;
+            }
+
+            if (pause)
+            {
+                string pause_msg = "[ PAUSED ]";
+                Vector2 textMiddlePoint = bm_font.MeasureString(pause_msg) / 2;
+                textMiddlePoint.X = (int)textMiddlePoint.X;
+                textMiddlePoint.Y = (int)textMiddlePoint.Y;
+
+                _spriteBatch.Draw(_nativeRenderTarget, _screenRectangle, Color.Black * 0.4f);
+                _spriteBatch.DrawString(bm_font,
+                                        pause_msg, 
+                                        new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2), _screenRectangle.Y + (_screenRectangle.Height / 2) - (12 * scale)), 
+                                        Color.White, 0, textMiddlePoint, scale * 2f, SpriteEffects.None, 0f
+                                        );
             }
 
             _spriteBatch.End();
