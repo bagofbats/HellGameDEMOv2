@@ -5,6 +5,7 @@ using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using TiledCS;
 
 namespace PERSIST
@@ -28,6 +29,11 @@ namespace PERSIST
         {
             "", "", "", "", "", "", "Done"
         };
+
+        private bool rebind = false;
+        private float rebind_timer = 1f;
+        private bool rebound_recently = false;
+        private int rebind_buffer = 0;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -144,6 +150,9 @@ namespace PERSIST
                 pause = !pause;
                 pause_selection = 0;
                 options = false;
+                options_selection = 0;
+                rebind = false;
+                rebind_timer = 1f;
             }
 
 
@@ -151,67 +160,8 @@ namespace PERSIST
                 the_level.Update(gameTime);
 
             // pause menu
-            else if (!options)
-            {
-                if (contManager.DOWN_PRESSED)
-                    pause_selection = (pause_selection + 1) % pause_options.Length;
-
-                if (contManager.UP_PRESSED)
-                {
-                    pause_selection -= 1;
-                    if (pause_selection < 0)
-                        pause_selection = pause_options.Length - 1;
-                }
-
-                if (contManager.ENTER_PRESSED || contManager.SPACE_PRESSED)
-                {
-                    if (pause_options[pause_selection] == "Resume")
-                        pause = !pause;
-
-                    if (pause_options[pause_selection] == "Options")
-                        options = true;
-
-                    if (pause_options[pause_selection] == "Quit")
-                        Exit();
-                }
-
-            }
-
-            // options menu
             else
-            {
-                if (contManager.DOWN_PRESSED)
-                    options_selection = (options_selection + 1) % options_options.Length;
-
-                if (contManager.UP_PRESSED)
-                {
-                    options_selection -= 1;
-                    if (options_selection < 0)
-                        options_selection = options_options.Length - 1;
-                }
-
-                if (contManager.ENTER_PRESSED || contManager.SPACE_PRESSED)
-                {
-                    if (options_options[options_selection] == "Done")
-                        options = false;
-                }
-
-                string[] keys =
-                {
-                    "UP", "DOWN", "LEFT", "RIGHT", "JUMP", "ATTACK"
-                };
-
-                for (int i = 0; i < contManager.key_map.Keys.Count; i++)
-                {
-                    string pause_msg = keys[i] + " | " + contManager.key_defaults[keys[i].ToLower()].ToString();
-
-                    string key = contManager.key_map[keys[i].ToLower()].ToString();
-                    if (key != "None")
-                        pause_msg += " or " + contManager.key_map[keys[i].ToLower()].ToString();
-
-                    options_options[i] = pause_msg;
-                }
-            }
+                HandlePause(gameTime);
 
             // fpsCounter.Update(gameTime);
 
@@ -282,6 +232,111 @@ namespace PERSIST
             the_level = destination;
         }
 
+        private void HandlePause(GameTime gameTime)
+        {
+            if (!options)
+            {
+                if (contManager.DOWN_PRESSED)
+                    pause_selection = (pause_selection + 1) % pause_options.Length;
+
+                if (contManager.UP_PRESSED)
+                {
+                    pause_selection -= 1;
+                    if (pause_selection < 0)
+                        pause_selection = pause_options.Length - 1;
+                }
+
+                if (contManager.ENTER_PRESSED || contManager.SPACE_PRESSED)
+                {
+                    if (pause_options[pause_selection] == "Resume")
+                        pause = !pause;
+
+                    if (pause_options[pause_selection] == "Options")
+                        options = true;
+
+                    if (pause_options[pause_selection] == "Quit")
+                        Exit();
+                }
+
+            }
+
+            // options menu
+            else
+            {
+                string[] keys =
+                {
+                    "UP", "DOWN", "LEFT", "RIGHT", "JUMP", "ATTACK"
+                };
+
+                if (!rebind)
+                {
+                    rebind_timer = 1f;
+
+                    if (contManager.DOWN_PRESSED && !rebound_recently)
+                        options_selection = (options_selection + 1) % options_options.Length;
+
+                    if (contManager.UP_PRESSED && !rebound_recently)
+                    {
+                        options_selection -= 1;
+                        if (options_selection < 0)
+                            options_selection = options_options.Length - 1;
+                    }
+
+                    if ((contManager.ENTER_PRESSED || contManager.SPACE_PRESSED) && !rebound_recently)
+                    {
+                        if (options_options[options_selection] == "Done")
+                            options = false;
+
+                        else
+                            rebind = true;
+                    }
+                }
+                else
+                {
+                    rebind_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 4;
+
+                    Keys new_key = contManager.GetCurrentlyPressedKey();
+
+                    if (new_key != Keys.None)
+                    {
+                        string selection = keys[options_selection].ToLower();
+                        contManager.Rebind(selection, new_key);
+                        rebind = false;
+                        rebound_recently = true;
+                    }
+                }
+
+                
+
+                for (int i = 0; i < contManager.key_map.Keys.Count; i++)
+                {
+                    string pause_msg = keys[i] + " | " + contManager.key_defaults[keys[i].ToLower()].ToString();
+
+                    string key = contManager.key_map[keys[i].ToLower()].ToString();
+                    if (rebind && i == options_selection)
+                    {
+                        pause_msg += " or";
+                        if ((int)rebind_timer % 2 == 1)
+                            pause_msg += " ???";
+                    }
+                    else if (key != "None")
+                        pause_msg += " or " + contManager.key_map[keys[i].ToLower()].ToString();
+
+                    options_options[i] = pause_msg;
+                }
+
+                if (rebound_recently)
+                {
+                    rebind_buffer++;
+                    if (rebind_buffer == 2)
+                    {
+                        rebind_buffer = 0;
+                        rebound_recently = false;
+                    }
+                }
+            }
+        }
+
         private void DrawPause(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Draw(_nativeRenderTarget, _screenRectangle, Color.Black * 0.5f);
@@ -343,7 +398,9 @@ namespace PERSIST
                         string first_half = options_options[i].Split('|')[0];
                         int xoffset = (int)((Vector2)bm_font.MeasureString(first_half)).X;
 
-                        _spriteBatch.DrawString(bm_font, options_options[i],
+                        string options_txt_draw_idk = options_options[i];
+
+                        _spriteBatch.DrawString(bm_font, options_txt_draw_idk,
                                                 new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f) - (xoffset * scale), _screenRectangle.Y + (_screenRectangle.Height / 3) + (12 * i * scale)),
                                                 text_color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0f
                                                 );

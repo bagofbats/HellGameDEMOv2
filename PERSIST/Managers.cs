@@ -39,6 +39,27 @@ namespace PERSIST
 
         public Dictionary<string, Keys> key_map;
         public Dictionary<string, Keys> key_defaults;
+        private Dictionary<string, int> key_nums;
+
+        private Keys[] list_defaults =
+        {
+            Keys.Up,
+            Keys.Down,
+            Keys.Left,
+            Keys.Right,
+            Keys.Space,
+            Keys.Enter
+        };
+
+        private Keys[] list_customs =
+        {
+            Keys.W,
+            Keys.A,
+            Keys.S,
+            Keys.D,
+            Keys.None,
+            Keys.None
+        };
 
         private bool multiple_atk_buttons = true;
         private bool multiple_down_buttons = true;
@@ -101,6 +122,16 @@ namespace PERSIST
                 {"right", Keys.Right },
                 {"jump", Keys.Space },
                 {"attack", Keys.Enter }
+            };
+
+            key_nums = new Dictionary<string, int>
+            {
+                {"up", 0 },
+                {"down", 1 },
+                {"left", 2 },
+                {"right", 3 },
+                {"jump", 4 },
+                {"attack", 5 }
             };
         }
 
@@ -168,6 +199,22 @@ namespace PERSIST
             old_up = up;
             old_down = down;
             old_esc = new_esc;
+        }
+
+        public void Rebind(string key, Keys new_key)
+        {
+            key_map[key] = new_key;
+            list_customs[key_nums[key]] = new_key;
+        }
+
+        public Keys GetCurrentlyPressedKey()
+        {
+            if (Keyboard.GetState().GetPressedKeys().Length != 0)
+                foreach (Keys key in Keyboard.GetState().GetPressedKeys()) 
+                    if (!list_defaults.Contains(key) && !list_customs.Contains(key))
+                        return key;
+
+            return Keys.None;
         }
     }
 
