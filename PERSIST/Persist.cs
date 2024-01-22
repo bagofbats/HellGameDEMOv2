@@ -295,7 +295,7 @@ namespace PERSIST
                 {
                     rebind_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 4;
 
-                    Keys new_key = contManager.GetCurrentlyPressedKey();
+                    Keys new_key = contManager.GetCurrentlyPressedKey(options_selection);
 
                     if (new_key != Keys.None)
                     {
@@ -310,7 +310,12 @@ namespace PERSIST
 
                 for (int i = 0; i < contManager.key_map.Keys.Count; i++)
                 {
-                    string pause_msg = keys[i] + " | " + contManager.key_defaults[keys[i].ToLower()].ToString();
+                    string pause_msg = keys[i];
+
+                    if (pause_msg == "DOWN")
+                        pause_msg += "/INTERACT";
+
+                    pause_msg += " | " + contManager.key_defaults[keys[i].ToLower()].ToString();
 
                     string key = contManager.key_map[keys[i].ToLower()].ToString();
                     if (rebind && i == options_selection)

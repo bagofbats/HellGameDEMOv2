@@ -207,12 +207,19 @@ namespace PERSIST
             list_customs[key_nums[key]] = new_key;
         }
 
-        public Keys GetCurrentlyPressedKey()
+        public Keys GetCurrentlyPressedKey(int selection)
         {
             if (Keyboard.GetState().GetPressedKeys().Length != 0)
-                foreach (Keys key in Keyboard.GetState().GetPressedKeys()) 
+                foreach (Keys key in Keyboard.GetState().GetPressedKeys())
+                {
                     if (!list_defaults.Contains(key) && !list_customs.Contains(key))
                         return key;
+
+                    // extra case to handle rebinding the same key over and over again
+                    else if (list_customs[selection] == key)
+                        return key;
+                }
+                    
 
             return Keys.None;
         }
