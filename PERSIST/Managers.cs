@@ -54,8 +54,8 @@ namespace PERSIST
         private Keys[] list_customs =
         {
             Keys.W,
-            Keys.A,
             Keys.S,
+            Keys.A,
             Keys.D,
             Keys.None,
             Keys.None
