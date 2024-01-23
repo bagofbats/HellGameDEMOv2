@@ -216,7 +216,11 @@ namespace PERSIST
                         return key;
 
                     // extra case to handle rebinding the same key over and over again
-                    else if (list_customs[selection] == key)
+                    else if (list_customs[selection] == key && selection < 4)
+                        return key;
+
+                    // extra extra case to handle rebinding the attack/jump key over and over again
+                    else if (list_customs[selection] == key && (enter_pressed || space_pressed))
                         return key;
                 }
                     
