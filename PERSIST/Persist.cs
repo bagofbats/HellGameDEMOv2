@@ -363,15 +363,18 @@ namespace PERSIST
                     pause_msg = pause_options[i];
                     Color text_color = Color.Gray;
 
+                    int x_draw_offset = 0;
+
                     if (i == pause_selection)
                     {
                         text_color = Color.White;
                         pause_msg = "> " + pause_msg;
+                        x_draw_offset = (int)((Vector2)bm_font.MeasureString(">")).X + 1;
                     }
 
                     _spriteBatch.DrawString(bm_font, pause_msg,
                                             new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2.36f), _screenRectangle.Y + (_screenRectangle.Height / 3) + (24 * (i + 1) * scale)),
-                                            text_color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0f
+                                            text_color, 0, new Vector2(0 + x_draw_offset, 0), scale, SpriteEffects.None, 0f
                                             );
                 }
             }

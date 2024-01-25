@@ -649,12 +649,15 @@ namespace PERSIST
 
                         for (int i = 0; i < opts_num; i++)
                         {
+                            int x_draw_offset = (int)((Vector2)bm_font.MeasureString("> ")).X + 1;
+
                             textDrawPoint = new Vector2(cam.GetPos().X + 12, cam.GetPos().Y + 2 + (12 * i));
+                            Vector2 offset_textDrawPoint = new Vector2(cam.GetPos().X + 12 + x_draw_offset, cam.GetPos().Y + 2 + (12 * i));
 
                             if (i == opts_highlighted)
                                 _spriteBatch.DrawString(bm_font, " > " + opts[i], textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                             else
-                                _spriteBatch.DrawString(bm_font, opts[i], textDrawPoint, Color.Gray, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                                _spriteBatch.DrawString(bm_font, opts[i], offset_textDrawPoint, Color.Gray, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                         }
                     }
 
