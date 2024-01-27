@@ -248,8 +248,8 @@ namespace PERSIST
 
         public ProgressionManager()
         {
-            knife = false;
-            ranged = false;
+            knife = true;
+            ranged = true;
             slime_dead = false;
             slime_started = false;
             mask = false;
@@ -286,10 +286,11 @@ namespace PERSIST
     {
         int frames = 0;
         float time_elapsed = 0;
+        Player p;
 
-        public FPSCounter()
+        public FPSCounter(Player p)
         {
-
+            this.p = p;
         }
 
         public void Update(GameTime gameTime)
@@ -303,6 +304,12 @@ namespace PERSIST
                 Debug.WriteLine(f);
                 frames = 0;
                 time_elapsed = 0;
+
+                //float x = p.GetPos().X;
+                //float v = p.GetPos().Y;
+
+                //Debug.WriteLine(x);
+                //Debug.WriteLine(v);
             }
         }
     }

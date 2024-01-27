@@ -323,9 +323,9 @@ namespace PERSIST
                 coyote_timer = coyote_time + 1;
 
                 if (wall_right)
-                    hoset = -3.0f;
+                    hoset = -2.9f;
                 else
-                    hoset = 3.0f;
+                    hoset = 2.9f;
 
                 hsp_ratio = 1f;
             }

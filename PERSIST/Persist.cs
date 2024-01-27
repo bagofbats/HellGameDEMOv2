@@ -43,7 +43,7 @@ namespace PERSIST
 
         private ControllerManager contManager = new ControllerManager();
         private ProgressionManager progManager = new ProgressionManager();
-        private FPSCounter fpsCounter = new FPSCounter();
+        private FPSCounter fpsCounter;
 
         private Texture2D spr_ui;
         private BitmapFont bm_font;
@@ -71,17 +71,20 @@ namespace PERSIST
             IsMouseVisible = true;
             bbuffer_color = Color.DarkSalmon;
 
-
             level_map = new Dictionary<(string, string), LevelStruct>()
             {
                 {("rm_tutorial2", "blue"), tutorial_two },
-                {("rm_tutorial1", "blue"), tutorial_one }
+                {("rm_tutorial1", "blue"), tutorial_one },
+                {("rm_tutorial3", "red"), tutorial_thr },
+                {("rm_tutorial2", "red"), tutorial_two }
             };
 
 
             player = new Player(this, new Vector2(100, 100), contManager, progManager);
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial3.tmx");
+            fpsCounter = new FPSCounter(player);
+
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
@@ -163,7 +166,7 @@ namespace PERSIST
             else
                 HandlePause(gameTime);
 
-            // fpsCounter.Update(gameTime);
+            //fpsCounter.Update(gameTime);
 
             base.Update(gameTime);
         }
