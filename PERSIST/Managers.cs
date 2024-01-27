@@ -137,8 +137,6 @@ namespace PERSIST
 
         public void GetInputs(KeyboardState key)
         {
-            GamePadCapabilities capabilities = GamePad.GetCapabilities(PlayerIndex.One);
-
             up = key.IsKeyDown(Keys.Up) || key.IsKeyDown(key_map["up"]);
             down = key.IsKeyDown(Keys.Down) || key.IsKeyDown(key_map["down"]);
             left = key.IsKeyDown(Keys.Left) || key.IsKeyDown(key_map["left"]);
@@ -146,6 +144,8 @@ namespace PERSIST
             new_space = key.IsKeyDown(Keys.Space) || key.IsKeyDown(key_map["jump"]);
             new_enter = key.IsKeyDown(Keys.Enter) || key.IsKeyDown(key_map["attack"]);
             new_esc = key.IsKeyDown(Keys.Escape);
+
+            GamePadCapabilities capabilities = GamePad.GetCapabilities(PlayerIndex.One);
 
             if (capabilities.IsConnected)
             {

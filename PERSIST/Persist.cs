@@ -61,6 +61,7 @@ namespace PERSIST
 
         private LevelStruct tutorial_one = new LevelStruct("\\rm_tutorial1.tmx", "\\tst_tutorial.tsx");
         private LevelStruct tutorial_two = new LevelStruct("\\rm_tutorial2.tmx", "\\tst_tutorial.tsx");
+        private LevelStruct tutorial_thr = new LevelStruct("\\rm_tutorial3.tmx", "\\tst_tutorial.tsx");
 
         public Persist()
         {
@@ -80,7 +81,7 @@ namespace PERSIST
 
             player = new Player(this, new Vector2(100, 100), contManager, progManager);
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial3.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
@@ -159,7 +160,6 @@ namespace PERSIST
             if (!pause)
                 the_level.Update(gameTime);
 
-            // pause menu
             else
                 HandlePause(gameTime);
 
@@ -369,7 +369,7 @@ namespace PERSIST
                     {
                         text_color = Color.White;
                         pause_msg = "> " + pause_msg;
-                        x_draw_offset = (int)((Vector2)bm_font.MeasureString(">")).X + 1;
+                        x_draw_offset = (int)((Vector2)bm_font.MeasureString(" ")).X + 1;
                     }
 
                     _spriteBatch.DrawString(bm_font, pause_msg,

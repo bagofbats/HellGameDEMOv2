@@ -649,7 +649,7 @@ namespace PERSIST
 
                         for (int i = 0; i < opts_num; i++)
                         {
-                            int x_draw_offset = (int)((Vector2)bm_font.MeasureString("> ")).X + 1;
+                            int x_draw_offset = (int)((Vector2)bm_font.MeasureString("  ")).X + 1;
 
                             textDrawPoint = new Vector2(cam.GetPos().X + 12, cam.GetPos().Y + 2 + (12 * i));
                             Vector2 offset_textDrawPoint = new Vector2(cam.GetPos().X + 12 + x_draw_offset, cam.GetPos().Y + 2 + (12 * i));

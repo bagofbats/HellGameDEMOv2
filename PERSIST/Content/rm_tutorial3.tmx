@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="1">
- <objectgroup id="8" name="rooms"/>
- <objectgroup id="6" name="entities"/>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="4">
+ <objectgroup id="8" name="rooms">
+  <object id="3" name="xdd" x="0" y="0" width="320" height="240"/>
+ </objectgroup>
+ <objectgroup id="6" name="entities">
+  <object id="2" name="player" x="104" y="160">
+   <point/>
+  </object>
+ </objectgroup>
  <layer id="5" name="background_lower" width="40" height="30">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -139,5 +145,7 @@
 </data>
  </layer>
  <objectgroup id="9" name="obstacles"/>
- <objectgroup id="7" name="walls"/>
+ <objectgroup id="7" name="walls">
+  <object id="1" x="0" y="208" width="320" height="32"/>
+ </objectgroup>
 </map>
