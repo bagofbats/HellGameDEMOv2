@@ -122,7 +122,11 @@ namespace PERSIST
             if (!player_dead)
                 player.Update(gameTime);
             if (player_dead || finish_player_dead)
+            {
                 HandleDeath(gameTime);
+                player.UpdateDead(gameTime);
+            }
+                
 
 
             // cutscene nonsense

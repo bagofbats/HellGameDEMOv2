@@ -139,6 +139,12 @@ namespace PERSIST
                 attacks[i].Update(gameTime);
         }
 
+        public void UpdateDead(GameTime gameTime)
+        {
+            pos.X += death_hsp;
+            death_hsp /= 1.06f;
+        }
+
         public void Draw(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
@@ -164,9 +170,6 @@ namespace PERSIST
                 frame.Y = 1088;
             else
                 frame.Y = 1120;
-
-            pos.X += death_hsp;
-            death_hsp /= 1.06f;
 
             if (timer < 0.2)
             {
