@@ -88,7 +88,12 @@ namespace PERSIST
                                 player.SetPos(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
 
                             if (l.objects[i].name == "checkpoint")
-                                AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
+                            {
+                                var temp = AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
+
+                                if (l.objects[i].properties.Count() != 0)
+                                    temp.SetSideways(true, l.objects[i].properties[0].value);
+                            }
 
                             if (l.objects[i].name == "fake_checkpoint")
                             {

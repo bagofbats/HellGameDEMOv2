@@ -315,13 +315,15 @@ namespace PERSIST
                     chunks[i].AddObstacle(temp);
         }
 
-        public void AddCheckpoint(Rectangle bounds)
+        public Checkpoint AddCheckpoint(Rectangle bounds)
         {
             Checkpoint temp = new Checkpoint(bounds, this);
             checkpoints.Add(temp);
             for (int i = 0; i < chunks.Count(); i++)
                 if (bounds.Intersects(chunks[i].bounds))
                     chunks[i].AddCheckpoint(temp);
+
+            return temp;
         }
 
         public void AddFX(ParticleFX particle)

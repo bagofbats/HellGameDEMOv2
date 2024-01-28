@@ -19,6 +19,11 @@ namespace PERSIST
         private Rectangle frame = new Rectangle(0, 0, 16, 32);
         private Texture2D sprite;
         float animate_timer = 0f;
+        private bool sideways = false;
+        private bool sideways_right = false;
+
+        private Rectangle DrawBox;
+
         public Level root
         { get; private set; }
 
@@ -30,6 +35,7 @@ namespace PERSIST
             this.box = box;
             this.root = root;
             visible = true;
+            DrawBox = box;
         }
 
         public void Load(Texture2D sprite)
@@ -44,20 +50,47 @@ namespace PERSIST
 
         public void Animate(GameTime gameTime)
         {
+            frame.Y = 0;
+
             animate_timer += 10 * (float)gameTime.ElapsedGameTime.TotalSeconds;
             frame.X = 16 + (16 * ((int)animate_timer % 4));
+
+            if (sideways)
+                frame.Y += 32;
+
+            if (sideways_right)
+                frame.Y += 32;
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
             if (visible)
-                _spriteBatch.Draw(sprite, box, frame, Color.White);
+                _spriteBatch.Draw(sprite, DrawBox, frame, Color.White);
         }
 
         public void Interact()
         {
             if (visible)
                 root.StartDialogue(root.dialogue_checkpoint, 0, 'c', 25f, true);
+        }
+
+        public void SetSideways(bool sideways, string dir)
+        {
+            this.sideways = sideways;
+            if (dir == "right")
+                sideways_right = true;
+
+            if (sideways)
+                frame.Y += 32;
+
+            if (sideways_right)
+                frame.Y += 32;
+
+            if (sideways)
+                DrawBox.X += 1;
+
+            if (sideways_right)
+                DrawBox.X -= 2;
         }
     }
 }

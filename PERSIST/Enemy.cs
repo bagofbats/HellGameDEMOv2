@@ -108,7 +108,7 @@ namespace PERSIST
 
             Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
 
-            sleep = (dist_x > 100 || dist_y > 70) && vcheck != null && sleep_possible;
+            sleep = (dist_x > 100 || dist_y > 100) && vcheck != null && sleep_possible;
             airborne = vcheck == null;
 
             if (vcheck != null)
