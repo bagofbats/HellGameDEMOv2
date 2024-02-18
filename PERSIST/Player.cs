@@ -229,10 +229,6 @@ namespace PERSIST
             space_released = contManager.SPACE_RELEASED;
             enter_pressed = contManager.ENTER_PRESSED;
             enter_released = contManager.ENTER_RELEASED;
-
-            hdir = (int)(Convert.ToSingle(right) - Convert.ToSingle(left));
-            if (hdir != 0)
-                last_hdir = hdir;
         }
 
         private void Die(GameTime gameTime)
@@ -256,6 +252,11 @@ namespace PERSIST
 
         private void HandleMovementAndCollisions(GameTime gameTime)
         {
+            hdir = (int)(Convert.ToSingle(this.right) - Convert.ToSingle(this.left));
+            if (hdir != 0)
+                last_hdir = hdir;
+
+
             (Wall left, Wall right, Wall up, Wall down, Wall inside) = root.the_level.FullCheckCollision(HitBox);
 
             wall_left = left != null;

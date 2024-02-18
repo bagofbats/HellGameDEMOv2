@@ -234,6 +234,10 @@ namespace PERSIST
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Load(checkpoint);
+
+            foreach (Checkpoint c in checkpoints)
+                if (c.sideways)
+                    c.GetSidewaysWall();
         }
 
         public override void Update(GameTime gameTime)

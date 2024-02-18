@@ -121,12 +121,13 @@ namespace PERSIST
         {
             if (!player_dead)
                 player.Update(gameTime);
-            if (player_dead || finish_player_dead)
-            {
-                HandleDeath(gameTime);
+            else
                 player.UpdateDead(gameTime);
-            }
+
+            if (player_dead || finish_player_dead)
+                HandleDeath(gameTime);
                 
+
 
 
             // cutscene nonsense
@@ -761,9 +762,13 @@ namespace PERSIST
                     root.blackout = true;
                 }
                     
-
-                player.SetPos(new Vector2(prog_manager.GetActiveCheckpoint().box.X + 8, prog_manager.GetActiveCheckpoint().box.Y));
-                cam.SmartSetPos(new Vector2(prog_manager.GetActiveCheckpoint().box.X + 8, prog_manager.GetActiveCheckpoint().box.Y));
+                if (active_check.sideways && !active_check.sideways_right)
+                    player.SetPos(new Vector2(active_check.side_wall.bounds.Left - 23 + 16, active_check.box.Y));
+                else if (active_check.sideways && active_check.sideways_right)
+                    player.SetPos(new Vector2(active_check.side_wall.bounds.Right - 9 + 16, active_check.box.Y));
+                else
+                    player.SetPos(new Vector2(active_check.box.X + 8, active_check.box.Y));
+                cam.SmartSetPos(new Vector2(active_check.box.X + 8, active_check.box.Y));
                 player_dead = false;
                 finish_player_dead = true;
 

@@ -19,8 +19,12 @@ namespace PERSIST
         private Rectangle frame = new Rectangle(0, 0, 16, 32);
         private Texture2D sprite;
         float animate_timer = 0f;
-        private bool sideways = false;
-        private bool sideways_right = false;
+        public bool sideways
+        { get; private set; } = false;
+        public bool sideways_right
+        { get; private set; } = false;
+        public Wall side_wall
+        { get; private set; } = null;
 
         private Rectangle DrawBox;
 
@@ -79,6 +83,7 @@ namespace PERSIST
             this.sideways = sideways;
             if (dir == "right")
                 sideways_right = true;
+            
 
             if (sideways)
                 frame.Y += 32;
@@ -91,6 +96,16 @@ namespace PERSIST
 
             if (sideways_right)
                 DrawBox.X -= 2;
+        }
+
+        public void GetSidewaysWall()
+        {
+            if (sideways && !sideways_right)
+            {
+                side_wall = root.SimpleCheckCollision(new Rectangle(HitBox.X + 24, HitBox.Y, HitBox.Width, HitBox.Height));
+            }
+            else if (sideways && sideways_right)
+                side_wall = root.SimpleCheckCollision(new Rectangle(HitBox.X - 24, HitBox.Y, HitBox.Width, HitBox.Height));
         }
     }
 }
