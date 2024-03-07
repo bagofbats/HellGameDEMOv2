@@ -12,7 +12,7 @@ namespace PERSIST
 {
     public class Persist : Game
     {
-        private bool debug = false;
+        private bool debug = true;
 
         public bool pause
         { get; private set; }
@@ -86,7 +86,7 @@ namespace PERSIST
 
             fpsCounter = new FPSCounter(player);
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial3.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
