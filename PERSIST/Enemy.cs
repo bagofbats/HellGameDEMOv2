@@ -707,11 +707,18 @@ namespace PERSIST
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
         private Player player;
 
+        // movement fields
+        private float hsp = 0f;
+        private float vsp = 0f;
+
+        // animation fields
+        private float timer = 0f;
+
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
 
         public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X + 8, (int)pos.Y + 4, 16, 24); } }
+        { get { return new Rectangle((int)pos.X + 11, (int)pos.Y + 8, 10, 18); } }
 
         public Lukas_Tutorial(Vector2 pos, Player player, TutorialLevel root)
         {
@@ -727,7 +734,16 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            
+            float elapsed_time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            timer += elapsed_time;
+
+            frame.X = 32 * ((int)(timer * 10) % 4);
+
+            vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.02f * Math.Sign(Math.Sin(timer * 2));
+            //hsp = 0.13f * (float)Math.Cos(timer * 1.7f) + 0.03f * Math.Sign(Math.Cos(timer * 2));
+
+            pos.Y += vsp;
+            //pos.X += hsp;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
