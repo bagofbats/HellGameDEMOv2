@@ -21,6 +21,7 @@ namespace PERSIST
         private Texture2D tst_tutorial;
         private Texture2D spr_slime;
         private Texture2D bg_brick;
+        private Texture2D spr_lukas;
 
         private List<EyeSwitch> switches = new List<EyeSwitch>();
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
@@ -184,6 +185,14 @@ namespace PERSIST
                                 enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
                                 enemy_types.Add("deadguy");
                             }
+
+                            if (l.objects[i].name == "lukas_boss")
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Lukas_Tutorial(temp, player, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("lukas");
+                            }
                         }
 
                 }
@@ -210,6 +219,7 @@ namespace PERSIST
             particle_img = root.Content.Load<Texture2D>("sprites/spr_particlefx");
             tst_tutorial = root.Content.Load<Texture2D>("tilesets/tst_tutorial");
             spr_slime = root.Content.Load<Texture2D>("sprites/spr_slime");
+            spr_lukas = root.Content.Load<Texture2D>("sprites/spr_lukas");
             bg_brick = root.Content.Load<Texture2D>("bgs/bg_brick2");
             // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
 
@@ -217,6 +227,7 @@ namespace PERSIST
             enemy_assets.Add(typeof(EyeSwitch), black);
             enemy_assets.Add(typeof(BigSlime), spr_slime);
             enemy_assets.Add(typeof(DeadGuy), spr_slime);
+            enemy_assets.Add(typeof(Lukas_Tutorial), spr_lukas);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -314,7 +325,10 @@ namespace PERSIST
                     AddEnemy(temp);
                     dead_guy = temp;
                 }
-                    
+
+                if (enemy_types[i] == "lukas_boss")
+                    AddEnemy(new Lukas_Tutorial(enemy_locations[i], player, this));
+
             }
                 
 

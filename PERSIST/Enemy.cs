@@ -703,39 +703,56 @@ namespace PERSIST
 
     public class Lukas_Tutorial : Enemy
     {
+        private Texture2D sprite;
+        private Rectangle frame = new Rectangle(0, 0, 32, 32);
+        private Player player;
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + 8, (int)pos.Y + 4, 16, 24); } }
+
+        public Lukas_Tutorial(Vector2 pos, Player player, TutorialLevel root)
+        {
+            this.pos = pos;
+            this.player = player;
+            this.root = root;
+        }
+
         public override void LoadAssets(Texture2D sprite)
         {
-            throw new NotImplementedException();
+            this.sprite = sprite;
         }
 
         public override void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            throw new NotImplementedException();
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
-            throw new NotImplementedException();
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
 
         public override void Damage()
         {
-            throw new NotImplementedException();
+            
         }
 
         public override Rectangle GetHitBox(Rectangle input)
         {
-            throw new NotImplementedException();
+            return HitBox;
         }
 
         public override bool CheckCollision(Rectangle input)
         {
-            throw new NotImplementedException();
+            return input.Intersects(HitBox);
         }
 
         public override void Interact()
