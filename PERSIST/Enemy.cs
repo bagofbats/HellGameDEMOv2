@@ -32,6 +32,7 @@ namespace PERSIST
         protected Vector2 pos;
         public Vector2 Pos { get => pos; }
         public bool hurtful { get; protected set; }
+        public bool pogoable { get; protected set; } = true;
     }
 
     // regular enemies
@@ -64,6 +65,7 @@ namespace PERSIST
             this.pos = pos;
             this.root = root;
             hurtful = true;
+            pogoable = true;
         }
 
         public int HP
@@ -279,6 +281,7 @@ namespace PERSIST
             this.bounds = bounds;
             this.root = root;
             hurtful = false;
+            pogoable = true;
             this.player = player;
         }
 
@@ -401,6 +404,7 @@ namespace PERSIST
             this.pos = pos;
             this.player = player;
             this.root = root;
+            pogoable = true;
             hurtful = true;
         }
 
@@ -725,6 +729,8 @@ namespace PERSIST
             this.pos = pos;
             this.player = player;
             this.root = root;
+            pogoable = true;
+            hurtful = false;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -795,6 +801,7 @@ namespace PERSIST
         {
             this.loc = loc;
             hurtful = false;
+            pogoable = true;
             hitbox = new Rectangle(loc.X + 8, loc.Y + 16, 13, 16);
             this.dialogue_deadguy = dialogue_deadguy;
             this.root = root;

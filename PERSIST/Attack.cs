@@ -103,8 +103,14 @@ namespace PERSIST
                 {
                     if (!pogoed)
                     {
-                        pogoed = true;
-                        player.SetPogoed(temp[0].GetHitBox(HitBox).Y, true);
+                        foreach (Enemy enemy in temp)
+                            if (enemy.pogoable)
+                            {
+                                pogoed = true;
+                                player.SetPogoed(temp[0].GetHitBox(HitBox).Y, true);
+                                break;
+                            }
+                        
                     }
                     foreach (Enemy enemy in temp)
                     {
