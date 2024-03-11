@@ -191,7 +191,7 @@ namespace PERSIST
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
                                 AddEnemy(new Lukas_Tutorial(temp, player, this));
                                 enemy_locations.Add(temp);
-                                enemy_types.Add("lukas");
+                                enemy_types.Add("lukas_boss");
                             }
                         }
 

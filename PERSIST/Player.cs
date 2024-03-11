@@ -105,7 +105,7 @@ namespace PERSIST
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + 9, (int)pos.Y + 16, 14, 16); } }
         public Rectangle HurtBox
-        { get { return new Rectangle((int)pos.X + 12, (int)pos.Y + 16, 8, 14); } }
+        { get { return new Rectangle((int)pos.X + 11, (int)pos.Y + 16, 10, 15); } }
 
 
         // core functions

@@ -12,7 +12,7 @@ namespace PERSIST
 {
     public class Persist : Game
     {
-        private bool debug = false;
+        private bool debug = true;
 
         public bool pause
         { get; private set; }
