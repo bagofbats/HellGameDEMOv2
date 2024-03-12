@@ -25,13 +25,17 @@ namespace PERSIST
         public abstract void DebugDraw(SpriteBatch spriteBatch, Texture2D blue);
         public abstract void Damage();
         public abstract bool CheckCollision(Rectangle input);
-        public abstract void Interact();
+        public virtual void Interact()
+        {
+            // this method is only needed for non-hurtful interactable enemies
+            // regular enemies should not override this empty function.
+        }
 
         protected Level root;
         public Room room { get; set; }
         protected Vector2 pos;
         public Vector2 Pos { get => pos; }
-        public bool hurtful { get; protected set; }
+        public bool hurtful { get; protected set; } = true;
         public bool pogoable { get; protected set; } = true;
     }
 
@@ -244,11 +248,6 @@ namespace PERSIST
             return HitBox.Intersects(input);
         }
 
-        public override void Interact()
-        {
-            // nothing xd
-        }
-
         public void SetSpeed(float speed)
         {
             hspeed = speed;
@@ -359,11 +358,6 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             return bounds.Intersects(input);
-        }
-
-        public override void Interact()
-        {
-            // nothing xd
         }
 
         public void SetDisabled(bool d)
@@ -645,11 +639,6 @@ namespace PERSIST
                 return HitBox.Intersects(input) || SquishedHB1.Intersects(input) || SquishedHB2.Intersects(input);
         }
 
-        public override void Interact()
-        {
-            // nothing xd
-        }
-
         public Rectangle IdleHB1
         { get { return new Rectangle((int)pos.X - 18, (int)pos.Y + 8, 36, 12); } }
 
@@ -775,11 +764,6 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             return input.Intersects(HitBox);
-        }
-
-        public override void Interact()
-        {
-            // nothing xd
         }
     }
 
