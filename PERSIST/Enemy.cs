@@ -23,8 +23,12 @@ namespace PERSIST
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch);
         public abstract void DebugDraw(SpriteBatch spriteBatch, Texture2D blue);
-        public abstract void Damage();
         public abstract bool CheckCollision(Rectangle input);
+        public virtual void Damage()
+        {
+            // this method is only needed for attackable enemies
+            // non-attackable enemies (e.g. projectiles) should not override this empty function
+        }
         public virtual void Interact()
         {
             // this method is only needed for non-hurtful interactable enemies
@@ -700,6 +704,8 @@ namespace PERSIST
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
         private Player player;
 
+        private List<Lukas_Projectile> projectiles = new List<Lukas_Projectile>();
+
         // movement fields
         private float hsp = 0f;
         private float vsp = 0f;
@@ -729,21 +735,29 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            if (projectiles.Count == 0)
+                AddProjectile(pos.X - 32, pos.Y);
+
             float elapsed_time = (float)gameTime.ElapsedGameTime.TotalSeconds;
             timer += elapsed_time;
 
             frame.X = 32 * ((int)(timer * 10) % 4);
 
-            vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.02f * Math.Sign(Math.Sin(timer * 2));
-            //hsp = 0.13f * (float)Math.Cos(timer * 1.7f) + 0.03f * Math.Sign(Math.Cos(timer * 2));
+            vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.04f * Math.Sign(Math.Sin(timer * 2));
 
             pos.Y += vsp;
-            //pos.X += hsp;
+            pos.X += hsp;
+
+            for (int i = projectiles.Count - 1; i >= 0; i--)
+                projectiles[i].Update(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            for (int i = projectiles.Count - 1; i >= 0; i--)
+                projectiles[i].Draw(spriteBatch);
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -756,6 +770,20 @@ namespace PERSIST
             
         }
 
+        public void AddProjectile(float x, float y)
+        {
+            var temp = new Lukas_Projectile(new Vector2(x, y));
+            temp.LoadAssets(sprite);
+            projectiles.Add(temp);
+            root.AddEnemy(temp);
+        }
+
+        public void RemoveProjectile(Lukas_Projectile proj)
+        {
+            projectiles.Remove(proj);
+            root.RemoveEnemy(proj);
+        }
+
         public override Rectangle GetHitBox(Rectangle input)
         {
             return HitBox;
@@ -764,6 +792,50 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             return input.Intersects(HitBox);
+        }
+    }
+
+    public class Lukas_Projectile : Enemy 
+    {
+        private Texture2D sprite;
+        private Rectangle frame = new Rectangle(212, 80, 12, 12);
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 12, 12); } }
+
+        public Lukas_Projectile(Vector2 pos) 
+        {
+            pogoable = false;
+            this.pos = pos;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, HitBox, frame, Color.White);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            
+        }
+
+        // obligatory
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
         }
     }
 
@@ -813,11 +885,6 @@ namespace PERSIST
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, hitbox, Color.Blue * 0.3f);
-        }
-
-        public override void Damage()
-        {
-            // nothing xd
         }
 
         public override bool CheckCollision(Rectangle input)
