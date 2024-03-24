@@ -736,7 +736,7 @@ namespace PERSIST
         public override void Update(GameTime gameTime)
         {
             if (projectiles.Count == 0)
-                AddProjectile(pos.X - 32, pos.Y);
+                AddProjectile(pos.X + 8, pos.Y - 8, "aim");
 
             float elapsed_time = (float)gameTime.ElapsedGameTime.TotalSeconds;
             timer += elapsed_time;
@@ -770,9 +770,10 @@ namespace PERSIST
             
         }
 
-        public void AddProjectile(float x, float y)
+        // lukas-specific functions
+        public void AddProjectile(float x, float y, string type)
         {
-            var temp = new Lukas_Projectile(new Vector2(x, y));
+            var temp = new Lukas_Projectile(new Vector2(x, y), type, this, root);
             temp.LoadAssets(sprite);
             projectiles.Add(temp);
             root.AddEnemy(temp);
@@ -784,6 +785,12 @@ namespace PERSIST
             root.RemoveEnemy(proj);
         }
 
+        public Vector2 GetPlayerPos()
+        {
+            return player.GetPos();
+        }
+
+        // trivial functions
         public override Rectangle GetHitBox(Rectangle input)
         {
             return HitBox;
@@ -798,15 +805,31 @@ namespace PERSIST
     public class Lukas_Projectile : Enemy 
     {
         private Texture2D sprite;
+        private string type;
+        private Lukas_Tutorial boss;
+
         private Rectangle frame = new Rectangle(212, 80, 12, 12);
+        private float speed = 2.4f;
+        private Vector2 move;
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 12, 12); } }
 
-        public Lukas_Projectile(Vector2 pos) 
+        public Lukas_Projectile(Vector2 pos, string type, Lukas_Tutorial boss, Level root) 
         {
             pogoable = false;
             this.pos = pos;
+            this.type = type;
+            this.root = root;
+            this.boss = boss;
+
+            if (type == "aim")
+            {
+                Vector2 player_pos = boss.GetPlayerPos();
+                Vector2 diff = player_pos - pos + new Vector2(16, 16);
+                move = Vector2.Normalize(diff) * speed;
+            }
+                
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -821,7 +844,12 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            
+            var temp = root.SimpleCheckCollision(HitBox);
+
+            if (temp != null)
+                boss.RemoveProjectile(this);
+
+            pos += move;
         }
 
         // obligatory
