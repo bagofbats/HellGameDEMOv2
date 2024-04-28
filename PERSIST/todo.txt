@@ -15,6 +15,8 @@ art:
 
  bugs:
   - disable switch while fighting slime boss
+  - camera follows player while in dying animation, can clip outside bounds of lvl and look real shit
+     - fix by making camera lock on to the last place the player was when they died
 
 
 epic room names

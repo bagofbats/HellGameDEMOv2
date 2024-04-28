@@ -174,7 +174,7 @@ namespace PERSIST
                         
 
             // camera following
-            Rectangle current_room = GetRoom(new Vector2(player.DrawBox.X + 16, player.DrawBox.Y + 16));
+            Rectangle current_room = GetRoom(player.GetPos(player_dead) + new Vector2(16, 16));
             Vector2 camera_pos = cam.GetPos();
             Rectangle camera_room = GetRoom(camera_pos);
 
@@ -183,13 +183,14 @@ namespace PERSIST
                 // default case that (hopefully) never happens
                 //int tempX = (player.PositionRectangle.X + 16) / 320;
                 //int tempY = (player.PositionRectangle.Y + 16) / 240;
-                cam.Follow(new Vector2(player.DrawBox.X - 160 + 16, player.DrawBox.Y - 120 + 16));
+                //cam.Follow(new Vector2(player.DrawBox.X - 160 + 16, player.DrawBox.Y - 120 + 16));
+                cam.Follow(player.GetPos(player_dead) + new Vector2(-160 + 16, -120 + 16));
             }
 
             else
             {
-                int tempX = player.DrawBox.X + 16 - 160;
-                int tempY = player.DrawBox.Y + 16 - 120;
+                int tempX = (int)player.GetPos(player_dead).X + 16 - 160;
+                int tempY = (int)player.GetPos(player_dead).Y + 16 - 120;
 
                 tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
                 tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));

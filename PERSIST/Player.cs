@@ -90,6 +90,7 @@ namespace PERSIST
         private float thrown_time = 0.2f;
         private float death_hsp = 0f;
         private GameTime game_time;
+        private Vector2 freeze_pos = new Vector2(0, 0);
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager, ProgressionManager progManager)
         {
@@ -234,6 +235,9 @@ namespace PERSIST
         private void Die(GameTime gameTime)
         {
             root.the_level.HandleDeath(gameTime);
+
+            freeze_pos = pos;
+
             death_hsp = -2.3f * last_hdir;
             if (last_hdir == 0)
                 death_hsp = 2.3f;
@@ -580,8 +584,11 @@ namespace PERSIST
             pos = new Vector2(new_pos.X - 16, new_pos.Y);
         }
 
-        public Vector2 GetPos()
+        public Vector2 GetPos(bool player_dead=false)
         {
+            if (player_dead)
+                return freeze_pos;
+
             return pos;
         }
 

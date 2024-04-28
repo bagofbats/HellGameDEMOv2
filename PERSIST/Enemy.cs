@@ -809,7 +809,7 @@ namespace PERSIST
         private Lukas_Tutorial boss;
 
         private Rectangle frame = new Rectangle(212, 80, 12, 12);
-        private float speed = 2.4f;
+        private float speed = 2f;
         private Vector2 move;
 
         public Rectangle HitBox
