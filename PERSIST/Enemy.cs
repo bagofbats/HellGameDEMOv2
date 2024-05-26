@@ -712,6 +712,11 @@ namespace PERSIST
 
         // animation fields
         private float timer = 0f;
+        private int frame_reset = 4;
+
+        // attack fields
+        private float atk_timer = 0f;
+        private bool attacking = false;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
@@ -726,6 +731,8 @@ namespace PERSIST
             this.root = root;
             pogoable = true;
             hurtful = false;
+
+            room = root.RealGetRoom(pos);
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -735,18 +742,47 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            if (projectiles.Count == 0)
-                AddProjectile(pos.X + 8, pos.Y - 8, "aim");
+            if (!root.GetRoom(player.GetPos() + new Vector2(16, 16)).Intersects(HitBox))
+                return;
 
             float elapsed_time = (float)gameTime.ElapsedGameTime.TotalSeconds;
             timer += elapsed_time;
+            atk_timer += elapsed_time;
 
-            frame.X = 32 * ((int)(timer * 10) % 4);
+            if (atk_timer > 3)
+            {
+                attacking = !attacking;
+                atk_timer = 0;
+            }
+
+            if (attacking)
+            {
+                frame_reset = 6;
+                frame.Y = 64;
+            } 
+
+            else
+            {
+                frame_reset = 4;
+                frame.Y = 0;
+            } 
+                
+
+            frame.X = 32 * ((int)(timer * 10) % frame_reset);
 
             vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.04f * Math.Sign(Math.Sin(timer * 2));
 
             pos.Y += vsp;
             pos.X += hsp;
+
+
+            //if (atk_timer > 0.7)
+            //{
+            //    AddProjectile(pos.X + 8, pos.Y - 8, "aim", room.bounds);
+            //    atk_timer = 0;
+            //}
+                
+
 
             for (int i = projectiles.Count - 1; i >= 0; i--)
                 projectiles[i].Update(gameTime);
@@ -771,9 +807,9 @@ namespace PERSIST
         }
 
         // lukas-specific functions
-        public void AddProjectile(float x, float y, string type)
+        public void AddProjectile(float x, float y, string type, Rectangle room)
         {
-            var temp = new Lukas_Projectile(new Vector2(x, y), type, this, root);
+            var temp = new Lukas_Projectile(new Vector2(x, y), type, this, root, room);
             temp.LoadAssets(sprite);
             projectiles.Add(temp);
             root.AddEnemy(temp);
@@ -811,17 +847,19 @@ namespace PERSIST
         private Rectangle frame = new Rectangle(212, 80, 12, 12);
         private float speed = 2f;
         private Vector2 move;
+        private Rectangle room_bounds;
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 12, 12); } }
 
-        public Lukas_Projectile(Vector2 pos, string type, Lukas_Tutorial boss, Level root) 
+        public Lukas_Projectile(Vector2 pos, string type, Lukas_Tutorial boss, Level root, Rectangle room_bounds) 
         {
             pogoable = false;
             this.pos = pos;
             this.type = type;
             this.root = root;
             this.boss = boss;
+            this.room_bounds = room_bounds;
 
             if (type == "aim")
             {
@@ -844,9 +882,10 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            var temp = root.SimpleCheckCollision(HitBox);
+            //var temp = root.SimpleCheckCollision(HitBox);
 
-            if (temp != null)
+            //if (temp != null)
+            if (!HitBox.Intersects(room_bounds))
                 boss.RemoveProjectile(this);
 
             pos += move;
