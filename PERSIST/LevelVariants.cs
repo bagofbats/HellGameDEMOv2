@@ -50,7 +50,8 @@ namespace PERSIST
             new DialogueStruct("Obtained the Silver Blade.", 'd', Color.White, 'c', true),
             new DialogueStruct("Like you, the corpse is wearing a cloak and\na wooden mask.", 'd', Color.White, 'c'),
             new DialogueStruct("There is a strange liquid leaking out of its\nskull.", 'd', Color.White, 'c', true),
-            new DialogueStruct("Best not to dwell on it.", 'd', Color.White, 'c', true)
+            new DialogueStruct("( . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 135),
+            new DialogueStruct("( . . . Best not to dwell on it. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 135)
         };
 
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 

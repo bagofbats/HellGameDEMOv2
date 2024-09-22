@@ -33,6 +33,7 @@ namespace PERSIST
         protected Texture2D spr_ui;
         protected Texture2D spr_screenwipe;
         protected Texture2D spr_doorwipe;
+        protected Texture2D spr_portrait;
         protected bool debug;
         protected ProgressionManager prog_manager;
         protected bool overlay = true;
@@ -63,6 +64,7 @@ namespace PERSIST
         protected int dialogue_num = 0;
         protected float dialogue_letter = 0;
         protected float dialogue_speed = 5f;
+        protected float dialogue_speed_multiplier = 1f;
         protected bool dialogue_skippable = true;
         protected int opts_highlighted = 0;
 
@@ -112,7 +114,7 @@ namespace PERSIST
             bm_font = root.Content.Load<BitmapFont>("fonts/pixellocale_bmp");
             spr_screenwipe = root.Content.Load<Texture2D>("sprites/spr_screenwipe");
             spr_doorwipe = root.Content.Load<Texture2D>("sprites/spr_doorwipe");
-
+            spr_portrait = root.Content.Load<Texture2D>("sprites/spr_portraits");
 
             this.spr_ui = spr_ui;
         }
@@ -212,7 +214,7 @@ namespace PERSIST
             // dialogue stuff
             if (dialogue)
             {
-                dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_speed;
+                dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_speed * dialogue_speed_multiplier;
                 dialogue_letter = Math.Min(dialogue_letter, dialogue_txt[dialogue_num].text.Length);
             }
         }
@@ -567,7 +569,7 @@ namespace PERSIST
                 
                 if (dialogue)
                 {
-                    var dialogue_rect = new Rectangle(cam_x, cam_y, 320, 48);
+                    var dialogue_rect = new Rectangle(cam_x, cam_y, 320, 49);
                     _spriteBatch.Draw(black, dialogue_rect, Color.Black);
                 }
                 else if (!(player_dead || finish_player_dead) && !cutscene)
@@ -630,6 +632,8 @@ namespace PERSIST
                 {
                     dialogue_loc = dialogue_txt[dialogue_num].loc;
                     char dialogue_type = dialogue_txt[dialogue_num].type;
+                    Rectangle portrait = dialogue_txt[dialogue_num].portrait;
+                    Rectangle portrait_loc = new Rectangle((int)cam.GetPos().X + 2, (int)cam.GetPos().Y + 2, 45, 45);
 
                     // default is to left-justify text, no portrait
                     Vector2 textMiddlePoint = new Vector2(0, 0);
@@ -641,6 +645,16 @@ namespace PERSIST
                         textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num].text) / 2;
                         // Vector2 textMiddlePoint = bm_font.MeasureString(dialogue_txt[dialogue_num].Substring(0, (int)dialogue_letter)) / 2;
                         textDrawPoint = new Vector2(cam.GetPos().X + 159, cam.GetPos().Y + 21);
+                    }
+
+                    if (dialogue_loc == 'p')
+                    {
+                        // left portrait justify
+                        textMiddlePoint = new Vector2(0, 0);
+                        textDrawPoint = new Vector2(cam.GetPos().X + 47 + 8, cam.GetPos().Y + 2);
+
+                        // draw portrait
+                        _spriteBatch.Draw(spr_portrait, portrait_loc, portrait, Color.White);
                     }
 
                     textMiddlePoint.X = (int)textMiddlePoint.X;
@@ -671,7 +685,13 @@ namespace PERSIST
 
                     else
                     {
-                        _spriteBatch.DrawString(bm_font, dialogue_txt[dialogue_num].text.Substring(0, (int)dialogue_letter), textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                        string message = dialogue_txt[dialogue_num].text.Substring(0, (int)dialogue_letter);
+                        string future_msg = dialogue_txt[dialogue_num].text.Substring(0, Math.Min((int)dialogue_letter + 2, dialogue_txt[dialogue_num].text.Length));
+                        _spriteBatch.DrawString(bm_font, message, textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                        if (message.EndsWith('.') && future_msg.EndsWith('.'))
+                            dialogue_speed_multiplier = 0.1f;
+                        else
+                            dialogue_speed_multiplier = 1.0f;
                     }
                 }
                 
@@ -687,6 +707,8 @@ namespace PERSIST
                 }
 
             _spriteBatch.End();
+
+            
         }
 
         public void DrawBossHP(SpriteBatch _spriteBatch, int HP, int maxHP)
@@ -1254,7 +1276,7 @@ namespace PERSIST
 
     public struct DialogueStruct
     {
-        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, string opt_code="", int portrait_x =0, int portrait_y=0)
+        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, string opt_code="", int portrait_x=0, int portrait_y=0)
         {
             this.text = text;
             this.type = type;
