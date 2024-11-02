@@ -14,6 +14,18 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin audio/snd_atk.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/snd_atk.wav
+
+#begin audio/snd_hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/snd_hit.wav
+
 #begin bgs/bg_brick2.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -82,10 +82,15 @@ namespace PERSIST
         protected Rectangle door_trans_rect_1 = new Rectangle(0, 0, 400, 240);
         protected Rectangle door_trans_rect_2 = new Rectangle(0, 0, 400, 240);
 
+        public AudioManager audio_manager;
+
         public DialogueStruct[] dialogue_checkpoint = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c', true)};
 
-        public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name)
+        public int dialogue_second_index
+        { get; protected set; } = 0;
+
+        public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name)
         {
             this.root = root;
             this.player = player;
@@ -94,6 +99,7 @@ namespace PERSIST
             this.cam = cam;
             this.debug = debug;
             this.prog_manager = prog_manager;
+            this.audio_manager = audio_manager;
             this.name = name;
 
             for (int i = 0; i < bounds.Width; i += 320)
@@ -1187,6 +1193,7 @@ namespace PERSIST
         public override void Damage()
         {
             damaged = true;
+            root.audio_manager.PlaySound("hit");
         }
     }
 

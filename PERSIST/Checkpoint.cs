@@ -19,6 +19,7 @@ namespace PERSIST
         private Rectangle frame = new Rectangle(0, 0, 16, 32);
         private Texture2D sprite;
         float animate_timer = 0f;
+        private int dialogue_num = 0;
         public bool sideways
         { get; private set; } = false;
         public bool sideways_right
@@ -75,7 +76,11 @@ namespace PERSIST
         public void Interact()
         {
             if (visible)
-                root.StartDialogue(root.dialogue_checkpoint, 0, 'c', 25f, true);
+            {
+                root.StartDialogue(root.dialogue_checkpoint, dialogue_num, 'c', 25f, true);
+                dialogue_num = root.dialogue_second_index;
+            }
+                
         }
 
         public void SetSideways(bool sideways, string dir)

@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -248,8 +249,8 @@ namespace PERSIST
 
         public ProgressionManager()
         {
-            knife = false;
-            ranged = false;
+            knife = true;
+            ranged = true;
             slime_dead = false;
             slime_started = false;
             mask = false;
@@ -279,6 +280,29 @@ namespace PERSIST
         {
             slime_dead = true;
             ranged = true;
+        }
+    }
+
+    public class AudioManager
+    {
+        private Persist root;
+
+        private Dictionary<string, SoundEffect> sfx = new Dictionary<string, SoundEffect>();
+
+        public AudioManager(Persist root)
+        {
+            this.root = root;
+        }
+
+        public void Load()
+        {
+            sfx.Add("atk", root.Content.Load<SoundEffect>("audio/snd_atk"));
+            sfx.Add("hit", root.Content.Load<SoundEffect>("audio/snd_hit"));
+        }
+
+        public void PlaySound(string snd)
+        {
+            sfx[snd].Play();
         }
     }
 

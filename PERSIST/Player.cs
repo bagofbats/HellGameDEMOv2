@@ -91,6 +91,7 @@ namespace PERSIST
         private float death_hsp = 0f;
         private GameTime game_time;
         private Vector2 freeze_pos = new Vector2(0, 0);
+        private bool dialogue_recent = false;
 
         public Player(Persist root, Vector2 pos, ControllerManager contManager, ProgressionManager progManager)
         {
@@ -134,7 +135,12 @@ namespace PERSIST
             {
                 if (contManager.ENTER_PRESSED || contManager.SPACE_PRESSED)
                     root.the_level.AdvanceDialogue();
+
+                dialogue_recent = true;
             }
+
+            if (dialogue_recent && contManager.ENTER_RELEASED)
+                dialogue_recent = false;
 
             for (int i = attacks.Count - 1; i >= 0; i--)
                 attacks[i].Update(gameTime);
@@ -493,7 +499,7 @@ namespace PERSIST
                 ranged_ready = false;
                 thrown = true;
             }
-            else if (enter_released && ! attacking)
+            else if (enter_released && ! attacking && !dialogue_recent)
             {
                 StartAttack();
                 ranged_timer = 0;
@@ -513,6 +519,7 @@ namespace PERSIST
         {
             attacking = true;
             Attack temp;
+            //root.audioManager.PlaySound("atk");
 
             // restrict attacks while on walls
             if (!wall_down && wall_right)

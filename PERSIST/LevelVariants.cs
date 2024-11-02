@@ -37,7 +37,9 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
-            new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true)
+            new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true),
+            new DialogueStruct("( . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
+            new DialogueStruct("( Why do I get the feeling that these torches\nare important somehow? )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
         };
 
         DialogueStruct[] dialogue_slime = { 
@@ -54,9 +56,10 @@ namespace PERSIST
             new DialogueStruct("( . . . Best not to dwell on it. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 135)
         };
 
-        public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, debug, name) 
+        public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name) 
         {
             dialogue_checkpoint = dialogue_ck;
+            dialogue_second_index = 2;
             door_trans_color = Color.Black; // new Color(36, 0, 0);
 
             foreach (TiledData t in tld)

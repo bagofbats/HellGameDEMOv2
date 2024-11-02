@@ -231,6 +231,8 @@ namespace PERSIST
 
             damaged = true;
             damaged_timer = 0;
+
+            root.audio_manager.PlaySound("hit");
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -717,6 +719,7 @@ namespace PERSIST
         // attack fields
         private float atk_timer = 0f;
         private bool attacking = false;
+        private float atk_counter = 0f;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
@@ -753,12 +756,14 @@ namespace PERSIST
             {
                 attacking = !attacking;
                 atk_timer = 0;
+                atk_counter = 0;
             }
 
             if (attacking)
             {
                 frame_reset = 6;
                 frame.Y = 64;
+                Attack(0, atk_timer);
             } 
 
             else
@@ -774,15 +779,6 @@ namespace PERSIST
 
             pos.Y += vsp;
             pos.X += hsp;
-
-
-            //if (atk_timer > 0.7)
-            //{
-            //    AddProjectile(pos.X + 8, pos.Y - 8, "aim", room.bounds);
-            //    atk_timer = 0;
-            //}
-                
-
 
             for (int i = projectiles.Count - 1; i >= 0; i--)
                 projectiles[i].Update(gameTime);
@@ -825,6 +821,22 @@ namespace PERSIST
         {
             return player.GetPos();
         }
+
+        
+        public void Attack(int type, float timer)
+        {
+            if (type == 0)
+            {
+                // aimed attacks
+                if (timer > atk_counter)
+                {
+                    AddProjectile(pos.X + 8, pos.Y - 8, "aim", room.bounds);
+                    atk_counter += 0.8f;
+                }
+                    
+            }
+        }
+
 
         // trivial functions
         public override Rectangle GetHitBox(Rectangle input)

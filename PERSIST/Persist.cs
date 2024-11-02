@@ -47,6 +47,8 @@ namespace PERSIST
         private ProgressionManager progManager = new ProgressionManager();
         private FPSCounter fpsCounter;
 
+        public AudioManager audioManager;
+
         private Texture2D spr_ui;
         private BitmapFont bm_font;
 
@@ -73,6 +75,8 @@ namespace PERSIST
             IsMouseVisible = true;
             bbuffer_color = Color.DarkSalmon;
 
+            audioManager = new AudioManager(this);
+
             level_map = new Dictionary<(string, string), LevelStruct>()
             {
                 {("rm_tutorial2", "blue"), tutorial_two },
@@ -86,7 +90,7 @@ namespace PERSIST
 
             fpsCounter = new FPSCounter(player);
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial3.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
@@ -118,7 +122,7 @@ namespace PERSIST
             _graphics.ApplyChanges();
 
             Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, debug, "rm_tutorial1");
+            the_level = new TutorialLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
             Window.Title = "HellGame [DEMO]";
         }
@@ -142,6 +146,7 @@ namespace PERSIST
             bm_font = Content.Load<BitmapFont>("fonts/pixellocale_bmp");
 
             player.Load();
+            audioManager.Load();
             the_level.Load(spr_ui);
         }
 
@@ -224,7 +229,7 @@ namespace PERSIST
             List<TiledData> tld = new List<TiledData> { data };
 
             Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight), player, tld, cam, progManager, debug, destination);
+            the_level = new TutorialLevel(this, new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight), player, tld, cam, progManager, audioManager, debug, destination);
 
             the_level.Load(spr_ui, code);
 
