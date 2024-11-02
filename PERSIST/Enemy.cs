@@ -830,7 +830,7 @@ namespace PERSIST
                 // aimed attacks
                 if (timer > atk_counter)
                 {
-                    AddProjectile(pos.X + 8, pos.Y - 8, "aim", room.bounds);
+                    AddProjectile(pos.X + 22, pos.Y - 0, "aim", room.bounds);
                     atk_counter += 0.8f;
                 }
                     
@@ -859,7 +859,13 @@ namespace PERSIST
         private Rectangle frame = new Rectangle(212, 80, 12, 12);
         private float speed = 2f;
         private Vector2 move;
+        private Vector2 diff;
         private Rectangle room_bounds;
+
+        private bool flash = true;
+        private float flash_timer = 0f;
+
+        private bool backwards = true;
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 12, 12); } }
@@ -873,12 +879,13 @@ namespace PERSIST
             this.boss = boss;
             this.room_bounds = room_bounds;
 
+            Vector2 player_pos = boss.GetPlayerPos();
+            diff = player_pos - pos + new Vector2(16, 8);
+            diff = Vector2.Normalize(diff);
+
             if (type == "aim")
-            {
-                Vector2 player_pos = boss.GetPlayerPos();
-                Vector2 diff = player_pos - pos + new Vector2(16, 16);
-                move = Vector2.Normalize(diff) * speed;
-            }
+                move = Vector2.Normalize(new Vector2(-1, 1)) * speed * -1.1f;
+                //move = diff * speed * -1.1f;
                 
         }
 
@@ -889,7 +896,10 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, HitBox, frame, Color.White);
+            if (flash)
+                spriteBatch.Draw(root.black, HitBox, Color.White);
+            else
+                spriteBatch.Draw(sprite, HitBox, frame, Color.White);
         }
 
         public override void Update(GameTime gameTime)
@@ -901,6 +911,31 @@ namespace PERSIST
                 boss.RemoveProjectile(this);
 
             pos += move;
+
+            if (type == "aim" && move.Length() < 5)
+            {
+                if (move.Length() < 0.05f)
+                {
+                    backwards = false;
+                    Vector2 player_pos = boss.GetPlayerPos();
+                    diff = player_pos - pos + new Vector2(16, 8);
+                    diff = Vector2.Normalize(diff);
+                }
+                    
+                if (backwards)
+                    move += Vector2.Normalize(new Vector2(-1, 1)) * 0.08f;
+
+                else
+                    move += diff * 0.08f;
+                    
+            }
+
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (flash_timer > 0.08f)
+                    flash = false;
+            }
         }
 
         // obligatory
