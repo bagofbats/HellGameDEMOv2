@@ -711,6 +711,9 @@ namespace PERSIST
         // movement fields
         private float hsp = 0f;
         private float vsp = 0f;
+        private int loc_one = 0;
+        private int loc_two = 0;
+        private bool teleported = true;
 
         // animation fields
         private float timer = 0f;
@@ -734,6 +737,9 @@ namespace PERSIST
             this.root = root;
             pogoable = true;
             hurtful = false;
+
+            loc_one = (int)pos.X + 20;
+            loc_two = (int)pos.X - 160;
 
             room = root.RealGetRoom(pos);
         }
@@ -759,8 +765,12 @@ namespace PERSIST
                 atk_counter = 0;
             }
 
+            if (!attacking && atk_timer > 0.5 && !teleported)
+                Teleport();
+
             if (attacking)
             {
+                teleported = false;
                 frame_reset = 6;
                 frame.Y = 64;
                 Attack(0, atk_timer);
@@ -823,7 +833,7 @@ namespace PERSIST
         }
 
         
-        public void Attack(int type, float timer)
+        private void Attack(int type, float timer)
         {
             if (type == 0)
             {
@@ -835,6 +845,15 @@ namespace PERSIST
                 }
                     
             }
+        }
+
+        private void Teleport()
+        {
+            if (Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two))
+                pos.X = loc_two;
+            else
+                pos.X = loc_one;
+            teleported = true;
         }
 
 
