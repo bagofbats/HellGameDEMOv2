@@ -39,7 +39,7 @@ namespace PERSIST
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
             new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true),
             new DialogueStruct("( . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
-            new DialogueStruct("( Why do I get the feeling that these torches\nare important somehow? )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
+            new DialogueStruct("( Why do I get the feeling that these torches\n  are important somehow? )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
         };
 
         DialogueStruct[] dialogue_slime = { 

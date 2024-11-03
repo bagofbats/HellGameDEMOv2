@@ -715,12 +715,16 @@ namespace PERSIST
         private int loc_one = 0;
         private int loc_two = 0;
         private bool teleported = true;
+        private bool hurt = false;
+        private float hurt_timer = 0f;
 
         // animation fields
         private float timer = 0f;
         private int frame_reset = 4;
         private bool left = false;
         private bool right = true;
+        private bool flash = false;
+        private float flash_timer = 0f;
 
         // attack fields
         private float atk_timer = 0f;
@@ -758,47 +762,77 @@ namespace PERSIST
                 return;
 
             float elapsed_time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             timer += elapsed_time;
-            atk_timer += elapsed_time;
 
-            if (atk_timer > 3)
+            if (!hurt)
             {
-                attacking = !attacking;
-                atk_timer = 0;
-                atk_counter = 0;
+                atk_timer += elapsed_time;
+
+                if (atk_timer > 3)
+                {
+                    attacking = !attacking;
+                    atk_timer = 0;
+                    atk_counter = 0;
+                }
+
+                if (!attacking && atk_timer > 2.5 && !teleported)
+                    Teleport();
+
+                right = Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two);
+                left = !right;
+
+
+                if (attacking)
+                {
+                    teleported = false;
+                    frame_reset = 6;
+                    frame.Y = 64;
+                    Attack(0, atk_timer);
+                }
+
+                else
+                {
+                    frame_reset = 4;
+                    frame.Y = 0;
+                }
+
+                if (left)
+                    frame.Y += 32;
+
+                Vector2 diff = GetPlayerPos() - pos + new Vector2(16, 8);
+
+                if ((diff.X < 0 && left) || (diff.X > 0 && right))
+                    frame.Y += 160;
+
+                
             }
-
-            if (!attacking && atk_timer > 0.5 && !teleported)
-                Teleport();
-
-            right = Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two);
-            left = !right;
-
-
-            if (attacking)
-            {
-                teleported = false;
-                frame_reset = 6;
-                frame.Y = 64;
-                Attack(0, atk_timer);
-            } 
 
             else
             {
+                hurt_timer += elapsed_time;
+                frame.Y = 128;
                 frame_reset = 4;
-                frame.Y = 0;
-            } 
-                
 
+                if (hurt_timer > 3f)
+                {
+                    Teleport();
+                    hurt_timer = 0;
+                    hurt = false;
+                }
+            }
+
+
+            // animation stuff
             frame.X = 32 * ((int)(timer * 10) % frame_reset);
 
-            if (left)
-                frame.Y += 32;
-
-            Vector2 diff = GetPlayerPos() - pos + new Vector2(16, 8);
-
-            if ((diff.X < 0 && left) || (diff.X > 0 && right))
-                frame.Y += 160;
+            if (flash)
+            {
+                flash_timer += elapsed_time;
+                frame.X += 128;
+                if (flash_timer > 0.08f)
+                    flash = false;
+            }
 
             vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.04f * Math.Sign(Math.Sin(timer * 2));
 
@@ -824,7 +858,13 @@ namespace PERSIST
 
         public override void Damage()
         {
-            
+            if (!hurt)
+            {
+                hurt = true;
+            }
+
+            flash = true;
+            flash_timer = 0f;
         }
 
         // lukas-specific functions
