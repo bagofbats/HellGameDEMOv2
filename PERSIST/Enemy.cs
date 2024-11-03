@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -718,6 +719,8 @@ namespace PERSIST
         // animation fields
         private float timer = 0f;
         private int frame_reset = 4;
+        private bool left = false;
+        private bool right = true;
 
         // attack fields
         private float atk_timer = 0f;
@@ -739,7 +742,7 @@ namespace PERSIST
             hurtful = false;
 
             loc_one = (int)pos.X + 20;
-            loc_two = (int)pos.X - 160;
+            loc_two = (int)pos.X - 100;
 
             room = root.RealGetRoom(pos);
         }
@@ -768,6 +771,10 @@ namespace PERSIST
             if (!attacking && atk_timer > 0.5 && !teleported)
                 Teleport();
 
+            right = Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two);
+            left = !right;
+
+
             if (attacking)
             {
                 teleported = false;
@@ -784,6 +791,14 @@ namespace PERSIST
                 
 
             frame.X = 32 * ((int)(timer * 10) % frame_reset);
+
+            if (left)
+                frame.Y += 32;
+
+            Vector2 diff = GetPlayerPos() - pos + new Vector2(16, 8);
+
+            if ((diff.X < 0 && left) || (diff.X > 0 && right))
+                frame.Y += 160;
 
             vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.04f * Math.Sign(Math.Sin(timer * 2));
 
@@ -813,9 +828,9 @@ namespace PERSIST
         }
 
         // lukas-specific functions
-        public void AddProjectile(float x, float y, string type, Rectangle room)
+        public void AddProjectile(float x, float y, string type, Rectangle room, bool dir)
         {
-            var temp = new Lukas_Projectile(new Vector2(x, y), type, this, root, room);
+            var temp = new Lukas_Projectile(new Vector2(x, y), type, this, root, room, dir);
             temp.LoadAssets(sprite);
             projectiles.Add(temp);
             root.AddEnemy(temp);
@@ -840,7 +855,10 @@ namespace PERSIST
                 // aimed attacks
                 if (timer > atk_counter)
                 {
-                    AddProjectile(pos.X + 22, pos.Y - 0, "aim", room.bounds);
+                    int offset = 22;
+                    if (left)
+                        offset = 22 - 26;
+                    AddProjectile(pos.X + offset, pos.Y - 0, "aim", room.bounds, left);
                     atk_counter += 0.8f;
                 }
                     
@@ -849,10 +867,12 @@ namespace PERSIST
 
         private void Teleport()
         {
+            Random rnd = new Random();
+
             if (Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two))
-                pos.X = loc_two;
+                pos.X = loc_two + rnd.Next(-16, 32);
             else
-                pos.X = loc_one;
+                pos.X = loc_one + rnd.Next(-32, 16);
             teleported = true;
         }
 
@@ -885,11 +905,12 @@ namespace PERSIST
         private float flash_timer = 0f;
 
         private bool backwards = true;
+        private bool dir;
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 12, 12); } }
 
-        public Lukas_Projectile(Vector2 pos, string type, Lukas_Tutorial boss, Level root, Rectangle room_bounds) 
+        public Lukas_Projectile(Vector2 pos, string type, Lukas_Tutorial boss, Level root, Rectangle room_bounds, bool dir) 
         {
             pogoable = false;
             this.pos = pos;
@@ -897,14 +918,20 @@ namespace PERSIST
             this.root = root;
             this.boss = boss;
             this.room_bounds = room_bounds;
+            this.dir = dir;
 
             Vector2 player_pos = boss.GetPlayerPos();
             diff = player_pos - pos + new Vector2(16, 8);
             diff = Vector2.Normalize(diff);
 
             if (type == "aim")
-                move = Vector2.Normalize(new Vector2(-1, 1)) * speed * -1.1f;
-                //move = diff * speed * -1.1f;
+            {
+                Vector2 initial_mov = new Vector2(-1, 1);
+                if (dir)
+                    initial_mov = new Vector2(1, 1);
+                move = Vector2.Normalize(initial_mov) * speed * -1.1f;
+            }
+                
                 
         }
 
@@ -942,7 +969,13 @@ namespace PERSIST
                 }
                     
                 if (backwards)
-                    move += Vector2.Normalize(new Vector2(-1, 1)) * 0.08f;
+                {
+                    Vector2 initial_mov = new Vector2(-1, 1);
+                    if (dir)
+                        initial_mov = new Vector2(1, 1);
+                    move += Vector2.Normalize(initial_mov) * 0.08f;
+                }
+                    
 
                 else
                     move += diff * 0.08f;
