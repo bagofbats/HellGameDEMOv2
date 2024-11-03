@@ -707,6 +707,8 @@ namespace PERSIST
         private Texture2D sprite;
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
         private Player player;
+        private int hp = 18;
+        private int max_hp = 18;
 
         private List<Lukas_Projectile> projectiles = new List<Lukas_Projectile>();
 
@@ -771,6 +773,8 @@ namespace PERSIST
             if (!root.GetRoom(player.GetPos() + new Vector2(16, 16)).Intersects(HitBox) && !teleporting)
                 return;
 
+            root.GetBossHP(hp, max_hp);
+
             float elapsed_time = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             timer += elapsed_time;
@@ -806,10 +810,18 @@ namespace PERSIST
 
             if (teleport_flash)
             {
-                teleport_flash_timer += elapsed_time;
-                if (teleport_flash_timer > 0.08f)
+                if (hurt)
+                {
+                    teleport_flash_timer = 0f;
                     teleport_flash = false;
-                frame.X = 256;
+                }
+                else
+                {
+                    teleport_flash_timer += elapsed_time;
+                    if (teleport_flash_timer > 0.08f)
+                        teleport_flash = false;
+                    frame.X = 256;
+                }
             }
 
             float vsp_shift_down = 0f;
@@ -853,6 +865,11 @@ namespace PERSIST
 
             flash = true;
             flash_timer = 0f;
+
+            hp -= 1;
+
+            if (hp <= 0)
+                Die();
         }
 
         // lukas-specific functions
@@ -1004,6 +1021,12 @@ namespace PERSIST
         private void TeleportOut()
         {
             pos.Y = y_one - 200;
+        }
+
+        private void Die()
+        {
+            root.ResetBossHP();
+            root.RemoveEnemy(this);
         }
 
 

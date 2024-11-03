@@ -879,12 +879,14 @@ namespace PERSIST
             }
         }
 
+        // call this to display boss HP bar on screen
         public void GetBossHP(int HP, int HP_max)
         {
             boss_hp = HP;
             boss_max_hp = HP_max;
         }
 
+        // call this to stop displaying boss HP bar on screen
         public void ResetBossHP()
         {
             boss_hp = 0;
