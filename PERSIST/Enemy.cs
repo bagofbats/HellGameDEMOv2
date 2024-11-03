@@ -777,85 +777,13 @@ namespace PERSIST
 
             if (!hurt)
             {
-                atk_timer += elapsed_time;
-
-                if (atk_timer > 3)
-                {
-                    attacking = !attacking;
-                    atk_timer = 0;
-                    atk_counter = 0;
-                }
-
-                if (!attacking && atk_timer > 2.5 && !teleported)
-                    Teleport();
-
-                right = Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two);
-                left = !right;
-
-
-                if (attacking)
-                {
-                    teleported = false;
-                    frame_reset = 6;
-                    frame.Y = 64;
-                    Attack(0, atk_timer);
-                }
-
-                else
-                {
-                    frame_reset = 4;
-                    frame.Y = 0;
-                }
-
-                if (left)
-                    frame.Y += 32;
-
-                Vector2 diff = GetPlayerPos() - pos + new Vector2(16, 8);
-
-                if ((diff.X < 0 && left) || (diff.X > 0 && right))
-                    frame.Y += 160;
+                UpdateNormal(elapsed_time);
+                AnimateNormal();
             }
 
             else
             {
-                hurt_timer += elapsed_time;
-                frame.Y = 128;
-                frame_reset = 4;
-
-                // pos.Y = y_two;
-
-                if (hurt_timer > 2f)
-                {
-                    if (!teleporting)
-                        timer = 0f;
-
-                    teleporting = true;
-                    frame.Y = 288;
-                    frame.X = 32 * ((int)(timer * 15) % 8);
-
-                    if (hurt_timer > teleport_threshhold && frame.X == 0)
-                        TeleportOut();
-                }
-
-                if (hurt_timer > 3f)
-                {
-                    Teleport();
-                    hurt_timer = 0;
-                    hurt = false;
-                    teleported = true;
-                    atk_timer = 2.5f;
-                    attacking = false;
-                    teleporting = false;
-
-                    frame.Y = 0;
-                    frame.X = 0;
-
-                    right = Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two);
-                    left = !right;
-
-                    if (left)
-                        frame.Y += 32;
-                }
+                UpdateHurt(elapsed_time);
             }
 
 
@@ -947,7 +875,99 @@ namespace PERSIST
             return player.GetPos();
         }
 
-        
+        private void UpdateNormal(float elapsed_time)
+        {
+            atk_timer += elapsed_time;
+
+            if (atk_timer > 3)
+            {
+                attacking = !attacking;
+                atk_timer = 0;
+                atk_counter = 0;
+            }
+
+            if (!attacking && atk_timer > 2.5 && !teleported)
+                Teleport();
+
+            if (attacking)
+                Attack(0, atk_timer);
+        }
+
+        private void AnimateNormal()
+        {
+            right = Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two);
+            left = !right;
+
+
+            if (attacking)
+            {
+                teleported = false;
+                frame_reset = 6;
+                frame.Y = 64;
+            }
+
+            else
+            {
+                frame_reset = 4;
+                frame.Y = 0;
+            }
+
+            if (left)
+                frame.Y += 32;
+
+            Vector2 diff = GetPlayerPos() - pos + new Vector2(16, 8);
+
+            if ((diff.X < 0 && left) || (diff.X > 0 && right))
+                frame.Y += 160;
+        }
+
+        private void UpdateHurt(float elapsed_time)
+        {
+            hurt_timer += elapsed_time;
+            frame.Y = 128;
+            frame_reset = 4;
+
+            // this function is kind of a mess
+            // animation code and update code are mixed together here
+
+            // -- teleporting: marker to check if currently doing teleport animation
+            //                 not to be confused with teleportED which checks if Lukas already teleported in UpdateNormal
+            //                 so he doesn't teleport every frame
+
+            if (hurt_timer > 2f)
+            {
+                if (!teleporting)
+                    timer = 0f;
+
+                teleporting = true;
+                frame.Y = 288;
+                frame.X = 32 * ((int)(timer * 15) % 8);
+
+                if (hurt_timer > teleport_threshhold && frame.X == 0)
+                    TeleportOut();
+            }
+
+            if (hurt_timer > 3f)
+            {
+                Teleport();
+                hurt_timer = 0;
+                hurt = false;
+                teleported = true;
+                atk_timer = 2.5f;
+                attacking = false;
+                teleporting = false;
+
+                frame.Y = 0;
+                frame.X = 0;
+
+                right = Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two);
+                left = !right;
+
+                if (left)
+                    frame.Y += 32;
+            }
+        }
+
         private void Attack(int type, float timer)
         {
             if (type == 0)
