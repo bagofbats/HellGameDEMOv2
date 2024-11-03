@@ -715,6 +715,8 @@ namespace PERSIST
         private float vsp = 0f;
         private int loc_one = 0;
         private int loc_two = 0;
+        private int y_one = 0;
+        private int y_two = 0;
         private bool teleported = true;
         private bool hurt = false;
         private float hurt_timer = 0f;
@@ -748,6 +750,9 @@ namespace PERSIST
 
             loc_one = (int)pos.X + 20;
             loc_two = (int)pos.X - 100;
+
+            y_one = (int)pos.Y;
+            y_two = (int)pos.Y + 32;
 
             room = root.RealGetRoom(pos);
         }
@@ -805,8 +810,6 @@ namespace PERSIST
 
                 if ((diff.X < 0 && left) || (diff.X > 0 && right))
                     frame.Y += 160;
-
-                
             }
 
             else
@@ -814,6 +817,8 @@ namespace PERSIST
                 hurt_timer += elapsed_time;
                 frame.Y = 128;
                 frame_reset = 4;
+
+                // pos.Y = y_two;
 
                 if (hurt_timer > 3f)
                 {
@@ -839,7 +844,12 @@ namespace PERSIST
 
             vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.04f * Math.Sign(Math.Sin(timer * 2));
 
-            pos.Y += vsp;
+            float vsp_shift_down = 0f;
+
+            if (hurt)
+                vsp_shift_down = Math.Max(0, (y_two - pos.Y) / 10);
+
+            pos.Y += vsp + vsp_shift_down;
             pos.X += hsp;
 
             for (int i = projectiles.Count - 1; i >= 0; i--)
@@ -867,6 +877,7 @@ namespace PERSIST
             if (!hurt)
             {
                 hurt = true;
+                timer = 0f;
             }
 
             flash = true;
@@ -918,8 +929,11 @@ namespace PERSIST
             if (Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two))
                 pos.X = loc_two + rnd.Next(-16, 32);
             else
-                pos.X = loc_one + rnd.Next(-32, 16);
+                pos.X = loc_one + rnd.Next(-32, 16); 
             teleported = true;
+
+            // timer = 0f;
+            pos.Y = y_one;
         }
 
 
