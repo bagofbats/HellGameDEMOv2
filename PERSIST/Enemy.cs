@@ -728,6 +728,10 @@ namespace PERSIST
         private bool right = true;
         private bool flash = false;
         private float flash_timer = 0f;
+        private bool teleporting = false;
+        private float teleport_threshhold = 2.5f;
+        private bool teleport_flash = false;
+        private float teleport_flash_timer = 0f;
 
         // attack fields
         private float atk_timer = 0f;
@@ -764,7 +768,7 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            if (!root.GetRoom(player.GetPos() + new Vector2(16, 16)).Intersects(HitBox))
+            if (!root.GetRoom(player.GetPos() + new Vector2(16, 16)).Intersects(HitBox) && !teleporting)
                 return;
 
             float elapsed_time = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -820,6 +824,19 @@ namespace PERSIST
 
                 // pos.Y = y_two;
 
+                if (hurt_timer > 2f)
+                {
+                    if (!teleporting)
+                        timer = 0f;
+
+                    teleporting = true;
+                    frame.Y = 288;
+                    frame.X = 32 * ((int)(timer * 15) % 8);
+
+                    if (hurt_timer > teleport_threshhold && frame.X == 0)
+                        TeleportOut();
+                }
+
                 if (hurt_timer > 3f)
                 {
                     Teleport();
@@ -828,13 +845,30 @@ namespace PERSIST
                     teleported = true;
                     atk_timer = 2.5f;
                     attacking = false;
+                    teleporting = false;
+
+                    frame.Y = 0;
+                    frame.X = 0;
+
+                    right = Math.Abs(pos.X - loc_one) < Math.Abs(pos.X - loc_two);
+                    left = !right;
+
+                    if (left)
+                        frame.Y += 32;
                 }
             }
 
 
             // animation stuff
-            frame.X = 32 * ((int)(timer * 10) % frame_reset);
 
+            vsp = 0f;
+
+            if (!teleporting)
+            {
+                frame.X = 32 * ((int)(timer * 10) % frame_reset);
+                vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.04f * Math.Sign(Math.Sin(timer * 2));
+            }
+                
             if (flash)
             {
                 flash_timer += elapsed_time;
@@ -842,11 +876,17 @@ namespace PERSIST
                     flash = false;
             }
 
-            vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.04f * Math.Sign(Math.Sin(timer * 2));
+            if (teleport_flash)
+            {
+                teleport_flash_timer += elapsed_time;
+                if (teleport_flash_timer > 0.08f)
+                    teleport_flash = false;
+                frame.X = 256;
+            }
 
             float vsp_shift_down = 0f;
 
-            if (hurt)
+            if (hurt && hurt_timer < teleport_threshhold)
                 vsp_shift_down = Math.Max(0, (y_two - pos.Y) / 10);
 
             pos.Y += vsp + vsp_shift_down;
@@ -860,8 +900,11 @@ namespace PERSIST
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
 
-            if (flash)
+            if (flash && !teleporting)
                 spriteBatch.Draw(sprite, PositionRectangle, new Rectangle(frame.X + 128, frame.Y, frame.Width, frame.Height), Color.White * 0.5f);
+
+            if (flash && teleporting)
+                spriteBatch.Draw(sprite, PositionRectangle, new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height), Color.White * 0.5f);
 
             for (int i = projectiles.Count - 1; i >= 0; i--)
                 projectiles[i].Draw(spriteBatch);
@@ -934,6 +977,13 @@ namespace PERSIST
 
             // timer = 0f;
             pos.Y = y_one;
+
+            teleport_flash = true;
+        }
+
+        private void TeleportOut()
+        {
+            pos.Y = y_one - 200;
         }
 
 
