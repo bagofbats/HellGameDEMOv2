@@ -299,11 +299,18 @@ namespace PERSIST
             List<Enemy> temp = level.CheckEnemyCollision(HitBox);
             if (temp.Count() != 0)
             {
+                bool destroy_this = false;
+
                 foreach (Enemy enemy in temp)
                 {
                     enemy.Damage();
+                    if (enemy.destroy_projectile)
+                        destroy_this = true;
+
                 }
-                Finish();
+
+                if (destroy_this)
+                    Finish();
             }
 
 

@@ -42,6 +42,7 @@ namespace PERSIST
         public Vector2 Pos { get => pos; }
         public bool hurtful { get; protected set; } = true;
         public bool pogoable { get; protected set; } = true;
+        public bool destroy_projectile { get; protected set; } = true;
     }
 
     // regular enemies
@@ -819,6 +820,9 @@ namespace PERSIST
                     Teleport();
                     hurt_timer = 0;
                     hurt = false;
+                    teleported = true;
+                    atk_timer = 2.5f;
+                    attacking = false;
                 }
             }
 
@@ -829,7 +833,6 @@ namespace PERSIST
             if (flash)
             {
                 flash_timer += elapsed_time;
-                frame.X += 128;
                 if (flash_timer > 0.08f)
                     flash = false;
             }
@@ -846,6 +849,9 @@ namespace PERSIST
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            if (flash)
+                spriteBatch.Draw(sprite, PositionRectangle, new Rectangle(frame.X + 128, frame.Y, frame.Width, frame.Height), Color.White * 0.5f);
 
             for (int i = projectiles.Count - 1; i >= 0; i--)
                 projectiles[i].Draw(spriteBatch);
@@ -953,6 +959,8 @@ namespace PERSIST
         public Lukas_Projectile(Vector2 pos, string type, Lukas_Tutorial boss, Level root, Rectangle room_bounds, bool dir) 
         {
             pogoable = false;
+            destroy_projectile = false;
+
             this.pos = pos;
             this.type = type;
             this.root = root;
