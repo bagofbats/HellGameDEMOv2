@@ -53,6 +53,7 @@ namespace PERSIST
         protected List<String> special_walls_types = new List<String>();
         protected List<Vector2> enemy_locations = new List<Vector2>();
         protected List<String> enemy_types = new List<String>();
+        protected List<Interactable> interactables = new List<Interactable>();
 
         protected bool player_dead = false;
         protected bool finish_player_dead = false;
@@ -165,6 +166,9 @@ namespace PERSIST
 
             for (int i = particles.Count - 1; i >= 0; i--)
                 particles[i].Update(gameTime);
+
+            for (int i = interactables.Count - 1; i >= 0; i--)
+                interactables[i].Update(gameTime);
 
             if (prog_manager.GetActiveCheckpoint() != null)
                 prog_manager.GetActiveCheckpoint().Animate(gameTime);
@@ -356,6 +360,16 @@ namespace PERSIST
             enemies.Remove(enemy);
         }
 
+        public void AddInteractable(Interactable i)
+        {
+            interactables.Add(i);
+        }
+
+        public void RemoveInteractable(Interactable i)
+        {
+            interactables.Remove(i);
+        }
+
         public void AddSpecialWall(Wall wall)
         {
             special_walls.Add(wall);
@@ -470,6 +484,18 @@ namespace PERSIST
             return ret;
         }
 
+        public List<Interactable> CheckInteractableCollision(Rectangle input)
+        {
+            List<Interactable> ret = new List<Interactable>();
+
+            for (int i = interactables.Count - 1; i >= 0; i--)
+                if (interactables[i] != null)
+                    if (interactables[i].CheckCollision(input))
+                        ret.Add(interactables[i]);
+
+            return ret;
+        }
+
         public List<Wall> ListCheckCollision(Rectangle input)
         {
             List<Wall> ret = new List<Wall>();
@@ -530,6 +556,9 @@ namespace PERSIST
 
             for (int i = enemies.Count - 1; i >= 0; i--)
                 enemies[i].Draw(_spriteBatch);
+
+            for (int i = interactables.Count - 1; i >= 0; i--)
+                interactables[i].Draw(_spriteBatch);
 
             if (!player_dead && !door_trans)
                 player.Draw(_spriteBatch);
@@ -719,10 +748,13 @@ namespace PERSIST
 
         public void DrawBossHP(SpriteBatch _spriteBatch, int HP, int maxHP)
         {
-            Rectangle bar_pos = new Rectangle((int)cam.GetPos().X + 10, (int)cam.GetPos().Y + 220, 300, 8);
-            Rectangle health_pos = new Rectangle((int)cam.GetPos().X + 12, (int)cam.GetPos().Y + 222, 296 * HP / maxHP, 4);
+            Rectangle bar_pos = new Rectangle((int)cam.GetPos().X + 10, (int)cam.GetPos().Y + 220, 300, 9);
+            Rectangle health_pos = new Rectangle((int)cam.GetPos().X + 37, (int)cam.GetPos().Y + 222, 271 * HP / maxHP, 5);
+            Rectangle label_pos = new Rectangle((int)cam.GetPos().X + 11, (int)cam.GetPos().Y + 220, 25, 9);
+            Rectangle label_frame = new Rectangle(0, 16, 25, 9);
 
             _spriteBatch.Draw(black, bar_pos, Color.Black);
+            _spriteBatch.Draw(spr_ui, label_pos, label_frame, Color.White);
             _spriteBatch.Draw(black, health_pos, Color.Red);
         }
 

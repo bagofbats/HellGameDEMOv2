@@ -1025,6 +1025,9 @@ namespace PERSIST
 
         private void Die()
         {
+            for (int i = projectiles.Count() - 1; i >= 0; i--)
+                RemoveProjectile(projectiles[i]);
+
             root.ResetBossHP();
             root.RemoveEnemy(this);
         }

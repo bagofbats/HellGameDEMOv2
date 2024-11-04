@@ -457,6 +457,11 @@ namespace PERSIST
                 foreach (Enemy temp in e)
                     temp.Interact();
 
+            List<Interactable> i = root.the_level.CheckInteractableCollision(HitBox);
+
+            if (i.Count > 0 && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED)
+                i[0].Interact();
+
             Checkpoint C = root.the_level.CheckpointCheckCollision(HitBox);
             if (C != null && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED && !contManager.LEFT && !contManager.RIGHT)
                 C.Interact();

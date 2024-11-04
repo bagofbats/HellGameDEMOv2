@@ -31,6 +31,8 @@ namespace PERSIST
 
         private DeadGuy dead_guy;
 
+        
+
         private BigSlime slimeboss;
 
         private int slime_counter = 4;
@@ -39,7 +41,7 @@ namespace PERSIST
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
             new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true),
             new DialogueStruct("( . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
-            new DialogueStruct("( Why do I get the feeling that these torches\n  are important somehow? )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
+            new DialogueStruct("( Seems like whoever runs this place isn't a fan\n  of light bulbs. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
         };
 
         DialogueStruct[] dialogue_slime = { 
@@ -55,6 +57,13 @@ namespace PERSIST
             new DialogueStruct("( . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 135),
             new DialogueStruct("( . . . Best not to dwell on it. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 135)
         };
+
+        DialogueStruct[] dialogue_ranged = {
+            new DialogueStruct("Obtained the Ranger's Medallion", 'd', Color.White, 'c'),
+            new DialogueStruct("Hold down the attack button to do a ranged attack!", 'd', Color.White, 'c', true)
+        };
+
+
 
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name) 
         {
@@ -197,6 +206,11 @@ namespace PERSIST
                                 enemy_locations.Add(temp);
                                 enemy_types.Add("lukas_boss");
                             }
+
+                            if (l.objects[i].name == "ranger_pickup" && !prog_manager.ranged)
+                            {
+                                AddInteractable(new RangerPickup(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y), this, prog_manager, dialogue_ranged));
+                            }
                         }
 
                 }
@@ -235,6 +249,9 @@ namespace PERSIST
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
+
+            foreach (Interactable i in interactables)
+                i.LoadAssets(spr_slime);
 
             foreach (Wall wall in special_walls)
             {

@@ -250,7 +250,7 @@ namespace PERSIST
         public ProgressionManager()
         {
             knife = true;
-            ranged = true;
+            ranged = false;
             slime_dead = false;
             slime_started = false;
             mask = false;
@@ -279,6 +279,10 @@ namespace PERSIST
         public void DefeatSlime()
         {
             slime_dead = true;
+        }
+
+        public void GetRanged()
+        {
             ranged = true;
         }
     }
@@ -337,9 +341,5 @@ namespace PERSIST
             }
         }
     }
-
-    public class ProgressionPickup
-    {
-
-    }
+    
 }
