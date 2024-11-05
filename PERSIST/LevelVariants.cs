@@ -63,6 +63,11 @@ namespace PERSIST
             new DialogueStruct("Hold down the attack button to do a ranged attack!", 'd', Color.White, 'c', true)
         };
 
+        DialogueStruct[] dialogue_chair = {
+            new DialogueStruct("it's a chari!", 'd', Color.White, 'c'),
+            new DialogueStruct("waow", 'd', Color.White, 'c', true)
+        };
+
 
 
         public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name) 
@@ -216,6 +221,23 @@ namespace PERSIST
                             if (l.objects[i].name == "ranger_pickup" && !prog_manager.ranged)
                             {
                                 AddInteractable(new RangerPickup(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y), this, prog_manager, dialogue_ranged));
+                            }
+
+                            if (l.objects[i].name == "furniture")
+                            {
+                                var temp = new Furniture(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), this);
+                                string value = l.objects[i].properties[0].value;
+
+                                if (value == "desk")
+                                    temp.SetType(dialogue_chair);
+
+                                if (value == "chair")
+                                    temp.SetType(dialogue_chair);
+
+                                if (value == "crate")
+                                    temp.SetType(dialogue_chair);
+
+                                AddInteractable(temp);
                             }
                         }
 

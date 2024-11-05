@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonoGame.Extended.Gui.Controls;
 
 namespace PERSIST
 {
@@ -75,6 +76,56 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             return input.Intersects(pos);
+        }
+    }
+
+    public class Furniture : Interactable
+    {
+        private Texture2D sprite;
+        protected Rectangle pos;
+        private DialogueStruct[] dialogue;
+
+        public Furniture(Rectangle pos, Level root)
+        {
+            this.pos = pos;
+            this.root = root;
+            // this.dialogue = dialogue;
+            // this.frame = frame;
+        }
+
+        public void SetType(DialogueStruct[] dialogue)
+        { 
+            this.dialogue = dialogue;
+        }
+
+        public override void Interact()
+        {
+            root.StartDialogue(dialogue, 0, 'c', 25f, true);
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(pos);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // throw new NotImplementedException();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            // spriteBatch.Draw(sprite, pos, frame, Color.White);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, pos, Color.Blue * 0.3f);
         }
     }
 }
