@@ -40,7 +40,7 @@ namespace PERSIST
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
             new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true),
-            new DialogueStruct("( . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
+            new DialogueStruct("( So many torches . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
             new DialogueStruct("( Seems like whoever runs this place isn't a fan\n  of light bulbs. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
         };
 
@@ -116,7 +116,13 @@ namespace PERSIST
                             }
                                 
                             if (l.objects[i].name == "door")
-                                doors.Add(new Door(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), l.objects[i].properties[1].value, l.objects[i].properties[0].value));
+                            {
+                                var temp = new Door(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), l.objects[i].properties[1].value, l.objects[i].properties[0].value);
+                                if (l.objects[i].properties.Count() > 2)
+                                    temp.SetOneWay(l.objects[i].properties[2].value);
+                                doors.Add(temp);
+                            }
+                                
                             
 
                             if (l.objects[i].name == "breakable")
@@ -542,6 +548,10 @@ namespace PERSIST
             foreach (EyeSwitch s in switches)
                 if (s.disabled)
                     s.SetDisabled(false);
+
+            RangerPickup rpickup = new RangerPickup(new Vector2(984, 976), this, prog_manager, dialogue_ranged);
+            rpickup.LoadAssets(spr_slime);
+            AddInteractable(rpickup);
 
             StartDialogue(dialogue_slime, 0, 'c', 10f, false, false);
         }

@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using TiledCS;
@@ -82,7 +84,8 @@ namespace PERSIST
                 {("rm_tutorial2", "blue"), tutorial_two },
                 {("rm_tutorial1", "blue"), tutorial_one },
                 {("rm_tutorial3", "red"), tutorial_thr },
-                {("rm_tutorial2", "red"), tutorial_two }
+                {("rm_tutorial2", "red"), tutorial_two },
+                {("rm_tutorial3", "green"), tutorial_thr }
             };
 
 
@@ -210,6 +213,8 @@ namespace PERSIST
 
         public void GoToLevel(string destination, string code, string cutscene="")
         {
+            Debug.WriteLine(cutscene);
+
             if (progManager.GetActiveCheckpoint().root.name == destination)
             {
                 SimpleGoToLevel(progManager.GetActiveCheckpoint().root);

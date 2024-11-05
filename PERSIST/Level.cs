@@ -72,7 +72,8 @@ namespace PERSIST
         protected int boss_hp = 0;
         protected int boss_max_hp = 0;
 
-        protected bool cutscene = false;
+        public bool cutscene
+        { get; protected set; } = false;
         protected float cutscene_timer = 0f;
         protected string[] cutscene_code;
 
@@ -176,7 +177,7 @@ namespace PERSIST
             // door nonsense idk
             for (int i = 0; i < doors.Count(); i++)
                 if (doors[i] != null)
-                    if (doors[i].location.Intersects(player.HitBox) && player.contManager.DOWN_PRESSED && !cutscene)
+                    if (doors[i].location.Intersects(player.HitBox) && player.contManager.DOWN_PRESSED && !cutscene && doors[i].one_way != "dest")
                     {
                         //player.EnterCutscene();
                         //cutscene = true;
@@ -294,6 +295,7 @@ namespace PERSIST
             if (cutscene_code[0] == "finish_door")
             {
                 door_trans = true;
+                cutscene = true;
 
                 if (cutscene_timer > 0.7f)
                 {
@@ -593,6 +595,7 @@ namespace PERSIST
                     _spriteBatch.Draw(black, doors[i].location, Color.Blue * 0.2f);
             }
 
+            // UI stuff
             if (overlay)
             {
                 int cam_x = (int)cam.GetPos().X;
@@ -600,7 +603,13 @@ namespace PERSIST
 
 
                 var overlay_rect = new Rectangle(cam_x, cam_y, 320, 12);
-                _spriteBatch.Draw(black, overlay_rect, Color.Black);
+
+                float opacity = 1f;
+
+                if (overlay_rect.Intersects(player.HitBox))
+                    opacity = 0.3f;
+
+                _spriteBatch.Draw(black, overlay_rect, Color.Black * opacity);
                 
                 if (dialogue)
                 {
@@ -862,7 +871,7 @@ namespace PERSIST
             if (code != "")
             {
                 for (int i = 0; i < doors.Count; i++)
-                    if (doors[i].code == code)
+                    if (doors[i].code == code && doors[i].one_way != "src")
                     {
                         Door dst = doors[i];
                         player.SetPos(new Vector2(dst.location.X + 6, dst.location.Y - 8));
@@ -1154,6 +1163,9 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            if (root.cutscene)
+                flash = false;
+
             if (flash)
                 spriteBatch.Draw(black, draw_rectangle, frame, Color.White);
             else
@@ -1294,12 +1306,19 @@ namespace PERSIST
         public Rectangle location { get; private set; }
         public string code { get; private set; }
         public string destination { get; private set; }
+        public string one_way { get; private set; }
 
-        public Door(Rectangle location, string code, string destination) 
+        public Door(Rectangle location, string code, string destination, string one_way="") 
         {
             this.location = location;
             this.code = code;
             this.destination = destination;
+            this.one_way = one_way;
+        }
+
+        public void SetOneWay(string one_way)
+        {
+            this.one_way = one_way;
         }
     }
 

@@ -4,7 +4,7 @@
  <objectgroup id="3" name="rooms">
   <object id="9" name="Beginning" x="480" y="280" width="320" height="240"/>
   <object id="26" name="Hop, Skip, Jump" x="800" y="360" width="320" height="240"/>
-  <object id="46" name="Crossroads" x="1120" y="217" width="320" height="263"/>
+  <object id="46" name="Crossroads" x="1120" y="224" width="320" height="240"/>
   <object id="55" name="Dead End" x="1440" y="240" width="320" height="240"/>
   <object id="88" name="Long Way Around" x="1120" y="0" width="320" height="240"/>
   <object id="127" name="Hatch" x="1440" y="0" width="320" height="240"/>
@@ -45,9 +45,6 @@
    <point/>
   </object>
   <object id="188" name="knife_getter_guy" x="1792" y="408" width="32" height="32"/>
-  <object id="189" name="ranger_pickup" x="736" y="456">
-   <point/>
-  </object>
  </objectgroup>
  <layer id="8" name="background_lower" width="260" height="75">
   <data encoding="csv">
