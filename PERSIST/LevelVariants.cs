@@ -81,12 +81,22 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_desk = {
             new DialogueStruct("It's a desk.", 'd', Color.White, 'c'),
-            new DialogueStruct("There's a stack of papers and a pen on top of it.", 'd', Color.White, 'c'),
-            new DialogueStruct("Leave it alone.\nRead the papers.", 'o', Color.White, 'l', false, "exit 0|read"),
-            new DialogueStruct("wadsafsfgsa", 'd', Color.White, 'l', true, "", 0, 0, 99999999999999),
-            new DialogueStruct("Journal status: Read.", 'd', Color.White, 'c', true)
+            new DialogueStruct("There's a paper and a pen on top of it.", 'd', Color.White, 'c'),
+            new DialogueStruct("Leave it alone.\nRead the paper.", 'o', Color.White, 'l', false, "exit 0|read"),
+            new DialogueStruct("Lukas, if you're reading this, don't go anywhere.\nI've gone out to look for you, but I'll be back.\nSo you should stay put for the time being.", 'd', Color.White, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("I'm still not sure where we are but this seems like a safe\nroom we can chill out in.\nAt least, there's no nasty red sludge in here.", 'd', Color.White, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("I'm really sorry we got separated like that.\nIt won't happen again, okay?\nPromise.", 'd', Color.White, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("Be back soon.\nLove, big sister Alice", 'd', Color.White, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("P.S. I found this coin lying around.\nPretty neat, huh? Maybe you could tell me where it's from.\nYou always know more about this kind of thing than I do.", 'd', Color.White, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("That's the end of the letter.", 'd', Color.White, 'c'),
+            new DialogueStruct("The coin Alice mentioned is still there.", 'd', Color.White, 'c'),
+            new DialogueStruct("You got the Strange Coin.", 'd', Color.White, 'c', true),
+            new DialogueStruct("( Alice . . . Lukas . . .\n  Are they okay? )", 'd', Color.DodgerBlue, 'p', false, "", 90, 135),
+            new DialogueStruct("( I want to think they are\n  but the coin is still here\n  and that corpse I pulled the knife from . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 135),
+            new DialogueStruct("( You know what, let's not think about it.\n  I'm sure they're fine. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 180),
+            new DialogueStruct("( Don't think about it.\n  Everything will be fine. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 180)
         };
-        int[] desk_bps = { 0, 4 };
+        int[] desk_bps = { 0, 11, 14 };
 
 
 
