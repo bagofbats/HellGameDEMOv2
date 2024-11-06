@@ -251,14 +251,18 @@ namespace PERSIST
         public bool journal_secret
         { get; private set; }
 
+        public bool charons_blessing
+        { get; private set; }
+
         public ProgressionManager()
         {
-            knife = false;
+            knife = true;
             ranged = false;
             slime_dead = false;
             slime_started = false;
             mask = false;
             journal_secret = false;
+            charons_blessing = true;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)

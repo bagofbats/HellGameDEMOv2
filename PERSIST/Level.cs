@@ -69,7 +69,7 @@ namespace PERSIST
         protected bool dialogue_skippable = true;
         protected int opts_highlighted = 0;
 
-        protected int boss_hp = 0;
+        protected float boss_hp = 0;
         protected int boss_max_hp = 0;
 
         public bool cutscene
@@ -762,10 +762,10 @@ namespace PERSIST
             
         }
 
-        public void DrawBossHP(SpriteBatch _spriteBatch, int HP, int maxHP)
+        public void DrawBossHP(SpriteBatch _spriteBatch, float HP, int maxHP)
         {
             Rectangle bar_pos = new Rectangle((int)cam.GetPos().X + 10, (int)cam.GetPos().Y + 220, 300, 9);
-            Rectangle health_pos = new Rectangle((int)cam.GetPos().X + 37, (int)cam.GetPos().Y + 222, 271 * HP / maxHP, 5);
+            Rectangle health_pos = new Rectangle((int)cam.GetPos().X + 37, (int)cam.GetPos().Y + 222, (int)(271 * HP / maxHP), 5);
             Rectangle label_pos = new Rectangle((int)cam.GetPos().X + 11, (int)cam.GetPos().Y + 220, 25, 9);
             Rectangle label_frame = new Rectangle(0, 16, 25, 9);
 
@@ -928,7 +928,7 @@ namespace PERSIST
         }
 
         // call this to display boss HP bar on screen
-        public void GetBossHP(int HP, int HP_max)
+        public void GetBossHP(float HP, int HP_max)
         {
             boss_hp = HP;
             boss_max_hp = HP_max;

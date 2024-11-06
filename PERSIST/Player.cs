@@ -75,6 +75,8 @@ namespace PERSIST
         private float coyote_timer = 0f;
         private int hp = 1;
         private int max_hp = 1;
+        private int damage = 1;
+        private float damage_multiplier = 1f;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -120,6 +122,11 @@ namespace PERSIST
 
         public void Update(GameTime gameTime)
         {
+            if (progManager.charons_blessing)
+                damage_multiplier = 0.6f;
+            else
+                damage_multiplier = 1f;
+
             GetInput();
 
             game_time = gameTime;
@@ -498,7 +505,7 @@ namespace PERSIST
                 if (!wall_down && wall_right)
                     ranged_dir = -1;
 
-                Attack temp = new Ranged(this, spr_ranged, ranged_dir, up, root.the_level);
+                Attack temp = new Ranged(this, spr_ranged, ranged_dir, up, root.the_level, damage * damage_multiplier);
                 attacks.Add(temp);
                 ranged_timer = 0;
                 ranged_ready = false;
@@ -543,7 +550,7 @@ namespace PERSIST
                     atk_type = 'r';
             }
 
-            temp = new Slash(this, atk_type, spr_atk, atk_dir, root.the_level);
+            temp = new Slash(this, atk_type, spr_atk, atk_dir, root.the_level, damage * damage_multiplier);
             attacks.Add(temp);
             atk_dir = !atk_dir;
         }

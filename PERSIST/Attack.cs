@@ -27,16 +27,18 @@ namespace PERSIST
         private float animateTimer = 0;
         private Level level;
         private bool pogoed = false;
+        private float damage = 1f;
 
         private List<Enemy> enemies_struck = new List<Enemy>();
         private List<Breakable> specials = new List<Breakable>();
 
-        public Slash(Player player, char type, Texture2D img, bool slash_dir, Level level)
+        public Slash(Player player, char type, Texture2D img, bool slash_dir, Level level, float damage)
         {
             this.player = player;
             this.type = type;
             this.img = img;
             this.level = level;
+            this.damage = damage;
             pos = player.DrawBox;
             pos.X = player.HitBox.X + 16;
             pos.Y = player.HitBox.Y;
@@ -117,7 +119,7 @@ namespace PERSIST
                         if (!enemies_struck.Contains(enemy))
                         {
                             enemies_struck.Add(enemy);
-                            enemy.Damage();
+                            enemy.Damage(damage);
                         }
                     }
                 }
@@ -130,7 +132,7 @@ namespace PERSIST
                     if (enemy != null && !enemies_struck.Contains(enemy))
                     {
                         enemies_struck.Add(enemy);
-                        enemy.Damage();
+                        enemy.Damage(damage);
                     }
                 }
             }
@@ -181,14 +183,16 @@ namespace PERSIST
         private float grav = 20f;
         private float spin_timer = 0;
         private bool fx_created = false;
+        private float damage = 1f;
 
-        public Ranged(Player player, Texture2D img, int dir, bool up, Level level)
+        public Ranged(Player player, Texture2D img, int dir, bool up, Level level, float damage)
         {
             this.player = player;
             this.img = img;
             this.dir = dir;
             this.up = up;
             this.level = level;
+            this.damage = damage;
 
             pos.X = player.DrawBox.X + 6;
 
@@ -303,7 +307,7 @@ namespace PERSIST
 
                 foreach (Enemy enemy in temp)
                 {
-                    enemy.Damage();
+                    enemy.Damage(damage);
                     if (enemy.destroy_projectile)
                         destroy_this = true;
 

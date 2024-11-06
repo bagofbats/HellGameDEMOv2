@@ -25,7 +25,7 @@ namespace PERSIST
         public abstract void Draw(SpriteBatch spriteBatch);
         public abstract void DebugDraw(SpriteBatch spriteBatch, Texture2D blue);
         public abstract bool CheckCollision(Rectangle input);
-        public virtual void Damage()
+        public virtual void Damage(float damage)
         {
             // this method is only needed for attackable enemies
             // non-attackable enemies (e.g. projectiles) should not override this empty function
@@ -50,7 +50,7 @@ namespace PERSIST
     public class Slime : Enemy
     {
         Texture2D sprite;
-        protected int hp = 4;
+        protected float hp = 4f;
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
         protected float vsp = 0f;
         private float grav = 0.12f;
@@ -78,7 +78,7 @@ namespace PERSIST
             pogoable = true;
         }
 
-        public int HP
+        public float HP
         { get { return hp; } set { hp = value; } }
 
         public Rectangle PositionRectangle
@@ -215,9 +215,9 @@ namespace PERSIST
 
         }
 
-        public override void Damage()
+        public override void Damage(float damage)
         {
-            hp -= 1;
+            hp -= damage;
             if (hp <= 0)
             {
                 root.RemoveEnemy(this);
@@ -348,7 +348,7 @@ namespace PERSIST
             //throw new NotImplementedException();
         }
 
-        public override void Damage()
+        public override void Damage(float damage)
         {
             if (disabled)
                 return;
@@ -391,7 +391,7 @@ namespace PERSIST
         private bool wakeup_ready = false;
         private Rectangle wakeup_rectangle = new Rectangle(880, 960, 24, 32);
         new private TutorialLevel root;
-        private int hp = 22;
+        private float hp = 22f;
         private int max_hp = 22;
         private bool damaged = false;
         private float damaged_timer = 0f;
@@ -585,13 +585,13 @@ namespace PERSIST
             }
         }
 
-        public override void Damage()
+        public override void Damage(float damage)
         {
-            hp -= 1;
+            hp -= damage;
             damaged = true;
             damaged_timer = 0;
 
-            if (hp == 0)
+            if (hp <= 0)
             {
                 //root.DefeatSime(this);
                 root.SplitSlime(this);
@@ -680,9 +680,9 @@ namespace PERSIST
                 hdir = 1;
         }
 
-        public override void Damage()
+        public override void Damage(float damage)
         {
-            hp -= 1;
+            hp -= damage;
             if (hp <= 0)
             {
                 root.RemoveEnemy(this);
@@ -707,7 +707,7 @@ namespace PERSIST
         private Texture2D sprite;
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
         private Player player;
-        private int hp = 18;
+        private float hp = 18;
         private int max_hp = 18;
 
         private List<Lukas_Projectile> projectiles = new List<Lukas_Projectile>();
@@ -855,7 +855,7 @@ namespace PERSIST
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
 
-        public override void Damage()
+        public override void Damage(float damage)
         {
             if (!hurt)
             {
@@ -866,7 +866,7 @@ namespace PERSIST
             flash = true;
             flash_timer = 0f;
 
-            hp -= 1;
+            hp -= damage;
 
             if (hp <= 0)
                 Die();
