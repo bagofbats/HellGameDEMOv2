@@ -247,6 +247,10 @@ namespace PERSIST
         public bool slime_dead
         { get; private set; }
 
+        // secrets
+        public bool journal_secret
+        { get; private set; }
+
         public ProgressionManager()
         {
             knife = false;
@@ -254,6 +258,7 @@ namespace PERSIST
             slime_dead = false;
             slime_started = false;
             mask = false;
+            journal_secret = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
@@ -284,6 +289,11 @@ namespace PERSIST
         public void GetRanged()
         {
             ranged = true;
+        }
+
+        public void ReadJournal()
+        {
+            journal_secret = true;
         }
     }
 

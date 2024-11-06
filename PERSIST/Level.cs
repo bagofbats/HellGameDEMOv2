@@ -225,7 +225,7 @@ namespace PERSIST
             // dialogue stuff
             if (dialogue)
             {
-                dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_speed * dialogue_speed_multiplier;
+                dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_txt[dialogue_num].speed * dialogue_speed_multiplier;
                 dialogue_letter = Math.Min(dialogue_letter, dialogue_txt[dialogue_num].text.Length);
             }
         }
@@ -699,6 +699,13 @@ namespace PERSIST
 
                         // draw portrait
                         _spriteBatch.Draw(spr_portrait, portrait_loc, portrait, Color.White);
+                    }
+
+                    if (dialogue_loc == 'l')
+                    {
+                        // left justify (no portrait)
+                        textMiddlePoint = new Vector2(0, 0);
+                        textDrawPoint = new Vector2(cam.GetPos().X + 8, cam.GetPos().Y + 2);
                     }
 
                     textMiddlePoint.X = (int)textMiddlePoint.X;
@@ -1336,7 +1343,7 @@ namespace PERSIST
 
     public struct DialogueStruct
     {
-        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, string opt_code="", int portrait_x=0, int portrait_y=0)
+        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, string opt_code="", int portrait_x=0, int portrait_y=0, float speed=25f)
         {
             this.text = text;
             this.type = type;
@@ -1345,6 +1352,7 @@ namespace PERSIST
             this.end = end;
             portrait = new Rectangle(portrait_x, portrait_y, 45, 45);
             this.opt_code = opt_code;
+            this.speed = speed;
         }
 
         public string text;
@@ -1354,5 +1362,6 @@ namespace PERSIST
         public Color color;
         public bool end;
         public string opt_code;
+        public float speed;
     }
 }

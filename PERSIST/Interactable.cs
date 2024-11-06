@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MonoGame.Extended.Gui.Controls;
+using System.Diagnostics.Metrics;
 
 namespace PERSIST
 {
@@ -81,9 +82,12 @@ namespace PERSIST
 
     public class Furniture : Interactable
     {
-        private Texture2D sprite;
+        protected Texture2D sprite;
         protected Rectangle pos;
-        private DialogueStruct[] dialogue;
+        protected DialogueStruct[] dialogue;
+
+        protected int counter = 0;
+        protected int[] breakpoints;
 
         public Furniture(Rectangle pos, Level root)
         {
@@ -93,14 +97,18 @@ namespace PERSIST
             // this.frame = frame;
         }
 
-        public void SetType(DialogueStruct[] dialogue)
+        public void SetType(DialogueStruct[] dialogue, int[] breakpoints)
         { 
             this.dialogue = dialogue;
+            this.breakpoints = breakpoints;
         }
 
         public override void Interact()
         {
-            root.StartDialogue(dialogue, 0, 'c', 25f, true);
+            root.StartDialogue(dialogue, breakpoints[counter], 'c', 25f, true);
+
+            if (counter < breakpoints.Length - 1)
+                counter++;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -126,6 +134,27 @@ namespace PERSIST
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, pos, Color.Blue * 0.3f);
+        }
+    }
+
+    public class SecretDesk : Furniture
+    {
+        ProgressionManager progman;
+
+        public SecretDesk(Rectangle pos, Level root, ProgressionManager progman) : base(pos, root)
+        {
+            this.progman = progman;
+        }
+
+        public override void Interact()
+        {
+            if (progman.journal_secret && counter == 0)
+                counter = 1;
+
+            root.StartDialogue(dialogue, breakpoints[counter], 'c', 25f, true);
+
+            if (counter < breakpoints.Length - 1 && progman.journal_secret)
+                counter++;
         }
     }
 }

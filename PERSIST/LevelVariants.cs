@@ -64,9 +64,29 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_chair = {
-            new DialogueStruct("it's a chari!", 'd', Color.White, 'c'),
-            new DialogueStruct("waow", 'd', Color.White, 'c', true)
+            new DialogueStruct("It's a chair.", 'd', Color.White, 'c'),
+            new DialogueStruct("You don't feel like sitting down, though.", 'd', Color.White, 'c', true),
+            new DialogueStruct("( My back hurts just looking at it . . . )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
         };
+        int[] chair_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_crate = {
+            new DialogueStruct("It's a crate.", 'd', Color.White, 'c'),
+            new DialogueStruct("Someone is probably storing stuff in these.", 'd', Color.White, 'c', true),
+            new DialogueStruct("You try to pry it open with your knife.", 'd', Color.White, 'c'),
+            new DialogueStruct("It's bolted too tightly for that to work.", 'd', Color.White, 'c', true),
+            new DialogueStruct("( Whatever.\n  probably just BORING stuff in there\n  anyway . . . )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
+        };
+        int[] crate_bps = { 0, 2, 4 };
+
+        DialogueStruct[] dialogue_desk = {
+            new DialogueStruct("It's a desk.", 'd', Color.White, 'c'),
+            new DialogueStruct("There's a stack of papers and a pen on top of it.", 'd', Color.White, 'c'),
+            new DialogueStruct("Leave it alone.\nRead the papers.", 'o', Color.White, 'l', false, "exit 0|read"),
+            new DialogueStruct("wadsafsfgsa", 'd', Color.White, 'l', true, "", 0, 0, 99999999999999),
+            new DialogueStruct("Journal status: Read.", 'd', Color.White, 'c', true)
+        };
+        int[] desk_bps = { 0, 4 };
 
 
 
@@ -229,13 +249,16 @@ namespace PERSIST
                                 string value = l.objects[i].properties[0].value;
 
                                 if (value == "desk")
-                                    temp.SetType(dialogue_chair);
+                                {
+                                    temp = new SecretDesk(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), this, prog_manager);
+                                    temp.SetType(dialogue_desk, desk_bps);
+                                }
 
                                 if (value == "chair")
-                                    temp.SetType(dialogue_chair);
+                                    temp.SetType(dialogue_chair, chair_bps);
 
                                 if (value == "crate")
-                                    temp.SetType(dialogue_chair);
+                                    temp.SetType(dialogue_crate, crate_bps);
 
                                 AddInteractable(temp);
                             }
@@ -447,6 +470,14 @@ namespace PERSIST
             else if (code[0] == "pull")
             {
                 dead_guy.GetKnife();
+                dialogue_num++;
+                dialogue_letter = 0f;
+                opts_highlighted = 0;
+            }
+
+            else if (code[0] == "read")
+            {
+                prog_manager.ReadJournal();
                 dialogue_num++;
                 dialogue_letter = 0f;
                 opts_highlighted = 0;
