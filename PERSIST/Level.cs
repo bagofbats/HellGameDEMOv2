@@ -1250,6 +1250,18 @@ namespace PERSIST
         }
     }
 
+    public class Crumble : Wall
+    {
+        private Level root;
+        private Rectangle draw_rectangle;
+
+        public Crumble(Rectangle bounds, Level root) : base(bounds)
+        {
+            this.root = root;
+            draw_rectangle = bounds;
+        }
+    }
+
     public class BossBlock : Wall
     {
         private Level root;

@@ -260,7 +260,7 @@ namespace PERSIST
             ranged = true;
             slime_dead = false;
             slime_started = false;
-            mask = false;
+            mask = true;
             journal_secret = false;
             charons_blessing = false;
         }

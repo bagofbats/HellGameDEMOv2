@@ -157,7 +157,7 @@ namespace PERSIST
 
         public void UpdateDead(GameTime gameTime)
         {
-            pos.X += death_hsp;
+            pos.X += death_hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             death_hsp /= 1.06f;
         }
 

@@ -682,4 +682,217 @@ namespace PERSIST
             AddFX(particle);
         }
     }
+
+    public class StyxLevel : Level
+    {
+        private Texture2D tst_styx;
+        private Texture2D bg_dark;
+        private Texture2D bg_rocks;
+
+        private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
+
+
+        DialogueStruct[] dialogue_ck = {
+            new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
+            new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true),
+            new DialogueStruct("( So many torches . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
+            new DialogueStruct("( Seems like whoever runs this place isn't a fan\n  of light bulbs. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
+        };
+
+        public StyxLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name)
+        {
+            dialogue_checkpoint = dialogue_ck;
+            dialogue_second_index = 2;
+            door_trans_color = Color.Black; // new Color(36, 0, 0);
+
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
+                {
+                    if (l.name == "walls")
+                        for (int i = 0; i < l.objects.Count(); i++)
+                            AddWall(new Rectangle((int)l.objects[i].x + t.location.X,
+                                                  (int)l.objects[i].y + t.location.Y,
+                                                  (int)l.objects[i].width,
+                                                  (int)l.objects[i].height));
+
+                    if (l.name == "rooms")
+                        for (int i = 0; i < l.objects.Count(); i++)
+                            rooms.Add(new Room(new Rectangle((int)l.objects[i].x + t.location.X,
+                                                             (int)l.objects[i].y + t.location.Y,
+                                                             (int)l.objects[i].width,
+                                                             (int)l.objects[i].height), l.objects[i].name));
+
+                    if (l.name == "obstacles")
+                        for (int i = 0; i < l.objects.Count(); i++)
+                            AddObstacle(new Rectangle((int)l.objects[i].x + t.location.X,
+                                                  (int)l.objects[i].y + t.location.Y,
+                                                  (int)l.objects[i].width,
+                                                  (int)l.objects[i].height));
+
+                    if (l.name == "entities")
+                        for (int i = 0; i < l.objects.Count(); i++)
+                        {
+                            if (l.objects[i].name == "player")
+                                player.SetPos(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
+
+                            if (l.objects[i].name == "checkpoint")
+                            {
+                                var temp = AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
+
+                                if (l.objects[i].properties.Count() != 0)
+                                    temp.SetSideways(true, l.objects[i].properties[0].value);
+                            }
+
+                            if (l.objects[i].name == "fake_checkpoint")
+                            {
+                                AddCheckpoint(new Rectangle((int)l.objects[i].x + t.location.X - 8, (int)l.objects[i].y + t.location.Y - 16, 16, 32));
+                                checkpoints[checkpoints.Count - 1].visible = false;
+                            }
+
+                            if (l.objects[i].name == "door")
+                            {
+                                var temp = new Door(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), l.objects[i].properties[1].value, l.objects[i].properties[0].value);
+                                if (l.objects[i].properties.Count() > 2)
+                                    temp.SetOneWay(l.objects[i].properties[2].value);
+                                doors.Add(temp);
+                            }
+                        }
+
+                }
+        }
+
+
+
+        // ------- mandatory overrides ---------
+        public override void Load(Texture2D spr_ui, string code = "")
+        {
+            if (code != "")
+            {
+                for (int i = 0; i < doors.Count; i++)
+                    if (doors[i].code == code)
+                    {
+                        Door dst = doors[i];
+                        player.SetPos(new Vector2(dst.location.X + 6, dst.location.Y - 8));
+                        break;
+                    }
+            }
+
+            cam.SmartSetPos(new Vector2(player.DrawBox.X - 16, player.DrawBox.Y - 16));
+
+            base.Load(spr_ui);
+
+            Texture2D checkpoint = root.Content.Load<Texture2D>("sprites/spr_checkpoint");
+            particle_img = root.Content.Load<Texture2D>("sprites/spr_particlefx");
+            tst_styx = root.Content.Load<Texture2D>("tilesets/tst_styx");
+            bg_dark = root.Content.Load<Texture2D>("bgs/bg_styx");
+            bg_rocks = root.Content.Load<Texture2D>("bgs/bg_styx_rocks");
+            // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
+
+            foreach (Enemy enemy in enemies)
+                enemy.LoadAssets(enemy_assets[enemy.GetType()]);
+
+            foreach (Wall wall in special_walls)
+            {
+                var temp = wall.GetType();
+
+                if (temp == typeof(Crumble))
+                    wall.Load(tst_styx);
+            }
+
+            for (int i = 0; i < chunks.Count(); i++)
+                chunks[i].Load(black);
+
+            for (int i = 0; i < checkpoints.Count(); i++)
+                checkpoints[i].Load(checkpoint);
+
+            foreach (Checkpoint c in checkpoints)
+                if (c.sideways)
+                    c.GetSidewaysWall();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+        }
+
+        public override void Draw(SpriteBatch _spriteBatch)
+        {
+            DrawTiles(_spriteBatch, tst_styx, bg_dark);
+        }
+
+        public override void ResetUponDeath()
+        {
+            // reset breakable walls
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                RemoveSpecialWall(special_walls[i]);
+
+            for (int i = 0; i < special_walls_bounds.Count; i++)
+            {
+                if (special_walls_types[i] == "breakable")
+                    AddSpecialWall(new Breakable(special_walls_bounds[i], this));
+                else if (special_walls_types[i] == "switch")
+                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this));
+            }
+
+
+            foreach (Wall wall in special_walls)
+            {
+                var temp = wall.GetType();
+                if (temp == typeof(Crumble))
+                    wall.Load(tst_styx);
+            }
+
+
+            // respawn enemies
+            for (int i = enemies.Count - 1; i >= 0; i--)
+                RemoveEnemy(enemies[i]);
+
+            for (int i = 0; i < enemy_locations.Count; i++)
+            {
+
+                // re-add enemies
+
+            }
+
+
+            foreach (Enemy enemy in enemies)
+                enemy.LoadAssets(enemy_assets[enemy.GetType()]);
+
+        }
+
+        public override void Switch(Room r, bool two)
+        {
+            // nothing
+        }
+
+        public override void HandleDialogueOption(string opt_code, int choice)
+        {
+            if (opt_code == "")
+                return;
+
+            string[] opts = opt_code.Split('|');
+
+            if (choice >= opts.Length)
+                return;
+
+            string[] code = opts[choice].Split(' ');
+
+            if (code[0] == "exit")
+            {
+                player.LeaveDialogue();
+                dialogue = false;
+                dialogue_letter = 0f;
+                dialogue_num = 0;
+                return;
+            }
+        }
+
+        public override void HandleCutscene(string code, GameTime gameTime, bool start)
+        {
+            base.HandleCutscene(code, gameTime, start);
+        }
+
+
+        // --------- end mandatory overrides ------------
+    }
 }
