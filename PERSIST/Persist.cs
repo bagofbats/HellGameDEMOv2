@@ -104,6 +104,7 @@ namespace PERSIST
             //    one
             //};
 
+            // styx level template
             TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);

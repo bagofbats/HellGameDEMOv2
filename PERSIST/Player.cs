@@ -189,15 +189,22 @@ namespace PERSIST
 
             if (timer < 0.2)
             {
+                if (progManager.mask)
+                    frame.X += 256;
+
                 _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
                 frame.X = 32;
                 _spriteBatch.Draw(sheet, DrawBox, frame, Color.White * (30 * timer * timer));
             }
             else
             {
-                frame.X = 32 + (32 * (int)((timer - 0.1) * 16));
-                if (frame.X > 224)
-                    frame.X = 224;
+                int frame_xoset = 0;
+                if (progManager.mask)
+                    frame_xoset = 256;
+
+                frame.X = 32 + (32 * (int)((timer - 0.1) * 16)) + frame_xoset;
+                if (frame.X > 224 + frame_xoset)
+                    frame.X = 224 + frame_xoset;
                 _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
             }
 
@@ -735,6 +742,10 @@ namespace PERSIST
                     }
                     
                 }
+
+                if (progManager.mask)
+                    frame.X += 256;
+
                 return;
             }
             // ranged attacks cont.
@@ -802,6 +813,10 @@ namespace PERSIST
                     }
                     
                 }
+
+                if (progManager.mask)
+                    frame.X += 256;
+
                 return;
             }
 
@@ -1146,6 +1161,10 @@ namespace PERSIST
                     }
                 }
             }
+
+            // mask
+            if (progManager.mask)
+                frame.X += 256;
         }
 
         private void AnimateNoKnife(GameTime gameTime)
