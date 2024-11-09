@@ -163,10 +163,10 @@ namespace PERSIST
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
-
             for (int i = attacks.Count - 1; i >= 0; i--)
                 attacks[i].Draw(_spriteBatch);
+
+            _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
         }
 
         public void DebugDraw(SpriteBatch _spriteBatch, Texture2D blue)
@@ -536,9 +536,9 @@ namespace PERSIST
             //root.audioManager.PlaySound("atk");
 
             // restrict attacks while on walls
-            if (!wall_down && wall_right)
+            if (!wall_down && wall_right && !up && !down)
                 atk_type = 'l';
-            else if (!wall_down && wall_left)
+            else if (!wall_down && wall_left && !up && !down)
                 atk_type = 'r';
             else
             {
@@ -676,11 +676,23 @@ namespace PERSIST
                     {
                         frame.X = 128;
                         frame.Y = 832;
+
+                        if (up)
+                        {
+                            frame.X = 128;
+                            frame.Y = 1152;
+                        }
                     }
                     else if (wall_right)
                     {
                         frame.X = 128;
                         frame.Y = 864;
+
+                        if (up)
+                        {
+                            frame.X = 128;
+                            frame.Y = 1184;
+                        }
                     }
                     else
                     {
@@ -734,11 +746,23 @@ namespace PERSIST
                     {
                         frame.X = 160;
                         frame.Y = 832;
+
+                        if (up)
+                        {
+                            frame.X = 160;
+                            frame.Y = 1152;
+                        }
                     }
                     else if (wall_right)
                     {
                         frame.X = 160;
                         frame.Y = 864;
+
+                        if (up)
+                        {
+                            frame.X = 160;
+                            frame.Y = 1184;
+                        }
                     }
                     else if (!up)
                     {
@@ -786,11 +810,35 @@ namespace PERSIST
             {
                 frame.X = 64;
                 frame.Y = 608;
+
+                if (ydir == -1)
+                {
+                    frame.X = 64;
+                    frame.Y = 1248;
+                }
+
+                if (ydir == 1)
+                {
+                    frame.X = 96;
+                    frame.Y = 1248;
+                }
             }
             else if (!wall_down && wall_left)
             {
                 frame.X = 64;
                 frame.Y = 576;
+
+                if (ydir == -1)
+                {
+                    frame.X = 64;
+                    frame.Y = 1216;
+                }
+
+                if (ydir == 1)
+                {
+                    frame.X = 96;
+                    frame.Y = 1216;
+                }
             }
 
             // in air
@@ -862,7 +910,25 @@ namespace PERSIST
                     frame.X = 192;
                 else
                     frame.X = 224;
-                
+
+                if (atk_type == 'u')
+                {
+                    frame.Y = 1248;
+                    if (atk_dir)
+                        frame.X = 128;
+                    else
+                        frame.X = 160;
+                }
+
+                else if (atk_type == 'd')
+                {
+                    frame.Y = 1248;
+                    if (atk_dir)
+                        frame.X = 192;
+                    else
+                        frame.X = 224;
+                }
+
             }
             else if (!wall_down && wall_left)
             {
@@ -871,6 +937,24 @@ namespace PERSIST
                     frame.X = 192;
                 else
                     frame.X = 224;
+
+                if (atk_type == 'u')
+                {
+                    frame.Y = 1216;
+                    if (atk_dir)
+                        frame.X = 128;
+                    else
+                        frame.X = 160;
+                }
+
+                else if (atk_type == 'd')
+                {
+                    frame.Y = 1216;
+                    if (atk_dir)
+                        frame.X = 192;
+                    else
+                        frame.X = 224;
+                }
             }
 
             // in air
@@ -1071,9 +1155,39 @@ namespace PERSIST
 
             // on wall
             if (!wall_down && wall_left)
-            { frame.X = 32; frame.Y = 768; }
+            { 
+                frame.X = 32; 
+                frame.Y = 768; 
+
+                if (ydir == -1)
+                {
+                    frame.X = 0;
+                    frame.Y = 1216;
+                }
+
+                if (ydir == 1)
+                {
+                    frame.X = 32;
+                    frame.Y = 1216;
+                }
+            }
             else if (!wall_down && wall_right )
-            { frame.X = 32; frame.Y = 800; }
+            { 
+                frame.X = 32; 
+                frame.Y = 800;
+
+                if (ydir == -1)
+                {
+                    frame.X = 0;
+                    frame.Y = 1248;
+                }
+
+                if (ydir == 1)
+                {
+                    frame.X = 32;
+                    frame.Y = 1248;
+                }
+            }
 
             // in air
             else if (!wall_down)
