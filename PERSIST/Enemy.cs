@@ -391,8 +391,8 @@ namespace PERSIST
         private bool wakeup_ready = false;
         private Rectangle wakeup_rectangle = new Rectangle(880, 960, 24, 32);
         new private TutorialLevel root;
-        private float hp = 22f;
-        private int max_hp = 22;
+        private float hp = 21f;
+        private int max_hp = 21;
         private bool damaged = false;
         private float damaged_timer = 0f;
         private bool airborne = false;
@@ -707,8 +707,8 @@ namespace PERSIST
         private Texture2D sprite;
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
         private Player player;
-        private float hp = 18;
-        private int max_hp = 18;
+        private float hp = 22;
+        private int max_hp = 22;
         new private TutorialLevel root;
 
         private List<Lukas_Projectile> projectiles = new List<Lukas_Projectile>();
@@ -736,12 +736,12 @@ namespace PERSIST
         private bool flash = false;
         private float flash_timer = 0f;
         private bool teleporting = false;
-        private float teleport_threshhold = 2.5f;
+        private float teleport_threshhold = 2.2f;
         private bool teleport_flash = false;
         private float teleport_flash_timer = 0f;
 
         // attack fields
-        private float atk_timer = 0f;
+        private float atk_timer = 1.4f;
         private bool attacking = false;
         private float atk_counter = 0f;
 
@@ -919,14 +919,14 @@ namespace PERSIST
         {
             atk_timer += elapsed_time;
 
-            if (atk_timer > 3)
+            if ((atk_timer > 2 && !attacking) || (atk_timer > 2.8 && attacking))
             {
                 attacking = !attacking;
                 atk_timer = 0;
                 atk_counter = 0;
             }
 
-            if (!attacking && atk_timer > 2.5 && !teleported)
+            if (!attacking && atk_timer > 1.9 && !teleported)
                 Teleport();
 
             if (attacking)
@@ -974,7 +974,7 @@ namespace PERSIST
             //                 not to be confused with teleportED which checks if Lukas already teleported in UpdateNormal
             //                 so he doesn't teleport every frame
 
-            if (hurt_timer > 2f)
+            if (hurt_timer > 1.7f)
             {
                 if (!teleporting)
                     timer = 0f;
@@ -987,7 +987,7 @@ namespace PERSIST
                     TeleportOut();
             }
 
-            if (hurt_timer > 3f)
+            if (hurt_timer > 2.7f)
             {
                 Teleport();
                 hurt_timer = 0;
