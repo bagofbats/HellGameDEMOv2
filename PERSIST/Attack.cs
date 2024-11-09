@@ -197,7 +197,7 @@ namespace PERSIST
             pos.X = player.DrawBox.X + 6;
 
             if (up)
-                pos.X -= 4 * dir;
+                pos.X += 4 * dir;
 
             up_X = pos.X;
             pos.Y = player.DrawBox.Y + 16;

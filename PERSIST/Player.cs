@@ -135,6 +135,8 @@ namespace PERSIST
             {
                 HandleMovementAndCollisions(gameTime);
 
+                AtkTree(gameTime);
+
                 AnimateTree(gameTime);
             }
 
@@ -633,7 +635,7 @@ namespace PERSIST
             return option;
         }
 
-        private void AnimateTree(GameTime gameTime)
+        private void AtkTree(GameTime gameTime)
         {
             if (progManager.knife)
             {
@@ -645,7 +647,10 @@ namespace PERSIST
                 else
                     HandleAttacksNoRanged(gameTime);
             }
+        }
 
+        private void AnimateTree(GameTime gameTime)
+        {
             if (progManager.knife)
             {
                 if (attacking)

@@ -2,6 +2,7 @@
  - main menu
  - saving/reloading
  - up/down attack sprites while wall sliding
+ - inventory
 
 art:
  - more advanced dust animation when blocks switch?
