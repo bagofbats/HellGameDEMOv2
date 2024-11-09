@@ -709,6 +709,7 @@ namespace PERSIST
         private Player player;
         private float hp = 18;
         private int max_hp = 18;
+        new private TutorialLevel root;
 
         private List<Lukas_Projectile> projectiles = new List<Lukas_Projectile>();
 
@@ -722,6 +723,10 @@ namespace PERSIST
         private bool teleported = true;
         private bool hurt = false;
         private float hurt_timer = 0f;
+        public bool sleep
+        { get; set; } = true;
+        private Rectangle wakeup_rectangle = new Rectangle(2400, 368, 32, 64);
+        private bool wakeup_ready = false;
 
         // animation fields
         private float timer = 0f;
@@ -769,6 +774,14 @@ namespace PERSIST
         }
 
         public override void Update(GameTime gameTime)
+        {
+            if (sleep)
+                Sleep(gameTime);
+            else
+                ActualUpdate(gameTime);
+        }
+
+        public void ActualUpdate(GameTime gameTime)
         {
             if (!root.GetRoom(player.GetPos() + new Vector2(16, 16)).Intersects(HitBox) && !teleporting)
                 return;
@@ -834,6 +847,16 @@ namespace PERSIST
 
             for (int i = projectiles.Count - 1; i >= 0; i--)
                 projectiles[i].Update(gameTime);
+        }
+
+        public void Sleep(GameTime gameTime)
+        {
+            if (player.HitBox.Intersects(wakeup_rectangle))
+                wakeup_ready = true;
+            else if (wakeup_ready && player.GetPos().X > wakeup_rectangle.X)
+                root.FightLukas(this, gameTime);
+            else if (wakeup_ready)
+                wakeup_ready = false;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

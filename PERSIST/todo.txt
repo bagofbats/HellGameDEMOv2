@@ -1,22 +1,13 @@
 ﻿programming:
- - health bar for bosses
- - cutscene mode for player
- - progression pickups (ranged attacks)
- - dialogue options
- - pause menu
- - customizable controls
  - main menu
  - saving/reloading
+ - up/down attack sprites while wall sliding
 
 art:
- - level transitions
  - more advanced dust animation when blocks switch?
  - particle effects on wall slide
 
  bugs:
-  - disable switch while fighting slime boss
-  - camera follows player while in dying animation, can clip outside bounds of lvl and look real shit
-     - fix by making camera lock on to the last place the player was when they died
 
 
 epic room names

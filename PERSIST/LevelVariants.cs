@@ -45,7 +45,7 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_slime = { 
-            new DialogueStruct("-- Defeated Mama Slime! --", 'd', Color.White, 'c', true), 
+            new DialogueStruct("-- Defeated Mama Slime! --", 'd', Color.White, 'c', true, "", 0, 0, 10f), 
         };
 
         DialogueStruct[] dialogue_deadguy = {
@@ -587,6 +587,22 @@ namespace PERSIST
                 AddSpecialWall(temp4);
             }
             
+        }
+
+        public void FightLukas(Lukas_Tutorial lukas, GameTime gameTime)
+        {
+            int blocks_x = 2392;
+            int blocks_y = 368;
+
+            lukas.sleep = false;
+
+            for (int i = blocks_x; i < blocks_x + 32; i += 16)
+                for (int j = blocks_y; j < blocks_y + 64; j += 16)
+                {
+                    BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this);
+                    temp1.Load(tst_tutorial);
+                    AddSpecialWall(temp1);
+                }
         }
 
         public void DefeatSime()

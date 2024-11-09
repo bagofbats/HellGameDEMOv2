@@ -257,12 +257,12 @@ namespace PERSIST
         public ProgressionManager()
         {
             knife = true;
-            ranged = false;
+            ranged = true;
             slime_dead = false;
             slime_started = false;
             mask = false;
             journal_secret = false;
-            charons_blessing = true;
+            charons_blessing = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
