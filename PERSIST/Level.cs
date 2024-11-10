@@ -535,7 +535,7 @@ namespace PERSIST
             return null;
         }
 
-        public void DrawTiles(SpriteBatch _spriteBatch, Texture2D tileset, Texture2D background)
+        public virtual void DrawTiles(SpriteBatch _spriteBatch, Texture2D tileset, Texture2D background)
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                 SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
@@ -774,7 +774,7 @@ namespace PERSIST
             _spriteBatch.Draw(black, health_pos, Color.Red);
         }
 
-        private void DrawLayerOnScreen(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, Camera cam)
+        protected void DrawLayerOnScreen(SpriteBatch spriteBatch, TiledLayer layer, TiledData t, Texture2D tileset, Camera cam)
         {
             if (layer.data == null)
                 return;

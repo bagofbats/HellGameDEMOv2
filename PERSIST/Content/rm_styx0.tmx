@@ -154,9 +154,9 @@
 </data>
  </layer>
  <objectgroup id="4" name="obstacles">
-  <object id="9" name="styx" x="0" y="216" width="224" height="24"/>
+  <object id="9" name="river" x="0" y="216" width="224" height="24"/>
   <object id="56" x="-16" y="0" width="16" height="240"/>
-  <object id="60" name="styx" x="1408" y="200" width="64" height="40"/>
+  <object id="60" name="river" x="1352" y="189" width="184" height="56"/>
  </objectgroup>
  <objectgroup id="5" name="walls">
   <object id="7" x="256" y="184" width="64" height="56"/>

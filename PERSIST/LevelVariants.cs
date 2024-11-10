@@ -39,7 +39,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
-            new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true),
+            new DialogueStruct("You feel soothed.", 'd', Color.White, 'c', true),
             new DialogueStruct("( So many torches . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
             new DialogueStruct("( Seems like whoever runs this place isn't a fan\n  of light bulbs. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
         };
@@ -689,12 +689,20 @@ namespace PERSIST
         private Texture2D bg_dark;
         private Texture2D bg_rocks;
 
+        
+
         private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
 
+        private List<Rectangle> rivers = new List<Rectangle>();
+        private Rectangle river_frame_top = new Rectangle(160 + 64, 192, 64, 16);
+        private Rectangle river_frame = new Rectangle(160 + 64, 208, 64, 16);
+        private float river_timer = 0f;
+        private int river_frame_oset = 0;
 
         DialogueStruct[] dialogue_ck = {
-            new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
-            new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true),
+            new DialogueStruct("The flame burns bright in the dark.", 'd', Color.White, 'c'),
+            // new DialogueStruct("It energizes you.", 'd', Color.White, 'c', true),
+            new DialogueStruct("You feel encouraged.", 'd', Color.White, 'c', true),
             new DialogueStruct("( Oh, so there are torches here too. )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
             new DialogueStruct("( So many torches . . .\n  I wonder why they're here? )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
             //new DialogueStruct("( Who makes all these torches, anyway?\n  Are they getting paid? )", 'd', Color.DodgerBlue, 'p', false, "", 90, 0),
@@ -726,10 +734,18 @@ namespace PERSIST
 
                     if (l.name == "obstacles")
                         for (int i = 0; i < l.objects.Count(); i++)
-                            AddObstacle(new Rectangle((int)l.objects[i].x + t.location.X,
+                        {
+                            var temp = new Rectangle((int)l.objects[i].x + t.location.X,
                                                   (int)l.objects[i].y + t.location.Y,
                                                   (int)l.objects[i].width,
-                                                  (int)l.objects[i].height));
+                                                  (int)l.objects[i].height);
+
+                            AddObstacle(temp);
+
+                            if (l.objects[i].name == "river")
+                                rivers.Add(temp);
+                        }
+                            
 
                     if (l.name == "entities")
                         for (int i = 0; i < l.objects.Count(); i++)
@@ -815,6 +831,19 @@ namespace PERSIST
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            river_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
+
+            river_frame_oset = (int)river_timer;
+
+            if (river_frame_oset >= 64)
+            {
+                river_frame_oset = 0;
+                river_timer = 0;
+
+                river_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
+                river_frame_oset = (int)river_timer;
+            }
         }
 
         public override void Draw(SpriteBatch _spriteBatch)
@@ -896,5 +925,166 @@ namespace PERSIST
 
 
         // --------- end mandatory overrides ------------
+
+
+        public override void DrawTiles(SpriteBatch _spriteBatch, Texture2D tileset, Texture2D background)
+        {
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
+                SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
+
+            Rectangle source = bounds;
+            _spriteBatch.Draw(background, bounds, source, Color.White);
+
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
+                    if (l.name == "background_lower")
+                        DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
+
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
+                    if (l.name == "background")
+                        DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
+
+            for (int i = 0; i < checkpoints.Count(); i++)
+                checkpoints[i].Draw(_spriteBatch);
+
+            for (int i = enemies.Count - 1; i >= 0; i--)
+                enemies[i].Draw(_spriteBatch);
+
+            for (int i = interactables.Count - 1; i >= 0; i--)
+                interactables[i].Draw(_spriteBatch);
+
+            if (!player_dead && !door_trans)
+                player.Draw(_spriteBatch);
+
+            int cam_x = (int)cam.GetPos().X;
+            int cam_y = (int)cam.GetPos().Y;
+            var camera_rect = new Rectangle(cam_x - 8, cam_y - 8, 320 + 16, 240 + 16);
+
+            for (int i = 0; i < rivers.Count(); i++)
+            {
+                if (!rivers[i].Intersects(camera_rect))
+                    continue;
+
+                DrawRiver(_spriteBatch, rivers[i]);
+            }
+
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
+                    if (l.name == "tiles_lower")
+                        DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
+
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                special_walls[i].Draw(_spriteBatch);
+
+            foreach (TiledData t in tld)
+                foreach (TiledLayer l in t.map.Layers)
+                    if (l.name == "tiles")
+                        DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
+
+            for (int i = particles.Count - 1; i >= 0; i--)
+                particles[i].Draw(_spriteBatch);
+
+            if (debug)
+            {
+                player.DebugDraw(_spriteBatch, black);
+                foreach (Chunk c in chunks)
+                    if (c.bounds.Contains(player.HitBox.X, player.HitBox.Y))
+                        c.Draw(_spriteBatch);
+
+                for (int i = enemies.Count - 1; i >= 0; i--)
+                    enemies[i].DebugDraw(_spriteBatch, black);
+
+                for (int i = 0; i < doors.Count; i++)
+                    _spriteBatch.Draw(black, doors[i].location, Color.Blue * 0.2f);
+            }
+
+            // UI stuff
+            if (overlay)
+            {
+                //int cam_x = (int)cam.GetPos().X;
+                //int cam_y = (int)cam.GetPos().Y;
+
+
+                var overlay_rect = new Rectangle(cam_x, cam_y, 320, 12);
+
+                float opacity = 1f;
+
+                if (overlay_rect.Intersects(player.HitBox))
+                    opacity = 0.3f;
+
+                _spriteBatch.Draw(black, overlay_rect, Color.Black * opacity);
+
+                if (dialogue)
+                {
+                    var dialogue_rect = new Rectangle(cam_x, cam_y, 320, 49);
+                    _spriteBatch.Draw(black, dialogue_rect, Color.Black);
+                }
+                else if (!(player_dead || finish_player_dead) && !cutscene)
+                {
+                    // draw the player's hp bar
+
+                    (int hp, int max_hp) = player.GetHP();
+                    int pos = 2;
+
+                    for (int i = 0; i < hp; i++)
+                    {
+                        Rectangle heart_loc = new Rectangle(cam_x + pos, cam_y + 2, 10, 8);
+                        _spriteBatch.Draw(spr_ui, heart_loc, new Rectangle(0, 0, 10, 8), Color.White);
+                        pos += 11;
+                    }
+
+                    for (int i = hp; i < max_hp; i++)
+                    {
+                        Rectangle heart_loc = new Rectangle(cam_x + pos, cam_y + 2, 10, 8);
+                        _spriteBatch.Draw(spr_ui, heart_loc, new Rectangle(11, 0, 10, 8), Color.White);
+                        pos += 11;
+                    }
+
+                }
+
+                if (boss_max_hp != 0 && !cutscene)
+                    DrawBossHP(_spriteBatch, boss_hp, boss_max_hp);
+            }
+
+            if ((player_dead || finish_player_dead) && dead_timer > 0.36)
+                _spriteBatch.Draw(spr_screenwipe, screenwipe_rect, Color.Black);
+
+            if (door_trans)
+            {
+                _spriteBatch.Draw(spr_doorwipe, door_trans_rect_1, new Rectangle(0, 0, 400, 240), door_trans_color);
+                _spriteBatch.Draw(spr_doorwipe, door_trans_rect_2, new Rectangle(0, 240, 400, 240), door_trans_color);
+            }
+
+
+            if (player_dead)
+                player.DrawDead(_spriteBatch, dead_timer);
+
+            _spriteBatch.End();
+        }
+
+
+
+
+
+        // --------- helper functions ---------
+
+        private void DrawRiver(SpriteBatch _spriteBatch, Rectangle river)
+        {
+            for (int i = 0; i < river.Height + 8; i+= 16)
+                for (int j = 0; j < river.Width; j += 64)
+                {
+                    var dstRectangle = new Rectangle(river.X + j, river.Y + i - 8, 64, 16);
+
+                    var real_frame = river_frame;
+
+                    if (i == 0)
+                        real_frame = river_frame_top;
+
+                    real_frame.X -= river_frame_oset;
+
+                    _spriteBatch.Draw(tst_styx, dstRectangle, real_frame, Color.White);
+                }
+        }
     }
 }
