@@ -431,7 +431,7 @@ namespace PERSIST
             return null;
         }
 
-        public (Wall, Wall, Wall, Wall, Wall) FullCheckCollision(Rectangle input)
+        public virtual (Wall, Wall, Wall, Wall, Wall) FullCheckCollision(Rectangle input)
         {
             Rectangle in_left = input;
             in_left.X -= 1;
@@ -1255,10 +1255,54 @@ namespace PERSIST
         private Level root;
         private Rectangle draw_rectangle;
 
+        private Texture2D img;
+
+        private Rectangle frame = new Rectangle(8, 200, 16, 16);
+
+        private bool shake = false;
+        private float shake_timer = 0f;
+
+        private Random rnd = new Random();
+
         public Crumble(Rectangle bounds, Level root) : base(bounds)
         {
             this.root = root;
             draw_rectangle = bounds;
+        }
+
+        public override void Load(Texture2D img)
+        {
+            this.img = img;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (shake)
+            {
+                draw_rectangle.X = bounds.X + (int)((rnd.Next(0, 2) - 0.5f) * 2);
+                draw_rectangle.Y = bounds.Y + (int)((rnd.Next(0, 2) - 0.5f) * 2);
+            }
+            else
+            {
+                draw_rectangle.X = bounds.X;
+                draw_rectangle.Y = bounds.Y;
+            }
+
+            spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (shake)
+                shake_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (shake_timer >= 0.75f)
+                root.RemoveSpecialWall(this);
+        }
+
+        public override void Damage()
+        {
+            shake = true;
         }
     }
 

@@ -703,7 +703,7 @@ namespace PERSIST
             new DialogueStruct("The flame burns bright in the dark.", 'd', Color.White, 'c'),
             // new DialogueStruct("It energizes you.", 'd', Color.White, 'c', true),
             new DialogueStruct("You feel encouraged.", 'd', Color.White, 'c', true),
-            new DialogueStruct("( Oh, so there are torches here too. )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
+            new DialogueStruct("( Oh, so there are torches here too. )", 'd', Color.DodgerBlue, 'p', false, "", 45, 135),
             new DialogueStruct("( So many torches . . .\n  I wonder why they're here? )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
             //new DialogueStruct("( Who makes all these torches, anyway?\n  Are they getting paid? )", 'd', Color.DodgerBlue, 'p', false, "", 90, 0),
             //new DialogueStruct("( Maybe I should learn how to make torches.\n  Seems like a lucrative business )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
@@ -773,6 +773,15 @@ namespace PERSIST
                                 if (l.objects[i].properties.Count() > 2)
                                     temp.SetOneWay(l.objects[i].properties[2].value);
                                 doors.Add(temp);
+                            }
+
+                            if (l.objects[i].name == "crumble")
+                            {
+                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
+                                AddSpecialWall(new Crumble(temp, this));
+
+                                special_walls_bounds.Add(temp);
+                                special_walls_types.Add("crumble");
                             }
                         }
 
@@ -859,10 +868,8 @@ namespace PERSIST
 
             for (int i = 0; i < special_walls_bounds.Count; i++)
             {
-                if (special_walls_types[i] == "breakable")
-                    AddSpecialWall(new Breakable(special_walls_bounds[i], this));
-                else if (special_walls_types[i] == "switch")
-                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this));
+                if (special_walls_types[i] == "crumble")
+                    AddSpecialWall(new Crumble(special_walls_bounds[i], this));
             }
 
 
@@ -988,11 +995,12 @@ namespace PERSIST
                 bool draw = true;
 
                 for (int j = 0; j < rivers.Count(); j++)
-                    if (particles[i].pos.Intersects(rivers[j]))
-                    {
-                        draw = false;
-                        break;
-                    }
+                    if (particles[i].GetType() == typeof(RangedFX))
+                        if (particles[i].pos.Intersects(rivers[j]))
+                        {
+                            draw = false;
+                            break;
+                        }
 
                 if (draw)
                     particles[i].Draw(_spriteBatch);
@@ -1076,6 +1084,30 @@ namespace PERSIST
 
             _spriteBatch.End();
         }
+
+
+        public override (Wall, Wall, Wall, Wall, Wall) FullCheckCollision(Rectangle input)
+        {
+            Wall left = null;
+            Wall right = null;
+            Wall up = null;
+            Wall down = null;
+            Wall inside = null;
+
+            (left, right, up, down, inside) = base.FullCheckCollision(input);
+
+            if (IsCrumble(left))
+                left.Damage();
+            if (IsCrumble(right))
+                right.Damage();
+            if (IsCrumble(down))
+                down.Damage();
+            if (IsCrumble(inside))
+                inside.Damage();
+
+            return (left, right, up, down, inside);
+        }
+
         // end optional override
 
 
@@ -1100,6 +1132,14 @@ namespace PERSIST
 
                     _spriteBatch.Draw(tst_styx, dstRectangle, real_frame, Color.White);
                 }
+        }
+
+        private bool IsCrumble(Wall w)
+        {
+            if (w != null)
+                return w.GetType() == typeof(Crumble);
+
+            return false;
         }
     }
 }
