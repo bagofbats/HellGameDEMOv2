@@ -695,8 +695,10 @@ namespace PERSIST
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The torch lights up at your presence.", 'd', Color.White, 'c'),
             new DialogueStruct("It soothes you.", 'd', Color.White, 'c', true),
-            new DialogueStruct("( So many torches . . . )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
-            new DialogueStruct("( Seems like whoever runs this place isn't a fan\n  of light bulbs. )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0)
+            new DialogueStruct("( Oh, so there are torches here too. )", 'd', Color.DodgerBlue, 'p', false, "", 45, 0),
+            new DialogueStruct("( So many torches . . .\n  I wonder why they're here? )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
+            //new DialogueStruct("( Who makes all these torches, anyway?\n  Are they getting paid? )", 'd', Color.DodgerBlue, 'p', false, "", 90, 0),
+            //new DialogueStruct("( Maybe I should learn how to make torches.\n  Seems like a lucrative business )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
         };
 
         public StyxLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name)

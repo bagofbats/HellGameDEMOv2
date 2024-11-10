@@ -99,20 +99,14 @@ namespace PERSIST
             //TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
             //TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
-            //List<TiledData> tld = new List<TiledData>
-            //{
-            //    one
-            //};
+            //List<TiledData> tld = new List<TiledData>{one};
 
             // styx level template
             TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
-            List<TiledData> tld = new List<TiledData>
-            {
-                one
-            };
+            List<TiledData> tld = new List<TiledData>{one};
 
             // determine how much to scale the window up
             // given how big the monitor is

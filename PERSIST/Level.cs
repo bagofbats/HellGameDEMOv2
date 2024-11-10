@@ -802,8 +802,8 @@ namespace PERSIST
                         continue;
 
                     int tileFrame = gid - 1;
-                    int column = tileFrame % (t.tst.Columns + 1);
-                    int row = (int)Math.Floor(tileFrame / ((double)t.tst.Columns + 1));
+                    int column = tileFrame % (t.tst.Columns);
+                    int row = (int)Math.Floor(tileFrame / ((double)t.tst.Columns));
 
                     int loc_x = (index % t.map.Width) * t.map.TileWidth;
                     int loc_y = (int)Math.Floor(index / (double)t.map.Width) * t.map.TileHeight;
