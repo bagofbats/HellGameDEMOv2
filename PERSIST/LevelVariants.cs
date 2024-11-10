@@ -927,6 +927,7 @@ namespace PERSIST
         // --------- end mandatory overrides ------------
 
 
+        // optional override
         public override void DrawTiles(SpriteBatch _spriteBatch, Texture2D tileset, Texture2D background)
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
@@ -983,7 +984,20 @@ namespace PERSIST
                         DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
 
             for (int i = particles.Count - 1; i >= 0; i--)
-                particles[i].Draw(_spriteBatch);
+            {
+                bool draw = true;
+
+                for (int j = 0; j < rivers.Count(); j++)
+                    if (particles[i].pos.Intersects(rivers[j]))
+                    {
+                        draw = false;
+                        break;
+                    }
+
+                if (draw)
+                    particles[i].Draw(_spriteBatch);
+            }
+                
 
             if (debug)
             {
@@ -1062,6 +1076,7 @@ namespace PERSIST
 
             _spriteBatch.End();
         }
+        // end optional override
 
 
 

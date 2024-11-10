@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -17,6 +18,7 @@ namespace PERSIST
         public Rectangle HitBox 
         { get { return new Rectangle(box.X + 2, box.Y + 14, box.Width - 4, box.Height - 14); } }
         private Rectangle frame = new Rectangle(0, 0, 16, 32);
+        private Rectangle glow_frame = new Rectangle(0, 96, 80, 48);
         private Texture2D sprite;
         float animate_timer = 0f;
         private int dialogue_num = 0;
@@ -28,6 +30,8 @@ namespace PERSIST
         { get; private set; } = null;
 
         private Rectangle DrawBox;
+        private Rectangle GlowBox;
+        private bool Active = false;
 
         public Level root
         { get; private set; }
@@ -41,6 +45,8 @@ namespace PERSIST
             this.root = root;
             visible = true;
             DrawBox = box;
+
+            GlowBox = new Rectangle(box.X - 32, box.Y, 80, 48);
         }
 
         public void Load(Texture2D sprite)
@@ -51,6 +57,7 @@ namespace PERSIST
         public void DontAnimate(GameTime gameTime)
         {
             frame.X = 0;
+            Active = false;
         }
 
         public void Animate(GameTime gameTime)
@@ -65,12 +72,22 @@ namespace PERSIST
 
             if (sideways_right)
                 frame.Y += 32;
+
+            Active = true;
+
+            glow_frame.Y = 96 + (48 * ((int)(animate_timer / 8) % 2));
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
             if (visible)
+            {
+                if (Active && !sideways)
+                    _spriteBatch.Draw(sprite, GlowBox, glow_frame, Color.White * 0.05f);
+
                 _spriteBatch.Draw(sprite, DrawBox, frame, Color.White);
+            }
+                
         }
 
         public void Interact()

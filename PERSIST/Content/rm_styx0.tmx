@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="200" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="80">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="200" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="82">
  <tileset firstgid="1" source="tst_styx.tsx"/>
  <objectgroup id="3" name="rooms">
   <object id="1" x="0" y="0" width="320" height="240"/>
@@ -196,11 +196,12 @@
   <object id="62" x="1344" y="0" width="32" height="104"/>
   <object id="63" x="1536" y="0" width="64" height="96"/>
   <object id="64" x="1504" y="0" width="32" height="104"/>
-  <object id="65" x="1376" y="0" width="128" height="24"/>
-  <object id="66" x="1376" y="24" width="40" height="16"/>
-  <object id="67" x="1472" y="24" width="32" height="8"/>
+  <object id="65" x="1376" y="0" width="128" height="8"/>
+  <object id="66" x="1376" y="24" width="24" height="16"/>
   <object id="76" x="1160" y="0" width="56" height="16"/>
   <object id="78" x="1192" y="16" width="24" height="16"/>
   <object id="79" x="992" y="-16" width="288" height="16"/>
+  <object id="80" x="1376" y="8" width="40" height="16"/>
+  <object id="81" x="1464" y="8" width="40" height="16"/>
  </objectgroup>
 </map>

@@ -16,6 +16,9 @@ namespace PERSIST
     {
         protected Level root;
 
+        public Rectangle pos
+        { get; protected set; } = new Rectangle(0, 0, 0, 0);
+
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch);
     }
@@ -24,7 +27,7 @@ namespace PERSIST
     {
         private Rectangle frame = new Rectangle(0, 0, 16, 16);
         private Texture2D img;
-        private Rectangle pos;
+        //private Rectangle pos;
         private float animate_timer = 0;
 
         public RangedFX(Vector2 pos, Texture2D img, Level root, bool fourway)
@@ -56,7 +59,7 @@ namespace PERSIST
     {
         private Rectangle frame = new Rectangle(0, 48, 32, 32);
         private Texture2D img;
-        private Rectangle pos;
+        //private Rectangle pos;
         private float animate_timer = 0;
 
         public SlimeFX(Vector2 pos, Texture2D img, Level root)
