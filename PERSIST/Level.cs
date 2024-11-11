@@ -15,6 +15,7 @@ using TiledCS;
 using MonoGame.Extended;
 using static System.Net.Mime.MediaTypeNames;
 using MonoGame.Extended.BitmapFonts;
+using MonoGame.Extended.Gui.Controls;
 
 namespace PERSIST
 {
@@ -1257,17 +1258,48 @@ namespace PERSIST
 
         private Texture2D img;
 
-        private Rectangle frame = new Rectangle(8, 200, 16, 16);
+        private Rectangle frame_1x1 = new Rectangle(8, 200, 16, 16);
+
+        private Rectangle frame_horizontal_left = new Rectangle(176, 176, 16, 16);
+        private Rectangle frame_horizontal_middle = new Rectangle(192, 176, 16, 16);
+        private Rectangle frame_horizontal_right = new Rectangle(208, 176, 16, 16);
+
+        private Rectangle frame_vertical_top = new Rectangle(272, 144, 16, 16);
+        private Rectangle frame_vertical_middle = new Rectangle(272, 160, 16, 16);
+        private Rectangle frame_vertical_bottom = new Rectangle(272, 176, 16, 16);
+
+        private Rectangle frame_top_left = new Rectangle(224, 144, 16, 16);
+        private Rectangle frame_top_right = new Rectangle(256, 144, 16, 16);
+        private Rectangle frame_bottom_left = new Rectangle(224, 176, 16, 16);
+        private Rectangle frame_bottom_right = new Rectangle(256, 176, 16, 16);
+
+        private Rectangle frame_top_middle = new Rectangle(240, 144, 16, 16);
+        private Rectangle frame_left_middle = new Rectangle(224, 160, 16, 16);
+        private Rectangle frame_right_middle = new Rectangle(256, 160, 16, 16);
+        private Rectangle frame_bottom_middle = new Rectangle(240, 176, 16, 16);
+
+        private Rectangle frame_middle = new Rectangle(240, 160, 16, 16);
 
         private bool shake = false;
         private float shake_timer = 0f;
 
         private Random rnd = new Random();
 
+        private string type = "";
+
         public Crumble(Rectangle bounds, Level root) : base(bounds)
         {
             this.root = root;
             draw_rectangle = bounds;
+
+            type = "1x1";
+
+            if (bounds.Width > 16 && bounds.Height == 16)
+                type = "horizontal";
+            if (bounds.Width == 16 && bounds.Height > 16)
+                type = "vertical";
+            if (bounds.Width > 16 && bounds.Height > 16)
+                type = "large";
         }
 
         public override void Load(Texture2D img)
@@ -1288,7 +1320,85 @@ namespace PERSIST
                 draw_rectangle.Y = bounds.Y;
             }
 
-            spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+
+            if (type == "1x1")
+                spriteBatch.Draw(img, draw_rectangle, frame_1x1, Color.White);
+
+            else if (type == "horizontal")
+            {
+                Rectangle front = new Rectangle(draw_rectangle.X, draw_rectangle.Y, 16, 16);
+                Rectangle back = new Rectangle(draw_rectangle.X + draw_rectangle.Width - 16, draw_rectangle.Y, 16, 16);
+
+                spriteBatch.Draw(img, front, frame_horizontal_left, Color.White);
+                spriteBatch.Draw(img, back, frame_horizontal_right, Color.White);
+
+                for (int i = front.X + 16; i < back.X; i += 16)
+                {
+                    Rectangle temp = new Rectangle(i, draw_rectangle.Y, 16, 16);
+                    spriteBatch.Draw(img, temp, frame_horizontal_middle, Color.White);
+                }
+            }
+
+            else if (type == "vertical")
+            {
+                Rectangle top = new Rectangle(draw_rectangle.X, draw_rectangle.Y, 16, 16);
+                Rectangle bottom = new Rectangle(draw_rectangle.X, draw_rectangle.Y + draw_rectangle.Height - 16, 16, 16);
+
+                spriteBatch.Draw(img, top, frame_vertical_top, Color.White);
+                spriteBatch.Draw(img, bottom, frame_vertical_bottom, Color.White);
+
+                for (int i = top.Y + 16; i < bottom.Y; i += 16)
+                {
+                    Rectangle temp = new Rectangle(draw_rectangle.X, i, 16, 16);
+                    spriteBatch.Draw(img, temp, frame_vertical_middle, Color.White);
+                }
+            }
+
+            else if (type == "large")
+            {
+                Rectangle top_left = new Rectangle(draw_rectangle.X, draw_rectangle.Y, 16, 16);
+                Rectangle top_right = new Rectangle(draw_rectangle.X + draw_rectangle.Width - 16, draw_rectangle.Y, 16, 16);
+                Rectangle bottom_left = new Rectangle(draw_rectangle.X, draw_rectangle.Y + draw_rectangle.Height - 16, 16, 16);
+                Rectangle bottom_right = new Rectangle(draw_rectangle.X + draw_rectangle.Width - 16, draw_rectangle.Y + draw_rectangle.Height - 16, 16, 16);
+
+                spriteBatch.Draw(img, top_left, frame_top_left, Color.White);
+                spriteBatch.Draw(img, top_right, frame_top_right, Color.White);
+                spriteBatch.Draw(img, bottom_left, frame_bottom_left, Color.White);
+                spriteBatch.Draw(img, bottom_right, frame_bottom_right, Color.White);
+
+                for (int i = top_left.X + 16; i < top_right.X; i += 16)
+                {
+                    Rectangle temp = new Rectangle(i, draw_rectangle.Y, 16, 16);
+                    spriteBatch.Draw(img, temp, frame_top_middle, Color.White);
+                }
+
+                for (int i = top_left.Y + 16; i < bottom_left.Y; i += 16)
+                {
+                    Rectangle temp = new Rectangle(draw_rectangle.X, i, 16, 16);
+                    spriteBatch.Draw(img, temp, frame_left_middle, Color.White);
+                }
+
+                for (int i = top_right.Y + 16; i < bottom_right.Y; i += 16)
+                {
+                    Rectangle temp = new Rectangle(top_right.X, i, 16, 16);
+                    spriteBatch.Draw(img, temp, frame_right_middle, Color.White);
+                }
+
+                for (int i = bottom_left.X + 16; i < bottom_right.X; i += 16)
+                {
+                    Rectangle temp = new Rectangle(i, bottom_left.Y, 16, 16);
+                    spriteBatch.Draw(img, temp, frame_bottom_middle, Color.White);
+                }
+
+                for (int i = top_left.X + 16; i < top_right.X; i += 16)
+                    for (int j = top_left.Y + 16; j < bottom_left.Y; j += 16)
+                    {
+                        Rectangle temp = new Rectangle(i, j, 16, 16);
+                        spriteBatch.Draw(img, temp, frame_middle, Color.White);
+                    }
+
+                
+            }
         }
 
         public override void Update(GameTime gameTime)
