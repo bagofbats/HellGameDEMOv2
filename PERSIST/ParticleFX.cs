@@ -200,4 +200,33 @@ namespace PERSIST
             spriteBatch.Draw(img, z_three, z_three_frame, Color.White * z_three_transparency);
         }
     }
+
+    public class CrumbleFX : ParticleFX
+    {
+        private Rectangle frame = new Rectangle(32, 192, 32, 32);
+        private Texture2D img;
+        //private Rectangle pos;
+        private float animate_timer = 0;
+
+        public CrumbleFX(Vector2 pos, Texture2D img, Level root)
+        {
+            this.pos = new Rectangle((int)pos.X - 8, (int)pos.Y - 8, 32, 32);
+            this.root = root;
+            this.img = img;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            animate_timer += 16 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            frame.X = 32 * ((int)animate_timer);
+
+            if (frame.X >= 128)
+                root.RemoveFX(this);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(img, pos, frame, Color.White);
+        }
+    }
 }

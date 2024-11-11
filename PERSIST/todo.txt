@@ -60,3 +60,4 @@ epic room names
  - Coda                 |  the concluding passage of a piece or movement, typically forming an addition to the basic structure
  - Ignoramus            |  an ignorant or stupid person
  - psychopomp           |  spirits whose responsibility is to escort newly deseased souls
+ - pontifex             |  a member of the highest council of priests in ancient Rome

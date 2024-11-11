@@ -355,7 +355,6 @@ namespace PERSIST
 
             root.Switch(room, two);
             damaged = true;
-            // two = !two;
         }
 
         public override Rectangle GetHitBox(Rectangle input)

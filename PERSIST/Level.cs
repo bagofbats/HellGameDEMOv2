@@ -1119,6 +1119,8 @@ namespace PERSIST
 
         public virtual void Damage() { }
 
+        public virtual void Trigger() { }
+
         public virtual void FlashDestroy() { }
     }
 
@@ -1407,10 +1409,17 @@ namespace PERSIST
                 shake_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (shake_timer >= 0.75f)
+            {
+                for (int i = draw_rectangle.X; i < draw_rectangle.X + draw_rectangle.Width; i += 16)
+                    for (int j = draw_rectangle.Y; j < draw_rectangle.Y + draw_rectangle.Height; j += 16)
+                        root.AddFX(new CrumbleFX(new Vector2(i, j), img, root));
+
                 root.RemoveSpecialWall(this);
+            }
+                
         }
 
-        public override void Damage()
+        public override void Trigger()
         {
             shake = true;
         }

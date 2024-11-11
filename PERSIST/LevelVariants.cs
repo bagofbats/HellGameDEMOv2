@@ -703,8 +703,8 @@ namespace PERSIST
             new DialogueStruct("The flame burns bright in the dark.", 'd', Color.White, 'c'),
             // new DialogueStruct("It energizes you.", 'd', Color.White, 'c', true),
             new DialogueStruct("You feel encouraged.", 'd', Color.White, 'c', true),
-            new DialogueStruct("( Oh, so there are torches here too. )", 'd', Color.DodgerBlue, 'p', false, "", 45, 135),
-            new DialogueStruct("( So many torches . . .\n  I wonder why they're here? )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
+            new DialogueStruct("( Oh, so there are torches here too. )", 'd', Color.DodgerBlue, 'p', false, "", 135, 0),
+            new DialogueStruct("( So many torches . . .\n  I wonder what they're for? )", 'd', Color.DodgerBlue, 'p', true, "",135, 45),
             //new DialogueStruct("( Who makes all these torches, anyway?\n  Are they getting paid? )", 'd', Color.DodgerBlue, 'p', false, "", 90, 0),
             //new DialogueStruct("( Maybe I should learn how to make torches.\n  Seems like a lucrative business )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
         };
@@ -1097,13 +1097,13 @@ namespace PERSIST
             (left, right, up, down, inside) = base.FullCheckCollision(input);
 
             if (IsCrumble(left))
-                left.Damage();
+                left.Trigger();
             if (IsCrumble(right))
-                right.Damage();
+                right.Trigger();
             if (IsCrumble(down))
-                down.Damage();
+                down.Trigger();
             if (IsCrumble(inside))
-                inside.Damage();
+                inside.Trigger();
 
             return (left, right, up, down, inside);
         }
