@@ -1284,6 +1284,8 @@ namespace PERSIST
 
         private bool shake = false;
         private float shake_timer = 0f;
+        private int shake_xoset = 0;
+        private int shake_yoset = 0;
 
         private Random rnd = new Random();
 
@@ -1311,16 +1313,8 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (shake)
-            {
-                draw_rectangle.X = bounds.X + (int)((rnd.Next(0, 2) - 0.5f) * 2);
-                draw_rectangle.Y = bounds.Y + (int)((rnd.Next(0, 2) - 0.5f) * 2);
-            }
-            else
-            {
-                draw_rectangle.X = bounds.X;
-                draw_rectangle.Y = bounds.Y;
-            }
+            draw_rectangle.X = bounds.X + shake_xoset;
+            draw_rectangle.Y = bounds.Y + shake_yoset;
 
 
             if (type == "1x1")
@@ -1406,7 +1400,18 @@ namespace PERSIST
         public override void Update(GameTime gameTime)
         {
             if (shake)
+            {
                 shake_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                shake_xoset = (int)((rnd.Next(0, 2) - 0.5f) * 2);
+                shake_yoset = (int)((rnd.Next(0, 2) - 0.5f) * 2);
+            }
+
+            else
+            {
+                shake_xoset = 0;
+                shake_yoset = 0;
+            }
+                
 
             if (shake_timer >= 0.75f)
             {
