@@ -525,10 +525,10 @@ namespace PERSIST
                 {
                     if (cutscene_code[1] == "")
                     {
-                        BossBlock temp1 = new BossBlock(new Rectangle(888, 960, 16, 16), this);
-                        BossBlock temp2 = new BossBlock(new Rectangle(888, 976, 16, 16), this);
-                        BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 960, 16, 16), this);
-                        BossBlock temp4 = new BossBlock(new Rectangle(888 - 16, 976, 16, 16), this);
+                        BossBlock temp1 = new BossBlock(new Rectangle(888, 960, 16, 16), this, new Rectangle(48, 112, 16, 16));
+                        BossBlock temp2 = new BossBlock(new Rectangle(888, 976, 16, 16), this, new Rectangle(48, 112, 16, 16));
+                        BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 960, 16, 16), this, new Rectangle(48, 112, 16, 16));
+                        BossBlock temp4 = new BossBlock(new Rectangle(888 - 16, 976, 16, 16), this, new Rectangle(48, 112, 16, 16));
 
                         temp1.Load(tst_tutorial);
                         temp2.Load(tst_tutorial);
@@ -571,10 +571,10 @@ namespace PERSIST
             {
                 slime.sleep = false;
 
-                BossBlock temp1 = new BossBlock(new Rectangle(888, 960, 16, 16), this);
-                BossBlock temp2 = new BossBlock(new Rectangle(888, 976, 16, 16), this);
-                BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 960, 16, 16), this);
-                BossBlock temp4 = new BossBlock(new Rectangle(888 - 16, 976, 16, 16), this);
+                BossBlock temp1 = new BossBlock(new Rectangle(888, 960, 16, 16), this, new Rectangle(48, 112, 16, 16));
+                BossBlock temp2 = new BossBlock(new Rectangle(888, 976, 16, 16), this, new Rectangle(48, 112, 16, 16));
+                BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 960, 16, 16), this, new Rectangle(48, 112, 16, 16));
+                BossBlock temp4 = new BossBlock(new Rectangle(888 - 16, 976, 16, 16), this, new Rectangle(48, 112, 16, 16));
 
                 temp1.Load(tst_tutorial);
                 temp2.Load(tst_tutorial);
@@ -599,7 +599,7 @@ namespace PERSIST
             for (int i = blocks_x; i < blocks_x + 32; i += 16)
                 for (int j = blocks_y; j < blocks_y + 64; j += 16)
                 {
-                    BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this);
+                    BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this, new Rectangle(48, 112, 16, 16));
                     temp1.Load(tst_tutorial);
                     AddSpecialWall(temp1);
                 }
@@ -688,6 +688,7 @@ namespace PERSIST
         private Texture2D tst_styx;
         private Texture2D bg_dark;
         private Texture2D bg_rocks;
+        private Texture2D spr_mushroom;
 
         
 
@@ -783,6 +784,14 @@ namespace PERSIST
                                 special_walls_bounds.Add(temp);
                                 special_walls_types.Add("crumble");
                             }
+
+                            if (l.objects[i].name == "walker")
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Walker(temp, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("walker");
+                            }
                         }
 
                 }
@@ -813,7 +822,10 @@ namespace PERSIST
             tst_styx = root.Content.Load<Texture2D>("tilesets/tst_styx");
             bg_dark = root.Content.Load<Texture2D>("bgs/bg_styx");
             bg_rocks = root.Content.Load<Texture2D>("bgs/bg_styx_rocks");
+            spr_mushroom = root.Content.Load<Texture2D>("sprites/spr_mushroom");
             // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
+
+            enemy_assets.Add(typeof(Walker), spr_mushroom);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -857,7 +869,10 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch _spriteBatch)
         {
-            DrawTiles(_spriteBatch, tst_styx, bg_dark);
+            if (name == "rm_styx0")
+                DrawTiles(_spriteBatch, tst_styx, bg_dark);
+            else
+                DrawTiles(_spriteBatch, tst_styx, bg_rocks);
         }
 
         public override void ResetUponDeath()
@@ -889,6 +904,9 @@ namespace PERSIST
             {
 
                 // re-add enemies
+
+                if (enemy_types[i] == "walker")
+                    AddEnemy(new Walker(enemy_locations[i], this));
 
             }
 

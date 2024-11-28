@@ -151,6 +151,18 @@
 /processorParam:TextureFormat=Color
 /build:sprites/spr_lukas.png
 
+#begin sprites/spr_mushroom.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/spr_mushroom.png
+
 #begin sprites/spr_particlefx.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -14,7 +14,7 @@ namespace PERSIST
 {
     public class Persist : Game
     {
-        private bool debug = false;
+        private bool debug = true;
 
         public bool pause
         { get; private set; }
@@ -102,7 +102,7 @@ namespace PERSIST
             //List<TiledData> tld = new List<TiledData>{one};
 
             // styx level template
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx1.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
             TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
@@ -133,7 +133,7 @@ namespace PERSIST
             Camera cam = new Camera(this);
             //the_level = new TutorialLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
-            the_level = new StyxLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_styx0");
+            the_level = new StyxLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_styx1");
 
             Window.Title = "HellGame [DEMO]";
         }

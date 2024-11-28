@@ -1434,22 +1434,24 @@ namespace PERSIST
     {
         private Level root;
         private Rectangle draw_rectangle;
-        private Rectangle frame = new Rectangle(48, 112, 16, 16);
+        private Rectangle frame; // = new Rectangle(48, 112, 16, 16);
         private Texture2D img;
         private Texture2D black;
         private float spawn_timer = 0;
         private bool white = true;
 
-        public BossBlock(Rectangle bounds, Level root) : base(bounds)
+        public BossBlock(Rectangle bounds, Level root, Rectangle frame) : base(bounds)
         {
             this.root = root;
             draw_rectangle = bounds;
+            this.frame = frame;
         }
 
         public override void Load(Texture2D img)
         {
             this.img = img;
             this.black = root.black;
+            
         }
 
         public override void Draw(SpriteBatch spriteBatch)
