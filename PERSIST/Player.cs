@@ -135,7 +135,8 @@ namespace PERSIST
             {
                 HandleMovementAndCollisions(gameTime);
 
-                AtkTree(gameTime);
+                if (!root.the_level.player_dead)
+                    AtkTree(gameTime);
 
                 AnimateTree(gameTime);
             }

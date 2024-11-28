@@ -56,7 +56,8 @@ namespace PERSIST
         protected List<String> enemy_types = new List<String>();
         protected List<Interactable> interactables = new List<Interactable>();
 
-        protected bool player_dead = false;
+        public bool player_dead
+        { get; protected set; } = false;
         protected bool finish_player_dead = false;
         protected float dead_timer = 0;
 
