@@ -585,16 +585,21 @@ namespace PERSIST
 
             if (debug)
             {
-                player.DebugDraw(_spriteBatch, black);
                 foreach (Chunk c in chunks)
                     if (c.bounds.Contains(player.HitBox.X, player.HitBox.Y))
-                        c.Draw(_spriteBatch);
+                        c.Draw(_spriteBatch, root.opaque);
 
-                for (int i = enemies.Count - 1; i >= 0; i--)
-                    enemies[i].DebugDraw(_spriteBatch, black);
+                if (!root.opaque)
+                {
+                    player.DebugDraw(_spriteBatch, black);
 
-                for (int i = 0; i < doors.Count; i++)
-                    _spriteBatch.Draw(black, doors[i].location, Color.Blue * 0.2f);
+                    for (int i = enemies.Count - 1; i >= 0; i--)
+                        enemies[i].DebugDraw(_spriteBatch, black);
+
+                    for (int i = 0; i < doors.Count; i++)
+                        _spriteBatch.Draw(black, doors[i].location, Color.Blue * 0.2f);
+                }
+                
             }
 
             // UI stuff
@@ -1038,19 +1043,25 @@ namespace PERSIST
             return (left, right, up, down, inside);
         }
 
-        public void Draw(SpriteBatch _spriteBatch)
+        public void Draw(SpriteBatch _spriteBatch, bool opaque)
         {
+            float trans = 0.2f;
+
+            if (opaque)
+                trans = 1f;
+
             foreach (Wall wall in walls)
                 if (wall != null)
-                    _spriteBatch.Draw(black, wall.bounds, Color.Blue * 0.2f);
+                    _spriteBatch.Draw(black, wall.bounds, Color.Blue * trans);
 
             foreach (Obstacle obstacle in obstacles)
                 if (obstacle != null)
-                    _spriteBatch.Draw(black, obstacle.bounds, Color.Red * 0.2f);
+                    _spriteBatch.Draw(black, obstacle.bounds, Color.Red * trans);
 
-            foreach (Checkpoint c in checkpoints)
-                if (c != null)
-                    _spriteBatch.Draw(black, c.HitBox, Color.Blue * 0.2f);
+            if (!opaque)
+                foreach (Checkpoint c in checkpoints)
+                    if (c != null)
+                        _spriteBatch.Draw(black, c.HitBox, Color.Blue * trans);
         }
 
         public void Load(Texture2D black)

@@ -385,7 +385,7 @@ namespace PERSIST
                     vsp /= 2;
 
                 if (vsp < grav_max)
-                    vsp += grav;
+                    vsp += grav * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             }
             
             if (space_pressed && (wall_down || coyote_timer <= coyote_time))
@@ -430,7 +430,7 @@ namespace PERSIST
                 hsp_max = hsp_max_default;
 
             float hsp_abs = (hsp_max * hdir);
-            hsp += hsp_abs * hsp_ratio;
+            hsp += hsp_abs * hsp_ratio * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
 
             // reset hsp_ratio if it was changed for whatever reason
             // (right now only wall jumping has the power to do that)

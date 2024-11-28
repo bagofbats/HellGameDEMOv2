@@ -378,9 +378,15 @@ namespace PERSIST
         Texture2D sprite;
 
         private int h_oset = 8;
-        private int v_oset = 20;
+        private int v_oset = 10;
+        private float animation_timer = 0f;
 
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
+
+        private int dir = -1;
+        private float hsp = 1f;
+        private float grav = 0.211f;
+        private float vsp = 0f;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
@@ -403,7 +409,44 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            //throw new NotImplementedException();
+
+            float xdiff = dir * hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+
+            Wall hcheck = root.SimpleCheckCollision(new Rectangle((int)(HitBox.X + xdiff), HitBox.Y, HitBox.Width, HitBox.Height));
+
+            if (hcheck != null)
+            {
+                if (dir == 1)
+                    pos.X = hcheck.bounds.Left - 32 + h_oset;
+                if (dir == -1)
+                    pos.X = hcheck.bounds.Right - h_oset;
+                dir *= -1;
+            }
+            else
+                pos.X += xdiff;
+
+            float vdiff = vsp + (grav * (float)gameTime.ElapsedGameTime.TotalSeconds * 60);
+
+            if (vdiff > 0)
+                vdiff += 1;
+            else
+                vdiff -= 1;
+
+            Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vdiff), HitBox.Width, HitBox.Height));
+
+            if (vcheck != null)
+            {
+                pos.Y = vcheck.bounds.Top - 32;
+                vsp = 0;
+            }
+            else
+            {
+                vsp += grav;
+                pos.Y += vsp;
+            }
+                
+
+            Animate(gameTime);
         }
 
         public override void Damage(float damage)
@@ -421,10 +464,6 @@ namespace PERSIST
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
         }
 
-        
-
-        
-
         public override Rectangle GetHitBox(Rectangle input)
         {
             return HitBox;
@@ -433,6 +472,15 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             return input.Intersects(HitBox);
+        }
+
+        private void Animate(GameTime gameTime)
+        {
+            animation_timer += 8 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            frame.X = 32 * ((int)animation_timer % 4);
+
+            frame.Y = 16 * (dir + 1);
         }
     }
 

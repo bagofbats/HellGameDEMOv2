@@ -15,6 +15,8 @@ namespace PERSIST
     public class Persist : Game
     {
         private bool debug = true;
+        public bool opaque
+        { get; private set; } = true;
 
         public bool pause
         { get; private set; }
