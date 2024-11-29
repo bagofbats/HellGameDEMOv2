@@ -16,6 +16,7 @@ using MonoGame.Extended;
 using static System.Net.Mime.MediaTypeNames;
 using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Gui.Controls;
+using MonoGame.Extended.Sprites;
 
 namespace PERSIST
 {
@@ -1051,7 +1052,7 @@ namespace PERSIST
                 trans = 1f;
 
             foreach (Wall wall in walls)
-                if (wall != null && wall.GetType() != typeof(Crumble))
+                if (wall != null && wall.GetType() != typeof(Crumble) && wall.GetType() != typeof(Stem))
                     _spriteBatch.Draw(black, wall.bounds, Color.Blue * trans);
 
             foreach (Obstacle obstacle in obstacles)
@@ -1488,11 +1489,17 @@ namespace PERSIST
         private Level root;
         private Trampoline head;
         private Texture2D img;
+        private int mouth;
 
-        public Stem(Rectangle bounds, Level root, Trampoline head) : base(bounds)
+        private float o_timer = 99999f;
+        private float o_threshhold = 0.5f;
+
+
+        public Stem(Rectangle bounds, Level root, Trampoline head, int mouth) : base(bounds)
         {
             this.root = root;
             this.head = head;
+            this.mouth = mouth;
         }
 
         public override void Load(Texture2D img)
@@ -1502,13 +1509,39 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            for (int i = 0; i < bounds.Height; i += 16)
+            for (int i = 0; i < bounds.Height; i += 8)
             {
-                var dst = new Rectangle(bounds.X, bounds.Y + i, 16, 16);
-                var frame = new Rectangle(136, 48, 16, 16);
+                var dst = new Rectangle(bounds.X, bounds.Y + i, 16, 8);
+                var frame = new Rectangle(136, 48 + (i % 16), 16, 8);
+
+                if (i / 8 == mouth)
+                    frame.Y = 32;
+
+                if (i / 8 == mouth + 1)
+                    frame.Y = 32 + 8;
+
+                if (head.flash || o_timer < o_threshhold)
+                {
+                    //frame.X += 32;
+                    if (i / 8 == mouth || i / 8 == mouth + 1)
+                        frame.Y += 32;
+                }
+
                 spriteBatch.Draw(img, dst, frame, Color.White);
+
+                if (head.flash)
+                    spriteBatch.Draw(img, dst, new Rectangle(frame.X + 32, frame.Y, frame.Width, frame.Height), Color.White * 0.4f);
             }
                 
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (head.flash)
+                o_timer = 0;
+
+            if (o_timer < o_threshhold)
+                o_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
     }
 

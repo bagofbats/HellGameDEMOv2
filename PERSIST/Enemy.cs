@@ -508,10 +508,14 @@ namespace PERSIST
     public class Trampoline : Enemy
     {
         Texture2D sprite;
-        private int h_oset = 3;
-        private int v_oset = 20;
+        private int h_oset = 4;
+        private int v_oset = 22;
+        private float flash_timer = 0f;
 
         private Rectangle frame = new Rectangle(128, 0, 32, 32);
+
+        public bool flash
+        { get; set; } = false;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
@@ -535,17 +539,26 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (flash_timer > 0.1f)
+                    flash = false;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            if (flash)
+                spriteBatch.Draw(sprite, PositionRectangle, new Rectangle(frame.X + 32, frame.Y, frame.Width, frame.Height), Color.White * 0.4f);
         }
 
         public override void Damage(float damage)
         {
-            //base.Damage(damage);
+            flash = true;
+            flash_timer = 0f;
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)

@@ -14,7 +14,11 @@
   <object id="294" name="walker" x="200" y="176">
    <point/>
   </object>
-  <object id="295" name="trampoline" x="136" y="128" width="16" height="88"/>
+  <object id="295" name="trampoline" x="136" y="128" width="16" height="88">
+   <properties>
+    <property name="mouth" type="int" value="1"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer id="1" name="background_lower" width="40" height="30">
   <data encoding="csv">

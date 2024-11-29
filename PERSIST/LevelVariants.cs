@@ -700,6 +700,8 @@ namespace PERSIST
         private float river_timer = 0f;
         private int river_frame_oset = 0;
 
+        private List<int> mouth_locs = new List<int>();
+
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The flame burns bright in the dark.", 'd', Color.White, 'c'),
             // new DialogueStruct("It energizes you.", 'd', Color.White, 'c', true),
@@ -802,9 +804,12 @@ namespace PERSIST
                                 enemy_types.Add("trampoline");
 
                                 var temp2 = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
-                                AddSpecialWall(new Stem(temp2, this, tempoline));
+                                var mouth = Int32.Parse(l.objects[i].properties[0].value);
+                                mouth_locs.Add(mouth);
+                                AddSpecialWall(new Stem(temp2, this, tempoline, mouth));
                                 special_walls_bounds.Add(temp2);
                                 special_walls_types.Add("stem");
+
 
                             }
                         }
@@ -904,6 +909,7 @@ namespace PERSIST
             for (int i = enemies.Count - 1; i >= 0; i--)
                 RemoveEnemy(enemies[i]);
 
+            int mouth_counter = 0;
 
             // replace special walls
             for (int i = 0; i < special_walls_bounds.Count; i++)
@@ -917,7 +923,8 @@ namespace PERSIST
                     var tempoline = new Trampoline(temp, this);
                     AddEnemy(tempoline);
 
-                    AddSpecialWall(new Stem(special_walls_bounds[i], this, tempoline));
+                    AddSpecialWall(new Stem(special_walls_bounds[i], this, tempoline, mouth_locs[mouth_counter]));
+                    mouth_counter++;
                 }
             }
 
