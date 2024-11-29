@@ -108,9 +108,18 @@ namespace PERSIST
                         foreach (Enemy enemy in temp)
                             if (enemy.pogoable)
                             {
-                                pogoed = true;
-                                player.SetPogoed(temp[0].GetHitBox(HitBox).Y, true);
-                                break;
+                                if (enemy.super_pogo)
+                                {
+                                    pogoed = true;
+                                    player.SetPogoed(temp[0].GetHitBox(HitBox).Y, true, false, true);
+                                    break;
+                                }
+                                else
+                                {
+                                    pogoed = true;
+                                    player.SetPogoed(temp[0].GetHitBox(HitBox).Y, true);
+                                    break;
+                                }
                             }
                         
                     }

@@ -77,6 +77,7 @@ namespace PERSIST
         private int max_hp = 1;
         private int damage = 1;
         private float damage_multiplier = 1f;
+        private bool just_pogoed = false;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -307,7 +308,7 @@ namespace PERSIST
                 
             else if (e.Count > 0)
                 foreach (Enemy temp in e)
-                    if (temp.hurtful)
+                    if (temp.hurtful && !just_pogoed)
                     {
                         Die(gameTime);
                         return;
@@ -319,8 +320,8 @@ namespace PERSIST
                     Die(gameTime);
                     return;
                 }
-                    
 
+            just_pogoed = false;
             // --------- end death ---------
 
 
@@ -586,19 +587,25 @@ namespace PERSIST
             }
         }
 
-        public void SetPogoed(int victim_y, bool value, bool halved=false)
+        public void SetPogoed(int victim_y, bool value, bool halved=false, bool super_pogo = false)
         {
             // helper function to handle transitions between pogo/not pogoing states
             pogoed = value;
             if (value)
             {
                 pogo_target = Math.Max(victim_y - pogo_height, pos.Y - pogo_height + 16);
+
+                if (super_pogo)
+                    pogo_target = Math.Max(victim_y - (pogo_height * 1.2f), pos.Y - (pogo_height * 1.2f) + 16);
+
                 pogo_timer = 0;
                 if (halved)
                 {
                     var temp = Math.Abs(pogo_target - pos.Y) / 3;
                     pogo_target += temp;
                 }
+
+                just_pogoed = true;
                     
             }
             else

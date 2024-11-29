@@ -1492,7 +1492,7 @@ namespace PERSIST
         private int mouth;
 
         private float o_timer = 99999f;
-        private float o_threshhold = 0.5f;
+        private float o_threshhold = 0.6f;
 
 
         public Stem(Rectangle bounds, Level root, Trampoline head, int mouth) : base(bounds)

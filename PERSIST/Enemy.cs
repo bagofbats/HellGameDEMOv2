@@ -42,6 +42,7 @@ namespace PERSIST
         public Vector2 Pos { get => pos; }
         public bool hurtful { get; protected set; } = true;
         public bool pogoable { get; protected set; } = true;
+        public bool super_pogo { get; protected set; } = false;
         public bool destroy_projectile { get; protected set; } = true;
     }
 
@@ -392,6 +393,8 @@ namespace PERSIST
         private float grav = 0.211f;
         private float vsp = 0f;
 
+        private float hp = 5f;
+
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
 
@@ -418,6 +421,64 @@ namespace PERSIST
         }
 
         public override void Update(GameTime gameTime)
+        {
+            //Room current = root.RealGetRoom(temp);
+            Room home = root.RealGetRoom(pos);
+
+            if (home != null)
+                if (home.bounds.Intersects(root.player.HitBox))
+                    ActualUpdate(gameTime);
+        }
+
+        public override void Damage(float damage)
+        {
+            flash = true;
+            flash_timer = 0;
+
+            hp -= damage;
+
+            if (hp <= 0)
+                root.RemoveEnemy(this);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+            spriteBatch.Draw(blue, front_check, Color.Blue * 0.3f);
+            spriteBatch.Draw(blue, back_check, Color.Blue * 0.3f);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            if (flash)
+            {
+                var flash_frame = new Rectangle(frame.X, frame.Y + 64, frame.Width, frame.Height);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+            }
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+
+        private void Animate(GameTime gameTime)
+        {
+            animation_timer += 8 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            frame.X = 32 * ((int)animation_timer % 4);
+
+            frame.Y = 16 * (dir + 1);
+        }
+
+        private void ActualUpdate(GameTime gameTime)
         {
             Wall ledge_check = root.SimpleCheckCollision(front_check);
             Wall ledge_check_back = root.SimpleCheckCollision(back_check);
@@ -470,52 +531,9 @@ namespace PERSIST
                     flash_timer = 0f;
                 }
             }
-                
+
 
             Animate(gameTime);
-        }
-
-        public override void Damage(float damage)
-        {
-            flash = true;
-            flash_timer = 0;
-        }
-
-        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
-        {
-            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
-            spriteBatch.Draw(blue, front_check, Color.Blue * 0.3f);
-            spriteBatch.Draw(blue, back_check, Color.Blue * 0.3f);
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
-
-            if (flash)
-            {
-                var flash_frame = new Rectangle(frame.X, frame.Y + 64, frame.Width, frame.Height);
-                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
-            }
-        }
-
-        public override Rectangle GetHitBox(Rectangle input)
-        {
-            return HitBox;
-        }
-
-        public override bool CheckCollision(Rectangle input)
-        {
-            return input.Intersects(HitBox);
-        }
-
-        private void Animate(GameTime gameTime)
-        {
-            animation_timer += 8 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            frame.X = 32 * ((int)animation_timer % 4);
-
-            frame.Y = 16 * (dir + 1);
         }
     }
 
@@ -544,6 +562,7 @@ namespace PERSIST
             this.root = root;
             hurtful = true;
             pogoable = true;
+            super_pogo = true;
         }
 
         public override void LoadAssets(Texture2D sprite)

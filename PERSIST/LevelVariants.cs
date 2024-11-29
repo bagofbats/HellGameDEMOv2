@@ -1032,6 +1032,9 @@ namespace PERSIST
             int cam_y = (int)cam.GetPos().Y;
             var camera_rect = new Rectangle(cam_x - 8, cam_y - 8, 320 + 16, 240 + 16);
 
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                special_walls[i].Draw(_spriteBatch);
+
             for (int i = 0; i < rivers.Count(); i++)
             {
                 if (!rivers[i].Intersects(camera_rect))
@@ -1044,9 +1047,6 @@ namespace PERSIST
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles_lower")
                         DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
-
-            for (int i = special_walls.Count - 1; i >= 0; i--)
-                special_walls[i].Draw(_spriteBatch);
 
             foreach (TiledData t in tld)
                 foreach (TiledLayer l in t.map.Layers)
