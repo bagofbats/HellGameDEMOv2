@@ -1051,7 +1051,7 @@ namespace PERSIST
                 trans = 1f;
 
             foreach (Wall wall in walls)
-                if (wall != null)
+                if (wall != null && wall.GetType() != typeof(Crumble))
                     _spriteBatch.Draw(black, wall.bounds, Color.Blue * trans);
 
             foreach (Obstacle obstacle in obstacles)
@@ -1480,6 +1480,35 @@ namespace PERSIST
                 spawn_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (spawn_timer > 0.08f)
                 white = false;
+        }
+    }
+
+    public class Stem : Wall
+    {
+        private Level root;
+        private Trampoline head;
+        private Texture2D img;
+
+        public Stem(Rectangle bounds, Level root, Trampoline head) : base(bounds)
+        {
+            this.root = root;
+            this.head = head;
+        }
+
+        public override void Load(Texture2D img)
+        {
+            this.img = img;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            for (int i = 0; i < bounds.Height; i += 16)
+            {
+                var dst = new Rectangle(bounds.X, bounds.Y + i, 16, 16);
+                var frame = new Rectangle(136, 48, 16, 16);
+                spriteBatch.Draw(img, dst, frame, Color.White);
+            }
+                
         }
     }
 

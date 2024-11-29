@@ -792,6 +792,21 @@ namespace PERSIST
                                 enemy_locations.Add(temp);
                                 enemy_types.Add("walker");
                             }
+
+                            if (l.objects[i].name == "trampoline")
+                            {
+                                var temp = new Vector2(l.objects[i].x - 8 + t.location.X, l.objects[i].y - 32 + t.location.Y);
+                                var tempoline = new Trampoline(temp, this);
+                                AddEnemy(tempoline);
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("trampoline");
+
+                                var temp2 = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
+                                AddSpecialWall(new Stem(temp2, this, tempoline));
+                                special_walls_bounds.Add(temp2);
+                                special_walls_types.Add("stem");
+
+                            }
                         }
 
                 }
@@ -826,6 +841,7 @@ namespace PERSIST
             // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
 
             enemy_assets.Add(typeof(Walker), spr_mushroom);
+            enemy_assets.Add(typeof(Trampoline), spr_mushroom);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -836,6 +852,9 @@ namespace PERSIST
 
                 if (temp == typeof(Crumble))
                     wall.Load(tst_styx);
+
+                if (temp == typeof(Stem))
+                    wall.Load(spr_mushroom);
             }
 
             for (int i = 0; i < chunks.Count(); i++)
@@ -881,10 +900,25 @@ namespace PERSIST
             for (int i = special_walls.Count - 1; i >= 0; i--)
                 RemoveSpecialWall(special_walls[i]);
 
+            // remove enemies
+            for (int i = enemies.Count - 1; i >= 0; i--)
+                RemoveEnemy(enemies[i]);
+
+
+            // replace special walls
             for (int i = 0; i < special_walls_bounds.Count; i++)
             {
                 if (special_walls_types[i] == "crumble")
                     AddSpecialWall(new Crumble(special_walls_bounds[i], this));
+
+                if (special_walls_types[i] == "stem")
+                {
+                    var temp = new Vector2(special_walls_bounds[i].X - 8, special_walls_bounds[i].Y - 32);
+                    var tempoline = new Trampoline(temp, this);
+                    AddEnemy(tempoline);
+
+                    AddSpecialWall(new Stem(special_walls_bounds[i], this, tempoline));
+                }
             }
 
 
@@ -893,13 +927,14 @@ namespace PERSIST
                 var temp = wall.GetType();
                 if (temp == typeof(Crumble))
                     wall.Load(tst_styx);
+
+                if (temp == typeof(Stem))
+                    wall.Load(spr_mushroom);
             }
 
 
-            // respawn enemies
-            for (int i = enemies.Count - 1; i >= 0; i--)
-                RemoveEnemy(enemies[i]);
-
+            
+            // replace enemies
             for (int i = 0; i < enemy_locations.Count; i++)
             {
 
@@ -907,6 +942,9 @@ namespace PERSIST
 
                 if (enemy_types[i] == "walker")
                     AddEnemy(new Walker(enemy_locations[i], this));
+
+                //if (enemy_types[i] == "trampoline")
+                //    AddEnemy(new Trampoline(enemy_locations[i], this));
 
             }
 
@@ -1107,7 +1145,6 @@ namespace PERSIST
 
             _spriteBatch.End();
         }
-
 
         public override (Wall, Wall, Wall, Wall, Wall) FullCheckCollision(Rectangle input)
         {

@@ -11,6 +11,26 @@ art:
 
  bugs:
 
+ area plan:
+  - tutorial
+     - mechanics: eye switches, breakable blocks
+     - enemies: slimes
+  - styx
+     - mechanics: crumble blocks, jump switches, keys/locks, trampolines
+     - enemies: walkers, shades
+  - laboratory
+     - mechanics: timer blocks, conveyor belts, autoscroll levels
+     - enemies: ??????
+  - tower
+     - mechanics: enemy dashing, eye switches, autoscroll levels
+     - enemies: lots
+  - depths
+     - mechanics: ?????
+     - enemies: ?????
+  - tundra (BONUS)
+     - mechanics: all
+     - enemies: ?????
+
 
 epic room names
  - polyglot             |  someone who knows a lot of languages
@@ -61,3 +81,4 @@ epic room names
  - Ignoramus            |  an ignorant or stupid person
  - psychopomp           |  spirits whose responsibility is to escort newly deseased souls
  - pontifex             |  a member of the highest council of priests in ancient Rome
+ - athazagoraphobia		|  fear of forgetting/being forgotten

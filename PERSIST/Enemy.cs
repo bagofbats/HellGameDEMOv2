@@ -46,7 +46,8 @@ namespace PERSIST
     }
 
     // regular enemies
-
+    
+    // tutorial
     public class Slime : Enemy
     {
         Texture2D sprite;
@@ -373,6 +374,7 @@ namespace PERSIST
         }
     }
 
+    // styx
     public class Walker : Enemy
     {
         Texture2D sprite;
@@ -380,6 +382,8 @@ namespace PERSIST
         private int h_oset = 8;
         private int v_oset = 10;
         private float animation_timer = 0f;
+        private bool flash = false;
+        private float flash_timer = 0f;
 
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
 
@@ -444,6 +448,16 @@ namespace PERSIST
                 vsp += grav;
                 pos.Y += vsp;
             }
+
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (flash_timer > 0.1f)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                }
+            }
                 
 
             Animate(gameTime);
@@ -451,7 +465,8 @@ namespace PERSIST
 
         public override void Damage(float damage)
         {
-            base.Damage(damage);
+            flash = true;
+            flash_timer = 0;
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -462,6 +477,12 @@ namespace PERSIST
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            if (flash)
+            {
+                var flash_frame = new Rectangle(frame.X, frame.Y + 64, frame.Width, frame.Height);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+            }
         }
 
         public override Rectangle GetHitBox(Rectangle input)
@@ -484,9 +505,69 @@ namespace PERSIST
         }
     }
 
+    public class Trampoline : Enemy
+    {
+        Texture2D sprite;
+        private int h_oset = 3;
+        private int v_oset = 20;
+
+        private Rectangle frame = new Rectangle(128, 0, 32, 32);
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset - 3, 32 - (h_oset * 2), 32 - v_oset); } }
+
+
+        public Trampoline(Vector2 pos, Level root)
+        {
+            this.pos = pos;
+            this.root = root;
+            hurtful = true;
+            pogoable = true;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+        }
+
+        public override void Damage(float damage)
+        {
+            //base.Damage(damage);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Red * 0.3f);
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+    }
+
 
     // bosses and mini-bosses
 
+    // tutorial
     public class BigSlime : Enemy
     {
         private Texture2D sprite;
