@@ -398,6 +398,9 @@ namespace PERSIST
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
 
+        public Rectangle w_check
+        { get { return new Rectangle(HitBox.X + (HitBox.Width * (dir + 1) / 2) + dir, HitBox.Y + HitBox.Height + 1, 1, 1); } }
+
         public Walker(Vector2 pos, Level root)
         {
             this.pos = pos;
@@ -413,6 +416,11 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            Wall ledge_check = root.SimpleCheckCollision(w_check);
+
+            if (ledge_check == null)
+                dir *= -1;
+
 
             float xdiff = dir * hsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
 
@@ -472,6 +480,7 @@ namespace PERSIST
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+            spriteBatch.Draw(blue, w_check, Color.Blue * 0.3f);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
