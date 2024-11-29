@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="298">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="300">
  <tileset firstgid="1" source="tst_styx.tsx"/>
  <objectgroup id="3" name="rooms">
   <object id="288" x="0" y="0" width="320" height="240"/>
@@ -22,6 +22,7 @@
   <object id="297" name="walker" x="224" y="80">
    <point/>
   </object>
+  <object id="299" name="crumble" x="160" y="112" width="112" height="16"/>
  </objectgroup>
  <layer id="1" name="background_lower" width="40" height="30">
   <data encoding="csv">
@@ -164,6 +165,5 @@
   <object id="289" x="0" y="184" width="120" height="56"/>
   <object id="292" x="120" y="216" width="200" height="24"/>
   <object id="293" x="296" y="184" width="24" height="32"/>
-  <object id="296" x="160" y="112" width="96" height="16"/>
  </objectgroup>
 </map>

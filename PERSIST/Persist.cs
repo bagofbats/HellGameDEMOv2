@@ -16,7 +16,7 @@ namespace PERSIST
     {
         private bool debug = true;
         public bool opaque
-        { get; private set; } = true;
+        { get; private set; } = false;
 
         public bool pause
         { get; private set; }
