@@ -355,5 +355,18 @@ namespace PERSIST
             }
         }
     }
+
+    public class JumpSwitch
+    {
+        public Vector2 pos
+        { get; private set; }
+        public bool two
+        { get; set; } = true;
+
+        public JumpSwitch(Vector2 pos)
+        {
+            this.pos = pos;
+        }
+    }
     
 }

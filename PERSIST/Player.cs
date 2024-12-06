@@ -360,6 +360,9 @@ namespace PERSIST
                     hoset = 2.9f;
 
                 hsp_ratio = 1f;
+
+                // for switch blocks in area 2
+                root.the_level.JumpAction();
             }
             // --------- end wall jumping ---------
 
@@ -393,6 +396,9 @@ namespace PERSIST
             {
                 vsp = -4.2f;
                 coyote_timer = coyote_time + 1;
+
+                // for switch blocks in area 2
+                root.the_level.JumpAction();
             }
 
             if (!wall_down && coyote_timer <= coyote_time + 1)

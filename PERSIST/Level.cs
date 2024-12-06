@@ -948,6 +948,11 @@ namespace PERSIST
             boss_hp = 0;
             boss_max_hp = 0;
         }
+
+        public virtual void JumpAction()
+        {
+            // nothing
+        }
     }
 
 

@@ -690,7 +690,11 @@ namespace PERSIST
         private Texture2D bg_rocks;
         private Texture2D spr_mushroom;
 
-        
+        private List<JumpSwitch> switches = new List<JumpSwitch>();
+        private List<Rectangle> switch_blocks_one = new List<Rectangle>();
+        private List<Rectangle> switch_blocks_two = new List<Rectangle>();
+
+
 
         private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
 
@@ -812,6 +816,27 @@ namespace PERSIST
 
 
                             }
+
+                            if (l.objects[i].name == "switch_one")
+                            {
+                                int h_bound = (int)l.objects[i].x + (int)l.objects[i].width + t.location.X;
+                                int v_bound = (int)l.objects[i].y + (int)l.objects[i].height + t.location.Y;
+                                switch_blocks_one.Add(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height));
+
+                                for (int h = (int)l.objects[i].x + t.location.X; h < h_bound; h += 16)
+                                    for (int v = (int)l.objects[i].y + t.location.Y; v < v_bound; v += 16)
+                                    {
+                                        AddSpecialWall(new SwitchBlock(new Rectangle(h, v, 16, 16), this));
+                                        special_walls_bounds.Add(new Rectangle(h, v, 16, 16));
+                                        special_walls_types.Add("switch");
+                                    }
+                            }
+
+                            if (l.objects[i].name == "switch_two")
+                                switch_blocks_two.Add(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height));
+
+                            if (l.objects[i].name == "switch")
+                                switches.Add(new JumpSwitch(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y)));
                         }
 
                 }
@@ -855,7 +880,7 @@ namespace PERSIST
             {
                 var temp = wall.GetType();
 
-                if (temp == typeof(Crumble))
+                if (temp == typeof(Crumble) || temp == typeof(SwitchBlock))
                     wall.Load(tst_styx);
 
                 if (temp == typeof(Stem))
@@ -926,13 +951,16 @@ namespace PERSIST
                     AddSpecialWall(new Stem(special_walls_bounds[i], this, tempoline, mouth_locs[mouth_counter]));
                     mouth_counter++;
                 }
+
+                else if (special_walls_types[i] == "switch")
+                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this));
             }
 
 
             foreach (Wall wall in special_walls)
             {
                 var temp = wall.GetType();
-                if (temp == typeof(Crumble))
+                if (temp == typeof(Crumble) || temp == typeof(SwitchBlock))
                     wall.Load(tst_styx);
 
                 if (temp == typeof(Stem))
@@ -959,11 +987,46 @@ namespace PERSIST
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
 
+            foreach (JumpSwitch s in switches)
+                s.two = true;
+
         }
 
         public override void Switch(Room r, bool two)
         {
-            // nothing
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                if (special_walls[i].GetType() == typeof(SwitchBlock))
+                    if (special_walls[i].bounds.Intersects(r.bounds))
+                        special_walls[i].FlashDestroy();
+
+            if (two)
+            {
+                foreach (Rectangle rect in switch_blocks_two)
+                    if (rect.Intersects(r.bounds))
+                        for (int h = rect.X; h < rect.X + rect.Width; h += 16)
+                            for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
+                            {
+                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this);
+                                AddSpecialWall(temp);
+                                temp.Load(tst_styx);
+                            }
+
+            }
+
+            else
+                foreach (Rectangle rect in switch_blocks_one)
+                    if (rect.Intersects(r.bounds))
+                        for (int h = rect.X; h < rect.X + rect.Width; h += 16)
+                            for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
+                            {
+                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this);
+                                AddSpecialWall(temp);
+                                temp.Load(tst_styx);
+                            }
+
+            foreach (JumpSwitch s in switches)
+                if (r.bounds.Contains(s.pos))
+                    s.two = !two;
         }
 
         public override void HandleDialogueOption(string opt_code, int choice)
@@ -1173,6 +1236,28 @@ namespace PERSIST
                 inside.Trigger();
 
             return (left, right, up, down, inside);
+        }
+
+        public override void JumpAction()
+        {
+            Room r = RealGetRoom(player.GetPos());
+
+            if (r == null) return;
+
+            bool two = false;
+            bool found = false;
+
+            foreach (JumpSwitch s in switches)
+                if (r.bounds.Contains(s.pos))
+                {
+                    two = s.two;
+                    found = true;
+                    break;
+                }
+
+            if (!found) return;
+
+            Switch(r, two);
         }
 
         // end optional override
