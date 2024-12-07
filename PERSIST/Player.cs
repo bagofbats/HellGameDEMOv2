@@ -965,7 +965,7 @@ namespace PERSIST
             walk_timer += 14 * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // on wall
-            if (!wall_down && wall_right)
+            if (wall_right && (!wall_down || (one_way_down && vsp != 0)))
             {
                 frame.Y = 864;
                 if (atk_dir)
@@ -992,7 +992,7 @@ namespace PERSIST
                 }
 
             }
-            else if (!wall_down && wall_left)
+            else if (wall_left && (!wall_down || (one_way_down && vsp != 0)))
             {
                 frame.Y = 832;
                 if (atk_dir)
@@ -1220,7 +1220,7 @@ namespace PERSIST
             int ydir = (int)(Convert.ToSingle(down) - Convert.ToSingle(up));
 
             // on wall
-            if (!wall_down && wall_left)
+            if (wall_left && (!wall_down || (one_way_down && vsp != 0)))
             { 
                 frame.X = 32; 
                 frame.Y = 768; 
@@ -1237,7 +1237,7 @@ namespace PERSIST
                     frame.Y = 1216;
                 }
             }
-            else if (!wall_down && wall_right )
+            else if (wall_right && (!wall_down || (one_way_down && vsp != 0)))
             { 
                 frame.X = 32; 
                 frame.Y = 800;
