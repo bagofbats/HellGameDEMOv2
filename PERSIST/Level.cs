@@ -17,6 +17,7 @@ using static System.Net.Mime.MediaTypeNames;
 using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Gui.Controls;
 using MonoGame.Extended.Sprites;
+using System.ComponentModel.Design.Serialization;
 
 namespace PERSIST
 {
@@ -1588,11 +1589,62 @@ namespace PERSIST
 
     public class OneWay : Wall
     {
-        //private Level root;
+        private Level root;
 
-        public OneWay(Rectangle bounds) : base(bounds)
+        private Texture2D img;
+        private Rectangle frame;
+        private Rectangle frame_left;
+        private Rectangle frame_right;
+
+        private bool wall_left;
+        private bool wall_right;
+
+        public OneWay(Rectangle bounds, Rectangle frame, Level root) : base(bounds)
         {
             one_way = true;
+            special = true;
+
+            this.frame = frame;
+            this.root = root;
+
+            frame_left = frame;
+            frame_left.X -= 8;
+            frame_right = frame;
+            frame_right.X += 8;
+            
+        }
+
+        public override void Load(Texture2D img)
+        {
+            this.img = img;
+
+            Rectangle left_check = bounds;
+            left_check.X -= 1;
+            Rectangle right_check = bounds;
+            right_check.X += 1;
+            Wall left = root.SimpleCheckCollision(left_check);
+            Wall right = root.SimpleCheckCollision(right_check);
+
+            wall_left = left != null;
+            wall_right = right != null;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            for (int i = bounds.X; i < bounds.X + bounds.Width; i += 8)
+            {
+                Rectangle dst = new Rectangle(i, bounds.Y, 8, 8);
+
+                if (i == bounds.X && wall_left)
+                    spriteBatch.Draw(img, dst, frame_left, Color.White);
+
+                else if (i == bounds.X + bounds.Width - 8 && wall_right)
+                    spriteBatch.Draw(img, dst, frame_right, Color.White);
+
+                else
+                    spriteBatch.Draw(img, dst, frame, Color.White);
+            }
+                
         }
     }
 
