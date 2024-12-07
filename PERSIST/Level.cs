@@ -392,15 +392,21 @@ namespace PERSIST
                     chunks[i].RemoveWall(wall);
         }
 
-        public Wall SimpleCheckCollision(Rectangle input)
+        public Wall SimpleCheckCollision(Rectangle input, bool ignore_oneways=true)
         {
             for (int i = 0; i < chunks.Count(); i++)
             {
                 if (chunks[i].bounds.Intersects(input))
                 {
-                    Wall temp = chunks[i].SimpleCheckCollision(input);
+                    Wall temp = chunks[i].SimpleCheckCollision(input, ignore_oneways);
+
                     if (temp != null)
+                    {
+                        if (temp.one_way && ignore_oneways)
+                            continue;
                         return temp;
+                    }
+                        
                 }
             }
             return null;
@@ -443,7 +449,8 @@ namespace PERSIST
             Rectangle in_up = input;
             in_up.Y -= 1;
             Rectangle in_down = input;
-            in_down.Y += 1;
+            in_down.Y += 1; //+ in_down.Height;
+            //in_down.Height = 1;
 
             Rectangle col_checker = new Rectangle(input.X - 1, input.Y - 1, input.Width + 2, input.Height + 2);
 
@@ -459,6 +466,8 @@ namespace PERSIST
                 {
                     (Wall ltemp, Wall rtemp, Wall utemp, Wall dtemp, Wall itemp) = chunks[i].FullCheckCollision(in_left, in_right, in_up, in_down, input);
 
+                    if (itemp != null)
+                        inside = itemp;
                     if (ltemp != null)
                         left = ltemp;
                     if (rtemp != null)
@@ -467,8 +476,6 @@ namespace PERSIST
                         up = utemp;
                     if (dtemp != null)
                         down = dtemp;
-                    if (itemp != null)
-                        inside = itemp;
 
                     if (left != null && right != null && up != null && down != null)
                         break;
@@ -991,13 +998,22 @@ namespace PERSIST
             checkpoints.Add(checkpoint);
         }
 
-        public Wall SimpleCheckCollision(Rectangle input)
+        public Wall SimpleCheckCollision(Rectangle input, bool ignore_oneways)
         {
+            Wall ret = null;
+
             for (int i = 0; i < walls.Count(); i++)
                 if (walls[i].bounds.Intersects(input))
-                    return walls[i];
+                {
+                    if (!walls[i].one_way || !ignore_oneways)
+                        ret = walls[i];
 
-            return null;
+                    if (!walls[i].one_way)
+                        return walls[i];
+                }
+                   
+
+            return ret;
         }
 
         public List<Wall> ListCheckCollision(Rectangle input)
@@ -1039,11 +1055,18 @@ namespace PERSIST
 
             for (int i = 0; i < walls.Count(); i++)
             {
-                if (walls[i].bounds.Intersects(in_left)) left = walls[i];
-                if (walls[i].bounds.Intersects(in_right)) right = walls[i];
-                if (walls[i].bounds.Intersects(in_up)) up = walls[i];
-                if (walls[i].bounds.Intersects(in_down)) down = walls[i];
-                if (walls[i].bounds.Intersects(in_inside)) inside = walls[i]; 
+                if (walls[i].bounds.Intersects(in_inside)) inside = walls[i];
+                if (walls[i].bounds.Intersects(in_left) && !walls[i].one_way) left = walls[i];
+                if (walls[i].bounds.Intersects(in_right) && !walls[i].one_way) right = walls[i];
+                if (walls[i].bounds.Intersects(in_up) && !walls[i].one_way) up = walls[i];
+                if (walls[i].bounds.Intersects(in_down))
+                {
+                    if (!walls[i].one_way)
+                        down = walls[i];
+
+                    else if (walls[i] != inside)
+                        down = walls[i];
+                }
             }
 
             return (left, right, up, down, inside);
@@ -1057,8 +1080,9 @@ namespace PERSIST
                 trans = 1f;
 
             foreach (Wall wall in walls)
-                if (wall != null && wall.GetType() != typeof(Crumble) && wall.GetType() != typeof(Stem))
-                    _spriteBatch.Draw(black, wall.bounds, Color.Blue * trans);
+                if (wall != null)
+                    if (!wall.special)
+                        _spriteBatch.Draw(black, wall.bounds, Color.Blue * trans);
 
             foreach (Obstacle obstacle in obstacles)
                 if (obstacle != null)
@@ -1123,6 +1147,10 @@ namespace PERSIST
     {
         public Rectangle bounds
         { get; private set; }
+        public bool special
+        { get; protected set; } = false;
+        public bool one_way
+        { get; protected set; } = false;
 
         public Wall(Rectangle bounds)
         {
@@ -1166,6 +1194,7 @@ namespace PERSIST
         {
             this.root = root;
             draw_rectangle = bounds;
+            special = true;
         }
 
         public override void Load(Texture2D img)
@@ -1223,6 +1252,7 @@ namespace PERSIST
         {
             this.root = root;
             draw_rectangle = bounds;
+            special = true;
         }
 
         public override void Load(Texture2D img)
@@ -1322,6 +1352,8 @@ namespace PERSIST
                 type = "vertical";
             if (bounds.Width > 16 && bounds.Height > 16)
                 type = "large";
+
+            special = true;
         }
 
         public override void Load(Texture2D img)
@@ -1463,6 +1495,8 @@ namespace PERSIST
             this.root = root;
             draw_rectangle = bounds;
             this.frame = frame;
+
+            special = true;
         }
 
         public override void Load(Texture2D img)
@@ -1505,6 +1539,8 @@ namespace PERSIST
             this.root = root;
             this.head = head;
             this.mouth = mouth;
+
+            special = true;
         }
 
         public override void Load(Texture2D img)
@@ -1547,6 +1583,16 @@ namespace PERSIST
 
             if (o_timer < o_threshhold)
                 o_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+    }
+
+    public class OneWay : Wall
+    {
+        //private Level root;
+
+        public OneWay(Rectangle bounds) : base(bounds)
+        {
+            one_way = true;
         }
     }
 

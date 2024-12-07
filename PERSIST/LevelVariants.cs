@@ -837,6 +837,15 @@ namespace PERSIST
 
                             if (l.objects[i].name == "switch")
                                 switches.Add(new JumpSwitch(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y)));
+
+                            if (l.objects[i].name == "oneway")
+                            {
+                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, 2);
+                                AddSpecialWall(new OneWay(temp));
+                                special_walls_bounds.Add(temp);
+                                special_walls_types.Add("oneway");
+                            }
+                                
                         }
 
                 }
@@ -954,6 +963,9 @@ namespace PERSIST
 
                 else if (special_walls_types[i] == "switch")
                     AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this));
+
+                if (special_walls_types[i] == "oneway")
+                    AddSpecialWall(new OneWay(special_walls_bounds[i]));
             }
 
 

@@ -78,6 +78,8 @@ namespace PERSIST
         private int damage = 1;
         private float damage_multiplier = 1f;
         private bool just_pogoed = false;
+        private bool one_way_inside = false;
+        private bool one_way_down = false;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -295,6 +297,16 @@ namespace PERSIST
 
             wallslide = !wall_down && !wall_up && (wall_left || wall_right);
 
+            if (wall_inside)
+                one_way_inside = inside.one_way;
+            else
+                one_way_inside = false;
+
+            if (wall_down)
+                one_way_down = down.one_way;
+            else
+                one_way_down = false;
+
 
             // --------- death ---------
             Obstacle o = root.the_level.ObstacleCheckCollision(HurtBox);
@@ -410,18 +422,39 @@ namespace PERSIST
             else
                 vsp_col_check -= 1;
 
-            Wall vcheck = root.the_level.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
+            Wall vcheck = root.the_level.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height), false);
 
             if (vcheck != null)
             {
-                if (vsp < 0)
+                if (!vcheck.one_way)
                 {
-                    pos.Y = vcheck.bounds.Bottom - 16;
-                    SetPogoed(0, false);
+                    if (vsp < 0)
+                    {
+                        pos.Y = vcheck.bounds.Bottom - 16;
+                        SetPogoed(0, false);
+                    }
+                    else if (vsp > 0)
+                        pos.Y = vcheck.bounds.Top - 32;
+                    vsp = 0;
                 }
-                else if (vsp > 0)
-                    pos.Y = vcheck.bounds.Top - 32;
-                vsp = 0;
+
+                else
+                {
+                    if (inside == null)
+                    {
+                        if (vsp > 0)
+                        {
+                            pos.Y = vcheck.bounds.Top - 32;
+                            vsp = 0;
+                        }
+                    }
+                    else if (inside != vcheck && vsp > 0)
+                    {
+                        pos.Y = vcheck.bounds.Top - 32;
+                        vsp = 0;
+                    }
+                }
+                
             }
 
             pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
@@ -835,7 +868,7 @@ namespace PERSIST
             }
 
             // on wall
-            if (!wall_down && wall_right)
+            if (wall_right && (!wall_down || (one_way_down && vsp != 0)))
             {
                 frame.X = 64;
                 frame.Y = 608;
@@ -852,7 +885,7 @@ namespace PERSIST
                     frame.Y = 1248;
                 }
             }
-            else if (!wall_down && wall_left)
+            else if (wall_left && (!wall_down || (one_way_down && vsp != 0)))
             {
                 frame.X = 64;
                 frame.Y = 576;
@@ -871,7 +904,7 @@ namespace PERSIST
             }
 
             // in air
-            else if (!wall_down)
+            else if (!wall_down || (one_way_down && vsp != 0))
             {
                 if (ydir == -1)
                     frame.X = 192;
@@ -987,7 +1020,7 @@ namespace PERSIST
             }
 
             // in air
-            else if (!wall_down)
+            else if (!wall_down || (one_way_down && vsp != 0))
             {
                 // facing left
                 if (atk_type == 'l' || last_hdir == -1)
@@ -1223,7 +1256,7 @@ namespace PERSIST
             }
 
             // in air
-            else if (!wall_down)
+            else if (!wall_down || (one_way_down && vsp != 0))
             {
                 if (ydir == 1 && hdir == 1)
                 { frame.X = 32; frame.Y = 832; }
