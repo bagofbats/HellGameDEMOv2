@@ -80,6 +80,7 @@ namespace PERSIST
         private bool just_pogoed = false;
         private bool one_way_inside = false;
         private bool one_way_down = false;
+        private bool breakable_down = false;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -297,6 +298,8 @@ namespace PERSIST
 
             wallslide = !wall_down && !wall_up && (wall_left || wall_right);
 
+
+            // set flags for animation and attacking purposes
             if (wall_inside)
                 one_way_inside = inside.one_way;
             else
@@ -306,6 +309,11 @@ namespace PERSIST
                 one_way_down = down.one_way;
             else
                 one_way_down = false;
+
+            if (wall_down)
+                breakable_down = down.GetType() == typeof(Breakable);
+            else
+                breakable_down = false;
 
 
             // --------- death ---------
@@ -592,7 +600,7 @@ namespace PERSIST
             {
                 if (up)
                     atk_type = 'u';
-                else if (down && !wall_down)
+                else if (down && (!wall_down || one_way_down || breakable_down))
                     atk_type = 'd';
                 else if (last_hdir == -1)
                     atk_type = 'l';
