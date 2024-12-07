@@ -183,7 +183,7 @@ namespace PERSIST
                                 for (int h = (int)l.objects[i].x + t.location.X; h < h_bound; h += 16)
                                     for (int v = (int)l.objects[i].y + t.location.Y; v < v_bound; v += 16)
                                     {
-                                        AddSpecialWall(new SwitchBlock(new Rectangle(h, v, 16, 16), this));
+                                        AddSpecialWall(new SwitchBlock(new Rectangle(h, v, 16, 16), this, new Rectangle(48, 32, 16, 16)));
                                         special_walls_bounds.Add(new Rectangle(h, v, 16, 16));
                                         special_walls_types.Add("switch");
                                     }
@@ -362,7 +362,7 @@ namespace PERSIST
                 if (special_walls_types[i] == "breakable")
                     AddSpecialWall(new Breakable(special_walls_bounds[i], this));
                 else if (special_walls_types[i] == "switch")
-                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this));
+                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this, new Rectangle(48, 32, 16, 16)));
                 else if (special_walls_types[i] == "oneway")
                     AddSpecialWall(new OneWay(special_walls_bounds[i], new Rectangle(32, 136, 8, 8), this));
             }
@@ -443,7 +443,7 @@ namespace PERSIST
                         for (int h = rect.X; h < rect.X + rect.Width; h += 16)
                             for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
                             {
-                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this);
+                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this, new Rectangle(48, 32, 16, 16));
                                 AddSpecialWall(temp);
                                 temp.Load(tst_tutorial);
                             }
@@ -456,7 +456,7 @@ namespace PERSIST
                         for (int h = rect.X; h < rect.X + rect.Width; h += 16)
                             for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
                             {
-                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this);
+                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this, new Rectangle(48, 32, 16, 16));
                                 AddSpecialWall(temp);
                                 temp.Load(tst_tutorial);
                             }
@@ -703,8 +703,8 @@ namespace PERSIST
         private List<JumpSwitch> switches = new List<JumpSwitch>();
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
         private List<Rectangle> switch_blocks_two = new List<Rectangle>();
-
-
+        private List<bool> switch_blocks_one_danger = new List<bool>();
+        private List<bool> switch_blocks_two_danger = new List<bool>();
 
         private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
 
@@ -713,6 +713,8 @@ namespace PERSIST
         private Rectangle river_frame = new Rectangle(160 + 64, 208, 64, 16);
         private float river_timer = 0f;
         private int river_frame_oset = 0;
+        private Rectangle switch_block_frame = new Rectangle(112, 128, 16, 16);
+        private Rectangle ghost_block_frame = new Rectangle(112 + 32, 128, 16, 16);
 
         private List<int> mouth_locs = new List<int>();
 
@@ -833,17 +835,43 @@ namespace PERSIST
                                 int v_bound = (int)l.objects[i].y + (int)l.objects[i].height + t.location.Y;
                                 switch_blocks_one.Add(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height));
 
-                                for (int h = (int)l.objects[i].x + t.location.X; h < h_bound; h += 16)
-                                    for (int v = (int)l.objects[i].y + t.location.Y; v < v_bound; v += 16)
-                                    {
-                                        AddSpecialWall(new SwitchBlock(new Rectangle(h, v, 16, 16), this));
-                                        special_walls_bounds.Add(new Rectangle(h, v, 16, 16));
-                                        special_walls_types.Add("switch");
-                                    }
+                                bool danger = l.objects[i].properties.Count() != 0;
+
+                                switch_blocks_one_danger.Add(danger);
+
+                                if (!danger)
+                                {
+                                    for (int h = (int)l.objects[i].x + t.location.X; h < h_bound; h += 16)
+                                        for (int v = (int)l.objects[i].y + t.location.Y; v < v_bound; v += 16)
+                                        {
+                                            AddSpecialWall(new SwitchBlock(new Rectangle(h, v, 16, 16), this, switch_block_frame));
+                                            special_walls_bounds.Add(new Rectangle(h, v, 16, 16));
+                                            special_walls_types.Add("switch");
+                                        }
+                                }
+
+                                else
+                                {
+                                    for (int h = (int)l.objects[i].x + t.location.X; h < h_bound; h += 16)
+                                        for (int v = (int)l.objects[i].y + t.location.Y; v < v_bound; v += 16)
+                                        {
+                                            AddEnemy(new GhostBlock(new Vector2(h, v), this, ghost_block_frame));
+                                            special_walls_bounds.Add(new Rectangle(h, v, 16, 16));
+                                            special_walls_types.Add("badswitch");
+                                        }
+                                }
+                                
                             }
 
                             if (l.objects[i].name == "switch_two")
+                            {
                                 switch_blocks_two.Add(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height));
+
+                                bool danger = l.objects[i].properties.Count() != 0;
+
+                                switch_blocks_two_danger.Add(danger);
+                            }
+                                
 
                             if (l.objects[i].name == "switch")
                                 switches.Add(new JumpSwitch(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y)));
@@ -891,6 +919,7 @@ namespace PERSIST
 
             enemy_assets.Add(typeof(Walker), spr_mushroom);
             enemy_assets.Add(typeof(Trampoline), spr_mushroom);
+            enemy_assets.Add(typeof(GhostBlock), tst_styx);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -972,7 +1001,10 @@ namespace PERSIST
                 }
 
                 else if (special_walls_types[i] == "switch")
-                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this));
+                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this, switch_block_frame));
+
+                else if (special_walls_types[i] == "badswitch")
+                    AddEnemy(new GhostBlock(new Vector2(special_walls_bounds[i].X, special_walls_bounds[i].Y), this, ghost_block_frame));
 
                 if (special_walls_types[i] == "oneway")
                     AddSpecialWall(new OneWay(special_walls_bounds[i], new Rectangle(8, 184, 8, 8), this));
@@ -1021,30 +1053,68 @@ namespace PERSIST
                     if (special_walls[i].bounds.Intersects(r.bounds))
                         special_walls[i].FlashDestroy();
 
+            for (int i = enemies.Count - 1; i >= 0; i--)
+                if (enemies[i].GetType() == typeof(GhostBlock))
+                    if (enemies[i].GetHitBox(r.bounds).Intersects(r.bounds))
+                        enemies[i].FlashDestroy();
+
             if (two)
             {
-                foreach (Rectangle rect in switch_blocks_two)
+                for (int i = 0; i < switch_blocks_two.Count; i++)
+                {
+                    Rectangle rect = switch_blocks_two[i];
                     if (rect.Intersects(r.bounds))
-                        for (int h = rect.X; h < rect.X + rect.Width; h += 16)
-                            for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
-                            {
-                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this);
-                                AddSpecialWall(temp);
-                                temp.Load(tst_styx);
-                            }
+                    {
+                        if (!switch_blocks_two_danger[i])
+                            for (int h = rect.X; h < rect.X + rect.Width; h += 16)
+                                for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
+                                {
+                                    var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this, switch_block_frame);
+                                    AddSpecialWall(temp);
+                                    temp.Load(tst_styx);
+                                }
+                        
+                        else
+                            for (int h = rect.X; h < rect.X + rect.Width; h += 16)
+                                for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
+                                {
+                                    var temp = new GhostBlock(new Vector2(h, v), this, ghost_block_frame);
+                                    AddEnemy(temp);
+                                    temp.LoadAssets(tst_styx);
+                                }
+                    }
+                }
+                    
 
             }
 
             else
-                foreach (Rectangle rect in switch_blocks_one)
+            {
+                for (int i = 0; i < switch_blocks_one.Count; i++)
+                {
+                    Rectangle rect = switch_blocks_one[i];
                     if (rect.Intersects(r.bounds))
-                        for (int h = rect.X; h < rect.X + rect.Width; h += 16)
-                            for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
-                            {
-                                var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this);
-                                AddSpecialWall(temp);
-                                temp.Load(tst_styx);
-                            }
+                    {
+                        if (!switch_blocks_one_danger[i])
+                            for (int h = rect.X; h < rect.X + rect.Width; h += 16)
+                                for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
+                                {
+                                    var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this, switch_block_frame);
+                                    AddSpecialWall(temp);
+                                    temp.Load(tst_styx);
+                                }
+
+                        else
+                            for (int h = rect.X; h < rect.X + rect.Width; h += 16)
+                                for (int v = rect.Y; v < rect.Y + rect.Height; v += 16)
+                                {
+                                    var temp = new GhostBlock(new Vector2(h, v), this, ghost_block_frame);
+                                    AddEnemy(temp);
+                                    temp.LoadAssets(tst_styx);
+                                }
+                    }
+                }
+            }
 
             foreach (JumpSwitch s in switches)
                 if (r.bounds.Contains(s.pos))

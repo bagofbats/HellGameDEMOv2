@@ -14,7 +14,7 @@ namespace PERSIST
 {
     public class Persist : Game
     {
-        private bool debug = false;
+        private bool debug = true;
         public bool opaque
         { get; private set; } = true;
 
@@ -97,18 +97,18 @@ namespace PERSIST
 
 
             // tutorial level template
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
-            TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
-            TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
-
-            List<TiledData> tld = new List<TiledData>{one};
-
-            // styx level template
-            //TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
-            //TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
+            //TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
+            //TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
             //TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
             //List<TiledData> tld = new List<TiledData>{one};
+
+            // styx level template
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
+            TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
+            TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
+
+            List<TiledData> tld = new List<TiledData>{one};
 
             // determine how much to scale the window up
             // given how big the monitor is
@@ -133,9 +133,9 @@ namespace PERSIST
             _graphics.ApplyChanges();
 
             Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
+            //the_level = new TutorialLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
-            //the_level = new StyxLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_styx2");
+            the_level = new StyxLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_styx2");
 
             Window.Title = "HellGame [DEMO]";
         }

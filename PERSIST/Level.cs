@@ -162,7 +162,7 @@ namespace PERSIST
 
             if (!dialogue && !cutscene)
             {
-                for (int i = 0; i < enemies.Count(); i++)
+                for (int i = enemies.Count - 1; i >= 0; i--)
                     enemies[i].Update(gameTime);
 
                 for (int i = special_walls.Count - 1; i >= 0; i--)
@@ -1186,16 +1186,17 @@ namespace PERSIST
         public Texture2D img { get; set; }
         private Texture2D black;
         private Rectangle draw_rectangle;
-        private Rectangle frame = new Rectangle(48, 32, 16, 16);
+        private Rectangle frame;
         private bool flash = true;
         private bool self_destruct = false;
         private float flash_timer = 0f;
 
-        public SwitchBlock(Rectangle bounds, Level root) : base(bounds)
+        public SwitchBlock(Rectangle bounds, Level root, Rectangle frame) : base(bounds)
         {
             this.root = root;
             draw_rectangle = bounds;
             special = true;
+            this.frame = frame;
         }
 
         public override void Load(Texture2D img)

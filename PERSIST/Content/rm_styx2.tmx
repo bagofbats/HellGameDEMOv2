@@ -10,8 +10,16 @@
   <object id="4" name="player" x="64" y="152">
    <point/>
   </object>
-  <object id="5" name="switch_one" x="208" y="80" width="32" height="80"/>
-  <object id="6" name="switch_two" x="96" y="56" width="80" height="32"/>
+  <object id="5" name="switch_one" x="208" y="80" width="32" height="80">
+   <properties>
+    <property name="danger" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="6" name="switch_two" x="96" y="56" width="80" height="32">
+   <properties>
+    <property name="danger" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="7" name="switch" x="224" y="32">
    <point/>
   </object>

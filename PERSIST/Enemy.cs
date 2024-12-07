@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -34,6 +35,11 @@ namespace PERSIST
         {
             // this method is only needed for non-hurtful interactable enemies
             // regular enemies should not override this empty function.
+        }
+        public virtual void FlashDestroy()
+        {
+            // this method is only for hurtful switch blocks
+            // nobody else should override this empty function
         }
 
         protected Level root;
@@ -607,6 +613,78 @@ namespace PERSIST
         public override Rectangle GetHitBox(Rectangle input)
         {
             return HitBox;
+        }
+    }
+
+    public class GhostBlock : Enemy
+    {
+        private Rectangle frame;
+        private Texture2D img;
+        private Texture2D black;
+
+        private Rectangle HitBox;
+
+        private bool flash = true;
+        private bool self_destruct = false;
+        private float flash_timer = 0f;
+
+        public GhostBlock(Vector2 pos, Level root, Rectangle frame)
+        {
+            this.pos = pos;
+            this.root = root;
+            this.frame = frame;
+            hurtful = true;
+            pogoable = false;
+
+            HitBox = new Rectangle((int)pos.X, (int)pos.Y, 16, 16);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+        public override void LoadAssets(Texture2D sprite)
+        {
+            img = sprite;
+            this.black = root.black;
+        }
+        public override void Update(GameTime gameTime)
+        {
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (flash_timer >= 0.08f)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                    if (self_destruct)
+                        root.RemoveEnemy(this);
+                }
+            }
+        }
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (root.cutscene)
+                flash = false;
+
+            if (flash)
+                spriteBatch.Draw(black, HitBox, Color.White);
+            else
+                spriteBatch.Draw(img, HitBox, frame, Color.White);
+        }
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+
+        }
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+        public override void FlashDestroy()
+        {
+            flash = true;
+            self_destruct = true;
+            flash_timer = 0f;
         }
     }
 
