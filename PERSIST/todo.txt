@@ -1,15 +1,15 @@
 ﻿programming:
  - main menu
  - saving/reloading
- - up/down attack sprites while wall sliding
  - inventory
 
 art:
  - more advanced dust animation when blocks switch?
  - particle effects on wall slide
- - translucent light vfx for checkpoints
+ - particle effects in general
 
  bugs:
+ - ranged attacks get stopped by one-way platforms
 
  area plan:
   - tutorial

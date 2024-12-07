@@ -1332,7 +1332,12 @@ namespace PERSIST
 
         public override void JumpAction()
         {
-            Room r = RealGetRoom(player.GetPos());
+            Vector2 player_pos = player.GetPos();
+
+            player_pos.X += 16;
+            player_pos.Y += 16;
+
+            Room r = RealGetRoom(player_pos);
 
             if (r == null) return;
 

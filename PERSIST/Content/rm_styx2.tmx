@@ -15,11 +15,7 @@
     <property name="danger" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="6" name="switch_two" x="96" y="56" width="80" height="32">
-   <properties>
-    <property name="danger" type="bool" value="true"/>
-   </properties>
-  </object>
+  <object id="6" name="switch_two" x="96" y="56" width="80" height="32"/>
   <object id="7" name="switch" x="224" y="32">
    <point/>
   </object>
