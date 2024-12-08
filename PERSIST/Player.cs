@@ -276,6 +276,7 @@ namespace PERSIST
 
             hsp = 0;
             vsp = 0;
+            hoset = 0;
             ranged_ready = false;
             ranged_timer = 0;
             SetPogoed(0, false);

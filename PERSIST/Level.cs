@@ -1225,10 +1225,10 @@ namespace PERSIST
             if (root.cutscene)
                 flash = false;
 
+            spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+
             if (flash)
-                spriteBatch.Draw(black, draw_rectangle, frame, Color.White);
-            else
-                spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+                spriteBatch.Draw(black, draw_rectangle, frame, Color.White * 0.6f); 
         }
 
         public override void FlashDestroy()

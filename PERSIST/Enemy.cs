@@ -667,10 +667,10 @@ namespace PERSIST
             if (root.cutscene)
                 flash = false;
 
+            spriteBatch.Draw(img, HitBox, frame, Color.White);
+
             if (flash)
-                spriteBatch.Draw(black, HitBox, Color.White);
-            else
-                spriteBatch.Draw(img, HitBox, frame, Color.White);
+                spriteBatch.Draw(black, HitBox, Color.White * 0.6f);
         }
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
