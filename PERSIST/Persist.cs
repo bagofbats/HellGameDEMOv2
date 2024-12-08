@@ -95,7 +95,6 @@ namespace PERSIST
 
             fpsCounter = new FPSCounter(player);
 
-
             // tutorial level template
             //TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
             //TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
@@ -104,11 +103,17 @@ namespace PERSIST
             //List<TiledData> tld = new List<TiledData>{one};
 
             // styx level template
+
             TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx1.tmx");
             TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
-            TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
-            TiledData two = new TiledData(new Rectangle(2096, 480, 1280, 480), two_map, one_tst);
+
+            List<Rectangle> bounds = new List<Rectangle>();
+            bounds.Add(new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight));
+            bounds.Add(new Rectangle(2096, 480, two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight));
+
+            TiledData one = new TiledData(bounds[0], one_map, one_tst);
+            TiledData two = new TiledData(bounds[1], two_map, one_tst);
 
             List<TiledData> tld = new List<TiledData>{one, two};
 
@@ -137,7 +142,7 @@ namespace PERSIST
             Camera cam = new Camera(this);
             //the_level = new TutorialLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
-            the_level = new StyxLevel(this, new Rectangle(0, 0, (one_map.Width * one_map.TileWidth) + (two_map.Width * two_map.TileWidth), (one_map.Height * one_map.TileHeight) + (two_map.Height * two_map.TileHeight)), player, tld, cam, progManager, audioManager, debug, "rm_styx2");
+            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx2");
 
             Window.Title = "HellGame [DEMO]";
         }
@@ -454,6 +459,35 @@ namespace PERSIST
                     }
                 }
             }
+        }
+
+        private Rectangle SmallestRectangle(List<Rectangle> bounds)
+        {
+            int smallest_X = int.MaxValue;
+            int smallest_Y = int.MaxValue;
+            int largest_X = 0;
+            int largest_Y = 0;
+
+            foreach (Rectangle r in bounds)
+            {
+                if (r.X < smallest_X)
+                    smallest_X = r.X;
+                if (r.Y < smallest_Y)
+                    smallest_Y = r.Y;
+                if (r.X + r.Width > largest_X)
+                    largest_X = r.X + r.Width;
+                if (r.Y + r.Height > largest_Y)
+                    largest_Y = r.Y + r.Height;
+            }
+
+            Rectangle ret = new Rectangle(
+                smallest_X,
+                smallest_Y,
+                largest_X - smallest_X,
+                largest_Y - smallest_Y
+                );
+
+            return ret;
         }
     }
 }
