@@ -16,7 +16,7 @@ namespace PERSIST
     {
         private bool debug = true;
         public bool opaque
-        { get; private set; } = true;
+        { get; private set; } = false;
 
         public bool pause
         { get; private set; }
@@ -108,9 +108,11 @@ namespace PERSIST
             TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
 
-            List<Rectangle> bounds = new List<Rectangle>();
-            bounds.Add(new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight));
-            bounds.Add(new Rectangle(2096, 480, two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight));
+            List<Rectangle> bounds = new List<Rectangle>
+            {
+                new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight),
+                new Rectangle(2096, 480, two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
+            };
 
             TiledData one = new TiledData(bounds[0], one_map, one_tst);
             TiledData two = new TiledData(bounds[1], two_map, one_tst);
@@ -153,7 +155,7 @@ namespace PERSIST
 
             base.Initialize();
 
-            _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, 320, 240); // <--- use this to change camera zoom
+            _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, 640, 480); // <--- use this to change camera zoom
         }
 
         protected override void LoadContent()

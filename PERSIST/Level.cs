@@ -810,7 +810,7 @@ namespace PERSIST
                     int index = cam_x + i + cam_y + (j * t.map.Width);
 
                     if (index >= layer.data.Length || index < 0)
-                        return;
+                        continue;
 
                     int gid = layer.data[index];
 

@@ -40,8 +40,8 @@ namespace PERSIST
               -(int)target.Y,
               0);
             var offset = Matrix.CreateTranslation(
-                0,
-                0,
+                160,
+                120,
                 0);
             Transform = position * offset;
         }
