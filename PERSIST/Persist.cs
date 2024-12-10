@@ -16,7 +16,7 @@ namespace PERSIST
     {
         private bool debug = true;
         public bool opaque
-        { get; private set; } = false;
+        { get; private set; } = true;
 
         public bool pause
         { get; private set; }
@@ -33,7 +33,7 @@ namespace PERSIST
         private int options_selection = 0;
         private string[] options_options =
         {
-            "", "", "", "", "", "", "Done"
+            "", "", "", "", "", "", "", "Done"
         };
 
         private bool rebind = false;
@@ -155,7 +155,7 @@ namespace PERSIST
 
             base.Initialize();
 
-            _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, 640, 480); // <--- use this to change camera zoom
+            _nativeRenderTarget = new RenderTarget2D(GraphicsDevice, 320, 240); // <--- use this to change camera zoom
         }
 
         protected override void LoadContent()
@@ -299,7 +299,7 @@ namespace PERSIST
             {
                 string[] keys =
                 {
-                    "UP", "DOWN", "LEFT", "RIGHT", "JUMP", "ATTACK"
+                    "UP", "DOWN", "LEFT", "RIGHT", "JUMP", "ATTACK", "DASH"
                 };
 
                 if (!rebind)

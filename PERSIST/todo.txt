@@ -12,6 +12,8 @@ art:
  - ranged attacks get stopped by one-way platforms
 
  area plan:
+  - on new save file:
+     - show player the controls menu, start opening cutscene when they hit "done"
   - tutorial
      - mechanics: eye switches, breakable blocks
      - enemies: slimes

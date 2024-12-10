@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
@@ -27,10 +29,13 @@ namespace PERSIST
         private bool right;
         private bool space;
         private bool enter;
+        private bool shift;
         private bool space_released;
         private bool space_pressed;
         private bool enter_pressed;
         private bool enter_released;
+        private bool shift_pressed;
+        private bool shift_released;
 
         // state fields
         private bool dialogue = false;
@@ -81,6 +86,16 @@ namespace PERSIST
         private bool one_way_inside = false;
         private bool one_way_down = false;
         private bool breakable_down = false;
+        private bool dash_ready = false;
+        private bool dashing = false;
+        private float dash_timer = 0f;
+        private float dash_limit = 0.14f;
+        private float dash_multiplier = 2.3f;
+        private float dash_multiplier_default = 2.3f;
+        private float dash_decay = 0.93f;
+        private int dash_dir = 0;
+        private float dash_cooldown = 0.2f;
+        private float dash_cooldown_over = 0.2f;
 
         // animation fields
         private float width = 32; // scale factor for image
@@ -252,11 +267,15 @@ namespace PERSIST
             right = contManager.RIGHT;
             space = contManager.SPACE;
             enter = contManager.ENTER;
+            shift = contManager.SHIFT;
+
 
             space_pressed = contManager.SPACE_PRESSED;
             space_released = contManager.SPACE_RELEASED;
             enter_pressed = contManager.ENTER_PRESSED;
             enter_released = contManager.ENTER_RELEASED;
+            shift_pressed = contManager.SHIFT_PRESSED;
+            shift_released = contManager.SHIFT_RELEASED;
         }
 
         private void Die(GameTime gameTime)
@@ -315,6 +334,9 @@ namespace PERSIST
                 breakable_down = down.GetType() == typeof(Breakable);
             else
                 breakable_down = false;
+
+            if (wall_down || wallslide)
+                dash_ready = true;
 
 
             // --------- death ---------
@@ -387,6 +409,52 @@ namespace PERSIST
             }
             // --------- end wall jumping ---------
 
+
+
+            // --------- dashing ---------
+
+            if (progManager.dash && shift_pressed && dash_ready && dash_cooldown >= dash_cooldown_over)
+            {
+                dashing = true;
+                dash_dir = last_hdir;
+
+                if (wallslide && wall_left)
+                    dash_dir = 1;
+                else if (wallslide && wall_right)
+                    dash_dir = -1;
+
+                dash_ready = false;
+
+                dash_multiplier = dash_multiplier_default;
+            }
+
+
+            if (dashing)
+            {
+                dash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (dash_timer > dash_limit)
+                {
+                    // stop dashing
+                    dashing = false;
+                    dash_timer = 0f;
+
+                    hoset = 2.1f * dash_dir;
+                    hsp_ratio = 1f;
+                }
+
+                wallslide = false;
+
+                dash_cooldown = 0;
+
+                dash_multiplier *= dash_decay;
+            }
+
+            else if (dash_cooldown <= dash_cooldown_over)
+                dash_cooldown += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+
+            // --------- end ---------
 
 
 
@@ -466,6 +534,11 @@ namespace PERSIST
                 
             }
 
+            // ******* special case for dashing ********
+            if (dashing)
+                vsp = 0;
+            // ******* end special case for dashing *******
+
             pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
             //  --------- end vertical movement ---------
 
@@ -489,6 +562,12 @@ namespace PERSIST
                 hsp = hsp_abs;
 
             float hsp_final = hsp + (hoset * Math.Abs(Math.Sign(hoset) - hdir));
+
+
+            // ******** special case for dashing **********
+            if (dashing)
+                hsp_final = hsp_max * dash_dir * dash_multiplier;
+            // ******** end special case for dashing ********
 
             if (wallslide && hoset == 0)
                 hsp_final = 0;
@@ -654,6 +733,7 @@ namespace PERSIST
                 }
 
                 just_pogoed = true;
+                dash_ready = true;
                     
             }
             else
@@ -729,6 +809,22 @@ namespace PERSIST
         {
             walk_timer += 14 * (float)gameTime.ElapsedGameTime.TotalSeconds;
             int ydir = (int)(Convert.ToSingle(down) - Convert.ToSingle(up));
+
+
+
+            if (dashing)
+            {
+                frame.X = 192;
+                frame.Y = 1152;
+
+                if (dash_dir == -1)
+                    frame.Y += 32;
+
+                if (progManager.mask)
+                    frame.X += 256;
+
+                return;
+            }
 
             // special case for animating ranged attacks
             if (ranged_ready)

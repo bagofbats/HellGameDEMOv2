@@ -37,6 +37,10 @@ namespace PERSIST
         private bool old_esc;
         private bool esc_pressed;
         private bool esc_released;
+        private bool old_shift;
+        private bool new_shift;
+        private bool shift_pressed;
+        private bool shift_released;
 
         public Dictionary<string, Keys> key_map;
         public Dictionary<string, Keys> key_defaults;
@@ -49,7 +53,8 @@ namespace PERSIST
             Keys.Left,
             Keys.Right,
             Keys.Space,
-            Keys.Enter
+            Keys.Enter,
+            Keys.RightShift
         };
 
         private Keys[] list_customs =
@@ -58,6 +63,7 @@ namespace PERSIST
             Keys.S,
             Keys.A,
             Keys.D,
+            Keys.None,
             Keys.None,
             Keys.None
         };
@@ -77,6 +83,8 @@ namespace PERSIST
         { get { return new_space; } }
         public bool ENTER
         { get { return new_enter; } }
+        public bool SHIFT
+        { get { return new_shift; } }
 
         public bool UP_PRESSED
         { get { return up_pressed; } }
@@ -98,6 +106,11 @@ namespace PERSIST
         public bool ENTER_RELEASED
         { get { return enter_released; } }
 
+        public bool SHIFT_PRESSED
+        { get { return shift_pressed; } }
+        public bool SHIFT_RELEASED
+        { get { return shift_released; } }
+
         public bool ESC_PRESSED
         { get { return esc_pressed; } }
         public bool ESC_RELEASED
@@ -112,7 +125,8 @@ namespace PERSIST
                 {"left", Keys.A },
                 {"right", Keys.D },
                 {"jump", Keys.None },
-                {"attack", Keys.None }
+                {"attack", Keys.None },
+                {"dash", Keys.None }
             };
 
             key_defaults = new Dictionary<string, Keys>
@@ -122,7 +136,8 @@ namespace PERSIST
                 {"left", Keys.Left },
                 {"right", Keys.Right },
                 {"jump", Keys.Space },
-                {"attack", Keys.Enter }
+                {"attack", Keys.Enter },
+                {"dash", Keys.RightShift }
             };
 
             key_nums = new Dictionary<string, int>
@@ -132,7 +147,8 @@ namespace PERSIST
                 {"left", 2 },
                 {"right", 3 },
                 {"jump", 4 },
-                {"attack", 5 }
+                {"attack", 5 },
+                {"dash", 6 }
             };
         }
 
@@ -144,6 +160,7 @@ namespace PERSIST
             right = key.IsKeyDown(Keys.Right) || key.IsKeyDown(key_map["right"]);
             new_space = key.IsKeyDown(Keys.Space) || key.IsKeyDown(key_map["jump"]);
             new_enter = key.IsKeyDown(Keys.Enter) || key.IsKeyDown(key_map["attack"]);
+            new_shift = key.IsKeyDown(Keys.RightShift) || key.IsKeyDown(key_map["dash"]);
             new_esc = key.IsKeyDown(Keys.Escape);
 
             GamePadCapabilities capabilities = GamePad.GetCapabilities(PlayerIndex.One);
@@ -194,12 +211,15 @@ namespace PERSIST
             enter_pressed = new_enter && !old_enter;
             esc_released = !new_esc && old_esc;
             esc_pressed = new_esc && !old_esc;
+            shift_pressed = new_shift && !old_shift;
+            shift_released = !new_shift && old_shift;
 
             old_space = new_space;
             old_enter = new_enter;
             old_up = up;
             old_down = down;
             old_esc = new_esc;
+            old_shift = new_shift;
         }
 
         public void Rebind(string key, Keys new_key)
@@ -240,6 +260,8 @@ namespace PERSIST
         { get; private set; }
         public bool mask
         { get; private set; }
+        public bool dash
+        { get; private set; }
         
         // bosses and mini-bosses
         public bool slime_started
@@ -263,6 +285,7 @@ namespace PERSIST
             mask = true;
             journal_secret = false;
             charons_blessing = false;
+            dash = true;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
