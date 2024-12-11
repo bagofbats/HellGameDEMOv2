@@ -490,6 +490,19 @@ namespace PERSIST
                 root.the_level.JumpAction();
             }
 
+            // ******** death (again) ********
+
+            // this is for the switch blocks in area 2 so things don't get weird when u die inside them
+
+            Wall temp_check = root.the_level.SimpleCheckCollision(HitBox);
+            if (temp_check != null)
+                if (temp_check.GetType() == typeof(SwitchBlock))
+                {
+                    Die(gameTime);
+                    return;
+                }
+            // ******** end death (again) ********
+
             if (!wall_down && coyote_timer <= coyote_time + 1)
                 coyote_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             
