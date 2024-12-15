@@ -1256,7 +1256,7 @@ namespace PERSIST
                 float opacity = 1f;
 
                 if (overlay_rect.Intersects(player.HitBox))
-                    opacity = 0.3f;
+                    opacity = 0.4f;
 
                 _spriteBatch.Draw(black, overlay_rect, Color.Black * opacity);
 
