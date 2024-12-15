@@ -90,12 +90,12 @@ namespace PERSIST
         private bool dashing = false;
         private float dash_timer = 0f;
         private float dash_limit = 0.14f;
-        private float dash_multiplier = 2.3f;
-        private float dash_multiplier_default = 2.3f;
-        private float dash_decay = 0.93f;
+        private float dash_multiplier = 2.4f;
+        private float dash_multiplier_default = 2.4f;
+        private float dash_decay = 0.87f;
         private int dash_dir = 0;
-        private float dash_cooldown = 0.2f;
-        private float dash_cooldown_over = 0.2f;
+        private float dash_cooldown = 0.3f;
+        private float dash_cooldown_over = 0.3f;
 
         // animation fields
         private float width = 32; // scale factor for image

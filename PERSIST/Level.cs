@@ -38,7 +38,8 @@ namespace PERSIST
         protected Texture2D spr_doorwipe;
         protected Texture2D spr_portrait;
         protected bool debug;
-        protected ProgressionManager prog_manager;
+        public ProgressionManager prog_manager
+        { get; protected set; }
         protected bool overlay = true;
         public string name
         { get; protected set; }
@@ -1522,6 +1523,50 @@ namespace PERSIST
                 spawn_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (spawn_timer > 0.08f)
                 white = false;
+        }
+    }
+
+    public class Lock : Wall
+    {
+        private Level root;
+        private Rectangle draw_rectangle;
+        private Rectangle base_frame; // = new Rectangle(48, 112, 16, 16);
+        private Rectangle frame;
+        private Texture2D img;
+        private Texture2D black;
+        //private float spawn_timer = 0;
+        private bool white = false;
+
+        public Lock(Rectangle bounds, Level root, Rectangle frame) : base(bounds)
+        {
+            this.root = root;
+            draw_rectangle = bounds;
+            this.frame = frame;
+            base_frame = frame;
+
+            special = true;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            frame = base_frame;
+
+            if (root.prog_manager.locks)
+                frame.X += 16;
+        }
+
+        public override void Load(Texture2D img)
+        {
+            this.img = img;
+            this.black = root.black;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (white)
+                spriteBatch.Draw(black, draw_rectangle, frame, Color.White);
+            else
+                spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
         }
     }
 

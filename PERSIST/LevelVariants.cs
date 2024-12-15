@@ -715,6 +715,7 @@ namespace PERSIST
         private int river_frame_oset = 0;
         private Rectangle switch_block_frame = new Rectangle(112, 128, 16, 16);
         private Rectangle ghost_block_frame = new Rectangle(112 + 32, 128, 16, 16);
+        private Rectangle lock_block_frame = new Rectangle(224, 112, 16, 16);
 
         private List<int> mouth_locs = new List<int>();
 
@@ -883,7 +884,21 @@ namespace PERSIST
                                 special_walls_bounds.Add(temp);
                                 special_walls_types.Add("oneway");
                             }
-                                
+
+                            if (l.objects[i].name == "lock")
+                            {
+                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
+
+                                for (int j = 0; j < temp.Width; j += 16)
+                                    for (int k = 0; k < temp.Height; k += 16)
+                                    {
+                                        Rectangle temp2 = new Rectangle(temp.X + j, temp.Y + k, 16, 16);
+                                        AddSpecialWall(new Lock(temp2, this, lock_block_frame));
+                                        special_walls_bounds.Add(temp2);
+                                        special_walls_types.Add("lock");
+                                    }
+                            }
+
                         }
 
                 }
@@ -928,7 +943,7 @@ namespace PERSIST
             {
                 var temp = wall.GetType();
 
-                if (temp == typeof(Crumble) || temp == typeof(SwitchBlock) || temp == typeof(OneWay))
+                if (temp == typeof(Crumble) || temp == typeof(SwitchBlock) || temp == typeof(OneWay) || temp == typeof(Lock))
                     wall.Load(tst_styx);
 
                 if (temp == typeof(Stem))
@@ -1005,6 +1020,9 @@ namespace PERSIST
 
                 else if (special_walls_types[i] == "badswitch")
                     AddEnemy(new GhostBlock(new Vector2(special_walls_bounds[i].X, special_walls_bounds[i].Y), this, ghost_block_frame));
+
+                else if (special_walls_types[i] == "switch")
+                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this, lock_block_frame));
 
                 if (special_walls_types[i] == "oneway")
                     AddSpecialWall(new OneWay(special_walls_bounds[i], new Rectangle(8, 184, 8, 8), this));
@@ -1256,7 +1274,7 @@ namespace PERSIST
                 float opacity = 1f;
 
                 if (overlay_rect.Intersects(player.HitBox))
-                    opacity = 0.4f;
+                    opacity = 0.3f;
 
                 _spriteBatch.Draw(black, overlay_rect, Color.Black * opacity);
 

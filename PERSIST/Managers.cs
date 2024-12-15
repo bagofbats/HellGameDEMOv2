@@ -262,6 +262,12 @@ namespace PERSIST
         { get; private set; }
         public bool dash
         { get; private set; }
+
+        // mechanics
+        public bool jump_blocks
+        { get; private set; }
+        public bool locks
+        { get; private set; }
         
         // bosses and mini-bosses
         public bool slime_started
@@ -286,6 +292,8 @@ namespace PERSIST
             journal_secret = false;
             charons_blessing = false;
             dash = true;
+            locks = true;
+            jump_blocks = true;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
