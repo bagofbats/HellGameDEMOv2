@@ -17,12 +17,12 @@ namespace PERSIST
         private float current_x = 0;
         private float current_y = 0;
 
-        private Persist root;
+        private HellGame root;
 
         public bool stable
         { get; set; }
 
-        public Camera(Persist root)
+        public Camera(HellGame root)
         {
             this.root = root;
             stable = true;

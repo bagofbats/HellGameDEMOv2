@@ -12,7 +12,7 @@ using TiledCS;
 
 namespace PERSIST
 {
-    public class Persist : Game
+    public class HellGame : Game
     {
         private bool debug = false;
         public bool opaque
@@ -71,7 +71,7 @@ namespace PERSIST
         private LevelStruct tutorial_two = new LevelStruct("\\rm_tutorial2.tmx", "\\tst_tutorial.tsx");
         private LevelStruct tutorial_thr = new LevelStruct("\\rm_tutorial3.tmx", "\\tst_tutorial.tsx");
 
-        public Persist()
+        public HellGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -146,7 +146,7 @@ namespace PERSIST
 
             the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx2");
 
-            Window.Title = "HellGame [DEMO]";
+            Window.Title = "Hell Escape [DEMO]";
         }
 
         protected override void Initialize()

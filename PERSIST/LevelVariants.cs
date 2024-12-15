@@ -100,7 +100,7 @@ namespace PERSIST
 
 
 
-        public TutorialLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name) 
+        public TutorialLevel(HellGame root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name) 
         {
             dialogue_checkpoint = dialogue_ck;
             dialogue_second_index = 2;
@@ -729,7 +729,7 @@ namespace PERSIST
             //new DialogueStruct("( Maybe I should learn how to make torches.\n  Seems like a lucrative business )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
         };
 
-        public StyxLevel(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name)
+        public StyxLevel(HellGame root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name)
         {
             dialogue_checkpoint = dialogue_ck;
             dialogue_second_index = 2;
@@ -1021,8 +1021,8 @@ namespace PERSIST
                 else if (special_walls_types[i] == "badswitch")
                     AddEnemy(new GhostBlock(new Vector2(special_walls_bounds[i].X, special_walls_bounds[i].Y), this, ghost_block_frame));
 
-                else if (special_walls_types[i] == "switch")
-                    AddSpecialWall(new SwitchBlock(special_walls_bounds[i], this, lock_block_frame));
+                else if (special_walls_types[i] == "lock")
+                    AddSpecialWall(new Lock(special_walls_bounds[i], this, lock_block_frame));
 
                 if (special_walls_types[i] == "oneway")
                     AddSpecialWall(new OneWay(special_walls_bounds[i], new Rectangle(8, 184, 8, 8), this));
@@ -1032,7 +1032,7 @@ namespace PERSIST
             foreach (Wall wall in special_walls)
             {
                 var temp = wall.GetType();
-                if (temp == typeof(Crumble) || temp == typeof(SwitchBlock) || temp == typeof(OneWay))
+                if (temp == typeof(Crumble) || temp == typeof(SwitchBlock) || temp == typeof(OneWay) || temp == typeof(Lock))
                     wall.Load(tst_styx);
 
                 if (temp == typeof(Stem))

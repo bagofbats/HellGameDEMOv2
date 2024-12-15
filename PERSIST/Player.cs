@@ -16,7 +16,7 @@ namespace PERSIST
 {
     public class Player
     {
-        private Persist root;
+        private HellGame root;
         public ControllerManager contManager
         { get; private set; }
         private ProgressionManager progManager;
@@ -94,7 +94,7 @@ namespace PERSIST
         private float dash_multiplier_default = 2.4f;
         private float dash_decay = 0.87f;
         private int dash_dir = 0;
-        private float dash_cooldown = 0.3f;
+        private float dash_cooldown = 0.22f;
         private float dash_cooldown_over = 0.3f;
 
         // animation fields
@@ -114,7 +114,7 @@ namespace PERSIST
         private Vector2 freeze_pos = new Vector2(0, 0);
         private bool dialogue_recent = false;
 
-        public Player(Persist root, Vector2 pos, ControllerManager contManager, ProgressionManager progManager)
+        public Player(HellGame root, Vector2 pos, ControllerManager contManager, ProgressionManager progManager)
         {
             this.root = root;
             this.pos = pos;

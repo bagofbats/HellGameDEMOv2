@@ -23,7 +23,7 @@ namespace PERSIST
 {
     public class Level
     {
-        protected Persist root;
+        protected HellGame root;
         public Player player
         { get; protected set; }
         protected Camera cam;
@@ -97,7 +97,7 @@ namespace PERSIST
         public int dialogue_second_index
         { get; protected set; } = 0;
 
-        public Level(Persist root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name)
+        public Level(HellGame root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name)
         {
             this.root = root;
             this.player = player;

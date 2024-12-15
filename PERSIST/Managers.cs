@@ -334,11 +334,11 @@ namespace PERSIST
 
     public class AudioManager
     {
-        private Persist root;
+        private HellGame root;
 
         private Dictionary<string, SoundEffect> sfx = new Dictionary<string, SoundEffect>();
 
-        public AudioManager(Persist root)
+        public AudioManager(HellGame root)
         {
             this.root = root;
         }
