@@ -11,6 +11,8 @@ art:
 
  bugs:
  - ranged attacks get stopped by one-way platforms
+ - ranged attack particle vfx fuckin sugks
+    - if the particle breaks on the corner of a wall the poof vfx is misplaced
 
  area plan:
   - on new save file:

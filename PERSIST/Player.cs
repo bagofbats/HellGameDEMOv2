@@ -340,7 +340,7 @@ namespace PERSIST
 
 
             // --------- death ---------
-            Obstacle o = root.the_level.ObstacleCheckCollision(HurtBox);
+            Obstacle o = root.the_level.ObstacleCheckCollision(HitBox); // <---- changed to use hitbox instead of hurtbox
             List<Enemy> e = root.the_level.CheckEnemyCollision(HurtBox);
 
             if (o != null)

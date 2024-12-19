@@ -14,9 +14,9 @@ namespace PERSIST
 {
     public class HellGame : Game
     {
-        private bool debug = false;
+        private bool debug = true;
         public bool opaque
-        { get; private set; } = true;
+        { get; private set; } = false;
 
         public bool pause
         { get; private set; }
@@ -104,20 +104,21 @@ namespace PERSIST
 
             // styx level template
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx1.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx3.tmx");
             TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
 
             List<Rectangle> bounds = new List<Rectangle>
             {
                 new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight),
-                new Rectangle(2096, 480, two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
+                //new Rectangle(2096, 480, two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
             };
 
             TiledData one = new TiledData(bounds[0], one_map, one_tst);
-            TiledData two = new TiledData(bounds[1], two_map, one_tst);
+            //TiledData two = new TiledData(bounds[1], two_map, one_tst);
 
-            List<TiledData> tld = new List<TiledData>{one, two};
+            //List<TiledData> tld = new List<TiledData>{one, two};
+            List<TiledData> tld = new List<TiledData> {one};
 
             // determine how much to scale the window up
             // given how big the monitor is

@@ -4,9 +4,9 @@
  <objectgroup id="5" name="rooms">
   <object id="1" x="0" y="0" width="320" height="240"/>
   <object id="36" name="Don't Suffocate" x="0" y="240" width="320" height="240"/>
-  <object id="53" x="320" y="240" width="320" height="240"/>
+  <object id="53" name="Priming" x="320" y="240" width="320" height="240"/>
   <object id="89" name="Airlock" x="640" y="240" width="320" height="240"/>
-  <object id="148" x="744" y="0" width="320" height="240"/>
+  <object id="148" name="Between the Lines" x="744" y="0" width="320" height="240"/>
   <object id="180" x="320" y="0" width="424" height="240"/>
  </objectgroup>
  <objectgroup id="6" name="entities">
@@ -24,13 +24,13 @@
   <object id="54" name="switch" x="192" y="296">
    <point/>
   </object>
-  <object id="69" name="crumble" x="384" y="376" width="16" height="48"/>
-  <object id="70" name="crumble" x="408" y="432" width="48" height="16"/>
+  <object id="69" name="crumble" x="384" y="384" width="16" height="32"/>
+  <object id="70" name="crumble" x="416" y="432" width="32" height="16"/>
   <object id="71" name="checkpoint" x="368" y="304">
    <point/>
   </object>
-  <object id="79" name="crumble" x="552" y="376" width="16" height="48"/>
-  <object id="80" name="crumble" x="504" y="432" width="48" height="16"/>
+  <object id="79" name="crumble" x="552" y="384" width="16" height="32"/>
+  <object id="80" name="crumble" x="512" y="432" width="32" height="16"/>
   <object id="81" name="switch" x="512" y="264">
    <point/>
   </object>
