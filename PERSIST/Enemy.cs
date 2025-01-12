@@ -1501,6 +1501,52 @@ namespace PERSIST
         }
     }
 
+    // styx
+    public class Kanna_Boss : Enemy
+    {
+        private Player player;
+        //private float hp = 22;
+        //private int max_hp = 22;
+        new private StyxLevel root;
+
+        public Kanna_Boss(Vector2 pos, Player player, StyxLevel root)
+        {
+            this.pos = pos;
+            this.player = player;
+            this.root = root;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     // miscellaneous/weird cases
 
     public class DeadGuy : Enemy

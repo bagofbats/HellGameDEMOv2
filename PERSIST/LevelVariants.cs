@@ -716,6 +716,7 @@ namespace PERSIST
         private Rectangle switch_block_frame = new Rectangle(112, 128, 16, 16);
         private Rectangle ghost_block_frame = new Rectangle(112 + 32, 128, 16, 16);
         private Rectangle lock_block_frame = new Rectangle(224, 112, 16, 16);
+        private Rectangle key_frame = new Rectangle(256, 120, 16, 8);
 
         private List<int> mouth_locs = new List<int>();
 
@@ -728,6 +729,8 @@ namespace PERSIST
             //new DialogueStruct("( Who makes all these torches, anyway?\n  Are they getting paid? )", 'd', Color.DodgerBlue, 'p', false, "", 90, 0),
             //new DialogueStruct("( Maybe I should learn how to make torches.\n  Seems like a lucrative business )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
         };
+
+        private Dictionary<Room, int> keys_in_room = new Dictionary<Room, int>();
 
         public StyxLevel(HellGame root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name)
         {
@@ -899,6 +902,13 @@ namespace PERSIST
                                     }
                             }
 
+                            if (l.objects[i].name == "key")
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddKey(new Key(temp, this, key_frame));
+                                key_locations.Add(temp);
+                            }
+
                         }
 
                 }
@@ -950,6 +960,19 @@ namespace PERSIST
                     wall.Load(spr_mushroom);
             }
 
+            foreach (Key key in keys)
+            {
+                key.Load(tst_styx);
+
+                Room r = RealGetRoom(new Vector2(key.bounds.X, key.bounds.Y));
+
+                if (keys_in_room.ContainsKey(r))
+                    keys_in_room[r]++;
+                else
+                    keys_in_room.Add(r, 1);
+            }
+                
+
             for (int i = 0; i < chunks.Count(); i++)
                 chunks[i].Load(black);
 
@@ -959,6 +982,17 @@ namespace PERSIST
             foreach (Checkpoint c in checkpoints)
                 if (c.sideways)
                     c.GetSidewaysWall();
+
+            foreach (Wall w in special_walls)
+                if (w.GetType() == typeof(Lock))
+                {
+                    Room r = RealGetRoom(new Vector2(w.bounds.X, w.bounds.Y));
+
+                    if (keys_in_room.ContainsKey(r))
+                        w.SetKeys(keys_in_room[r]);
+                    else
+                        w.SetKeys(0);
+                }
         }
 
         public override void Update(GameTime gameTime)
@@ -977,6 +1011,9 @@ namespace PERSIST
                 river_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
                 river_frame_oset = (int)river_timer;
             }
+
+            for (int i = keys.Count() - 1; i >= 0; i--)
+                keys[i].Update(gameTime);
         }
 
         public override void Draw(SpriteBatch _spriteBatch)
@@ -996,6 +1033,9 @@ namespace PERSIST
             // remove enemies
             for (int i = enemies.Count - 1; i >= 0; i--)
                 RemoveEnemy(enemies[i]);
+
+            for (int i = keys.Count - 1; i >= 0; i--)
+                RemoveKey(keys[i]);
 
             int mouth_counter = 0;
 
@@ -1053,6 +1093,14 @@ namespace PERSIST
                 //if (enemy_types[i] == "trampoline")
                 //    AddEnemy(new Trampoline(enemy_locations[i], this));
 
+            }
+
+            // replace keys
+            for (int i = 0; i < key_locations.Count; i++)
+            {
+                var temp = new Key(key_locations[i], this, key_frame);
+                temp.Load(tst_styx);
+                AddKey(temp);
             }
 
 
@@ -1205,8 +1253,8 @@ namespace PERSIST
             int cam_y = (int)cam.GetPos().Y;
             var camera_rect = new Rectangle(cam_x - 8, cam_y - 8, 320 + 16, 240 + 16);
 
-            for (int i = special_walls.Count - 1; i >= 0; i--)
-                special_walls[i].Draw(_spriteBatch);
+            for (int i = keys.Count() - 1; i >= 0; i--)
+                keys[i].Draw(_spriteBatch);
 
             for (int i = 0; i < rivers.Count(); i++)
             {
@@ -1225,6 +1273,9 @@ namespace PERSIST
                 foreach (TiledLayer l in t.map.Layers)
                     if (l.name == "tiles")
                         DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
+
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                special_walls[i].Draw(_spriteBatch);
 
             for (int i = particles.Count - 1; i >= 0; i--)
             {

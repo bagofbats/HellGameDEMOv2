@@ -58,6 +58,8 @@ namespace PERSIST
         protected List<Vector2> enemy_locations = new List<Vector2>();
         protected List<String> enemy_types = new List<String>();
         protected List<Interactable> interactables = new List<Interactable>();
+        protected List<Key> keys = new List<Key>();
+        protected List<Vector2> key_locations = new List<Vector2>();
 
         public bool player_dead
         { get; protected set; } = false;
@@ -394,6 +396,16 @@ namespace PERSIST
                     chunks[i].RemoveWall(wall);
         }
 
+        public void AddKey(Key key)
+        {
+            keys.Add(key);
+        }
+
+        public void RemoveKey(Key key)
+        {
+            keys.Remove(key);
+        }
+
         public Wall SimpleCheckCollision(Rectangle input, bool ignore_oneways=true)
         {
             for (int i = 0; i < chunks.Count(); i++)
@@ -567,6 +579,9 @@ namespace PERSIST
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].Draw(_spriteBatch);
+
+            for (int i = keys.Count() - 1; i >= 0; i--)
+                keys[i].Draw(_spriteBatch);
 
             for (int i = enemies.Count - 1; i >= 0; i--)
                 enemies[i].Draw(_spriteBatch);
@@ -1170,6 +1185,16 @@ namespace PERSIST
         public virtual void Trigger() { }
 
         public virtual void FlashDestroy() { }
+
+        public virtual int GetKeys()
+        {
+            return 0;
+        }
+
+        public virtual void SetKeys(int keys) 
+        {
+            // nothing
+        }
     }
 
     public class Obstacle
@@ -1537,13 +1562,14 @@ namespace PERSIST
         //private float spawn_timer = 0;
         private bool white = false;
 
+        private int keys_left = 0;
+
         public Lock(Rectangle bounds, Level root, Rectangle frame) : base(bounds)
         {
             this.root = root;
             draw_rectangle = bounds;
             this.frame = frame;
             base_frame = frame;
-
             special = true;
         }
 
@@ -1552,7 +1578,16 @@ namespace PERSIST
             frame = base_frame;
 
             if (root.prog_manager.locks)
-                frame.X += 16;
+            {
+                if (keys_left < 7)
+                {
+                    frame.Y += 16;
+                    frame.X += (16 * keys_left) - 16;
+                }
+                else
+                    frame.X += 16;
+            }
+                
         }
 
         public override void Load(Texture2D img)
@@ -1567,6 +1602,60 @@ namespace PERSIST
                 spriteBatch.Draw(black, draw_rectangle, frame, Color.White);
             else
                 spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
+        }
+
+        public override void SetKeys(int keys)
+        {
+            keys_left = keys;
+        }
+
+        public override int GetKeys()
+        {
+            return keys_left;
+        }
+    }
+
+    public class Key
+    {
+        public Rectangle bounds
+        { get; private set; }
+        public Rectangle hitbox
+        { get; private set; }
+        private Level root;
+        private Texture2D img;
+        private Rectangle frame;
+        private Rectangle base_frame;
+
+        public Key(Vector2 pos, Level root, Rectangle frame)
+        {
+            bounds = new Rectangle((int)pos.X, (int)pos.Y, 16, 8);
+            hitbox = new Rectangle((int)pos.X + 4, (int)pos.Y + 4, 8, 4);
+            this.root = root;
+            this.frame = frame;
+            base_frame = frame;
+        }
+
+        public void Load(Texture2D img)
+        {
+            this.img = img;
+        }
+
+        public void Draw(SpriteBatch _spriteBatch)
+        {
+            if (root.prog_manager.locks)
+                frame.X = base_frame.X + 16;
+
+            _spriteBatch.Draw(img, bounds, frame, Color.White);
+        }
+
+        public void DebugDraw(SpriteBatch _spriteBatch, Texture2D blue)
+        {
+            _spriteBatch.Draw(blue, hitbox, Color.Blue * 0.3f);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            // nothing
         }
     }
 
