@@ -1103,6 +1103,17 @@ namespace PERSIST
                 AddKey(temp);
             }
 
+            foreach (Wall w in special_walls)
+                if (w.GetType() == typeof(Lock))
+                {
+                    Room r = RealGetRoom(new Vector2(w.bounds.X, w.bounds.Y));
+
+                    if (keys_in_room.ContainsKey(r))
+                        w.SetKeys(keys_in_room[r]);
+                    else
+                        w.SetKeys(0);
+                }
+
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
