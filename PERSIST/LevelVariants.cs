@@ -1012,6 +1012,23 @@ namespace PERSIST
                 river_frame_oset = (int)river_timer;
             }
 
+            if (prog_manager.locks)
+            {
+                List<Key> killed_keys = KeyCheckCollision(player.HitBox);
+
+                for (int i = killed_keys.Count() - 1; i >= 0; i--)
+                {
+                    Room r = RealGetRoom(new Vector2(killed_keys[i].bounds.X, killed_keys[i].bounds.Y));
+
+                    for (int j = special_walls.Count() - 1; j >= 0; j--)
+                        if (special_walls[j].GetType() == typeof(Lock) && special_walls[j].bounds.Intersects(r.bounds))
+                            special_walls[j].DecrementKeys();
+
+                    killed_keys[i].Die();
+                }
+            }
+            
+
             for (int i = keys.Count() - 1; i >= 0; i--)
                 keys[i].Update(gameTime);
         }

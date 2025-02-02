@@ -94,13 +94,10 @@
   <object id="210" name="oneway" x="904" y="316" width="32" height="8"/>
   <object id="221" name="lock" x="224" y="144" width="16" height="32"/>
   <object id="223" name="lock" x="328" y="112" width="16" height="32"/>
-  <object id="224" name="key" x="248" y="168">
-   <point/>
-  </object>
   <object id="225" name="key" x="368" y="184">
    <point/>
   </object>
-  <object id="226" name="key" x="176" y="168">
+  <object id="226" name="key" x="256" y="168">
    <point/>
   </object>
  </objectgroup>

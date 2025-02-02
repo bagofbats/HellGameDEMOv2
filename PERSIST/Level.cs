@@ -537,6 +537,18 @@ namespace PERSIST
             return ret;
         }
 
+        public List<Key> KeyCheckCollision(Rectangle input)
+        {
+            List<Key> ret = new List<Key>();
+
+            for (int i = keys.Count - 1; i >= 0; i--)
+                if (keys[i] != null)
+                    if (keys[i].hitbox.Intersects(input))
+                        ret.Add(keys[i]);
+
+            return ret;
+        }
+
         public Rectangle GetRoom(Vector2 input)
         {
             Rectangle room = new Rectangle(0, 0, 0, 0);
@@ -1195,6 +1207,11 @@ namespace PERSIST
         {
             // nothing
         }
+
+        public virtual void DecrementKeys()
+        {
+            // nothing
+        }
     }
 
     public class Obstacle
@@ -1613,6 +1630,14 @@ namespace PERSIST
         {
             return keys_left;
         }
+
+        public override void DecrementKeys()
+        {
+            keys_left -= 1;
+
+            if (keys_left <= 0)
+                root.RemoveSpecialWall(this);
+        }
     }
 
     public class Key
@@ -1656,6 +1681,11 @@ namespace PERSIST
         public void Update(GameTime gameTime)
         {
             // nothing
+        }
+
+        public void Die()
+        {
+            root.RemoveKey(this);
         }
     }
 
