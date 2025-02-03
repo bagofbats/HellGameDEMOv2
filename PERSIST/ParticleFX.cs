@@ -229,4 +229,40 @@ namespace PERSIST
             spriteBatch.Draw(img, pos, frame, Color.White);
         }
     }
+
+    public class KeyFX : ParticleFX
+    {
+        private Rectangle frame = new Rectangle(304, 120, 16, 8);
+        private Texture2D img;
+
+        private float timer = 0f;
+
+        private float timer_max = 0.14f;
+
+        public KeyFX(Vector2 pos, Texture2D img, Level root)
+        {
+            this.pos = new Rectangle((int)pos.X, (int)pos.Y, 16, 8);
+            this.root = root;
+            this.img = img;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (timer > timer_max)
+                root.RemoveFX(this);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            float oset = timer * 180;
+
+            Rectangle draw_pos = new Rectangle(pos.X - (int)(oset / 2), pos.Y - (int)(oset / 2), pos.Width + (int)oset, pos.Height + (int)(oset / 2));
+
+            float opacity = 1 - ((timer + 0.01f) / timer_max);
+
+            spriteBatch.Draw(img, draw_pos, frame, Color.White * opacity);
+        }
+    }
 }

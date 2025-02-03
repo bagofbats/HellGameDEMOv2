@@ -1577,7 +1577,8 @@ namespace PERSIST
         private Texture2D img;
         private Texture2D black;
         //private float spawn_timer = 0;
-        private bool white = false;
+        private bool flash = false;
+        private float flash_timer = 0f;
 
         private int keys_left = 0;
 
@@ -1604,7 +1605,19 @@ namespace PERSIST
                 else
                     frame.X += 16;
             }
-                
+
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (flash_timer >= 0.08f)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                    if (keys_left <= 0)
+                        root.RemoveSpecialWall(this);
+                }
+            }
+
         }
 
         public override void Load(Texture2D img)
@@ -1615,7 +1628,7 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (white)
+            if (flash)
                 spriteBatch.Draw(black, draw_rectangle, frame, Color.White);
             else
                 spriteBatch.Draw(img, draw_rectangle, frame, Color.White);
@@ -1635,8 +1648,10 @@ namespace PERSIST
         {
             keys_left -= 1;
 
-            if (keys_left <= 0)
-                root.RemoveSpecialWall(this);
+            //if (keys_left <= 0)
+            //    root.RemoveSpecialWall(this);
+
+            flash = true;
         }
     }
 
@@ -1735,6 +1750,7 @@ namespace PERSIST
 
         public void Die()
         {
+            root.AddFX(new KeyFX(new Vector2(pos.X, pos.Y), img, root));
             root.RemoveKey(this);
         }
     }
