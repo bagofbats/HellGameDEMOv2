@@ -291,7 +291,7 @@ namespace PERSIST
             mask = true;
             journal_secret = false;
             charons_blessing = false;
-            dash = false;
+            dash = true;
             locks = true;
             jump_blocks = true;
         }
