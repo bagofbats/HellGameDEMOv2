@@ -730,6 +730,8 @@ namespace PERSIST
             //new DialogueStruct("( Maybe I should learn how to make torches.\n  Seems like a lucrative business )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
         };
 
+        // dialogue_key is inside the key object -- i know, confusing...
+
         private Dictionary<Room, int> keys_in_room = new Dictionary<Room, int>();
 
         public StyxLevel(HellGame root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name)

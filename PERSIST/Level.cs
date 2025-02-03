@@ -1675,6 +1675,15 @@ namespace PERSIST
         private Rectangle frame;
         private Rectangle base_frame;
 
+        DialogueStruct[] dialogue_key = {
+            new DialogueStruct("It's a key.", 'd', Color.White, 'c'),
+            new DialogueStruct("It's practically stuck to the floor.\nYou can't pick it up.", 'd', Color.White, 'c', true),
+            new DialogueStruct("( There are locks over there, but the key is too \n  heavy . . .\n  Is this some kind of prank? )", 'd', Color.DodgerBlue, 'p', false, "", 135, 45 * 3),
+            new DialogueStruct("( Actually, if it is a prank, it's a pretty funny one.\n  I should write that down . . . )", 'd', Color.DodgerBlue, 'p', true, "",135, 0),
+        };
+
+        private bool interacted = false;
+
         public Key(Vector2 pos, Level root, Rectangle frame)
         {
             this.pos = pos;
@@ -1752,6 +1761,20 @@ namespace PERSIST
         {
             root.AddFX(new KeyFX(new Vector2(pos.X, pos.Y), img, root));
             root.RemoveKey(this);
+        }
+
+        public void Interact()
+        {
+            if (!interacted)
+            {
+                interacted = true;
+                root.StartDialogue(dialogue_key, 0, 'c', 25f, true);
+            }
+            else
+            {
+                root.StartDialogue(dialogue_key, 2, 'c', 25f, true);
+            }
+            
         }
     }
 

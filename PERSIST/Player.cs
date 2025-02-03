@@ -624,6 +624,13 @@ namespace PERSIST
             if (C != null && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED && !contManager.LEFT && !contManager.RIGHT)
                 C.Interact();
 
+            if (!progManager.locks)
+            {
+                List<Key> keys = root.the_level.KeyCheckCollision(HitBox);
+                if (keys.Count > 0 && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED)
+                    keys[0].Interact();
+            }
+
 
             // --------- end interactable dialogue ---------
 
