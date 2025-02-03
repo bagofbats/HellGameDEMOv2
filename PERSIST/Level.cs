@@ -1642,10 +1642,19 @@ namespace PERSIST
 
     public class Key
     {
+        private Vector2 pos;
+
+        private float vsp = 0f;
+        private float grav = 0.20f;
+        private float grav_max = 5f;
+
+        //private int h_oset = 8;
+        private int v_oset = 4;
+
         public Rectangle bounds
-        { get; private set; }
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 8); } }
         public Rectangle hitbox
-        { get; private set; }
+        { get { return new Rectangle((int)pos.X + 4, (int)pos.Y + 4, 8, 4); } }
         private Level root;
         private Texture2D img;
         private Rectangle frame;
@@ -1653,8 +1662,7 @@ namespace PERSIST
 
         public Key(Vector2 pos, Level root, Rectangle frame)
         {
-            bounds = new Rectangle((int)pos.X, (int)pos.Y, 16, 8);
-            hitbox = new Rectangle((int)pos.X + 4, (int)pos.Y + 4, 8, 4);
+            this.pos = pos;
             this.root = root;
             this.frame = frame;
             base_frame = frame;
@@ -1680,7 +1688,49 @@ namespace PERSIST
 
         public void Update(GameTime gameTime)
         {
-            // nothing
+            Room home = root.RealGetRoom(pos);
+
+            if (home != null)
+                if (home.bounds.Intersects(root.player.HitBox))
+                    ActualUpdate(gameTime);
+        }
+
+        public void ActualUpdate(GameTime gameTime)
+        {
+            vsp += grav;
+
+            if (vsp > grav_max)
+                vsp = grav_max;
+
+            float vsp_col_check = vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+            if (vsp_col_check > 0)
+                vsp_col_check += 1;
+            else
+                vsp_col_check -= 1;
+
+            Wall vcheck = root.SimpleCheckCollision(new Rectangle(hitbox.X, (int)(hitbox.Y + vsp_col_check), hitbox.Width, hitbox.Height));
+
+            if (vcheck != null)
+            {
+                if (vsp < 0)
+                    pos.Y = vcheck.bounds.Bottom - v_oset;
+                else
+                    pos.Y = vcheck.bounds.Top - 8;
+                vsp = 0;
+            }
+
+            Obstacle vcheck_2 = root.ObstacleCheckCollision(new Rectangle(hitbox.X, (int)(hitbox.Y + vsp_col_check), hitbox.Width, hitbox.Height));
+            
+            if (vcheck_2 != null)
+            {
+                if (vsp < 0)
+                    pos.Y = vcheck_2.bounds.Bottom - v_oset;
+                else
+                    pos.Y = vcheck_2.bounds.Top - 8;
+                vsp = 0;
+            }
+
+            pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
         }
 
         public void Die()

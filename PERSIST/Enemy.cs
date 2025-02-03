@@ -179,7 +179,7 @@ namespace PERSIST
                 }
             }
 
-            pos.Y += vsp;
+            pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
 
             if (vcheck != null && !sleep)
             {

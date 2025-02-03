@@ -169,12 +169,12 @@
    <point/>
   </object>
   <object id="723" name="crumble" x="1816" y="456" width="32" height="16"/>
-  <object id="724" name="switch_one" x="1624" y="432" width="16" height="16"/>
-  <object id="725" name="switch_two" x="1624" y="464" width="16" height="16"/>
+  <object id="724" name="switch_one" x="1624" y="472" width="16" height="16"/>
+  <object id="725" name="switch_two" x="1624" y="504" width="16" height="16"/>
   <object id="726" name="switch" x="1712" y="512">
    <point/>
   </object>
-  <object id="727" name="key" x="1624" y="424">
+  <object id="727" name="key" x="1624" y="464">
    <point/>
   </object>
  </objectgroup>
@@ -924,11 +924,11 @@
   <object id="709" x="1544" y="600" width="56" height="56"/>
   <object id="712" x="1848" y="416" width="16" height="144"/>
   <object id="713" x="1800" y="416" width="16" height="64"/>
-  <object id="714" x="1544" y="416" width="64" height="56"/>
-  <object id="715" x="1544" y="472" width="56" height="64"/>
+  <object id="714" x="1544" y="416" width="64" height="104"/>
+  <object id="715" x="1544" y="520" width="56" height="16"/>
   <object id="717" x="1656" y="416" width="144" height="56"/>
-  <object id="718" x="1608" y="416" width="16" height="64"/>
-  <object id="719" x="1640" y="416" width="16" height="64"/>
-  <object id="721" x="1624" y="416" width="16" height="8"/>
+  <object id="718" x="1608" y="416" width="16" height="112"/>
+  <object id="719" x="1640" y="416" width="16" height="112"/>
+  <object id="721" x="1624" y="456" width="16" height="8"/>
  </objectgroup>
 </map>
