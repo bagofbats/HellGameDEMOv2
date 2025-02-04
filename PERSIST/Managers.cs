@@ -292,7 +292,7 @@ namespace PERSIST
             journal_secret = false;
             charons_blessing = false;
             dash = true;
-            locks = false;
+            locks = true;
             jump_blocks = true;
         }
 

@@ -1014,7 +1014,7 @@ namespace PERSIST
                 river_frame_oset = (int)river_timer;
             }
 
-            if (prog_manager.locks)
+            if (prog_manager.locks && !(player_dead && !finish_player_dead))
             {
                 List<Key> killed_keys = KeyCheckCollision(player.HitBox);
 
@@ -1286,6 +1286,10 @@ namespace PERSIST
             for (int i = keys.Count() - 1; i >= 0; i--)
                 keys[i].Draw(_spriteBatch);
 
+            for (int i = special_walls.Count - 1; i >= 0; i--)
+                if (special_walls[i].GetType() == typeof(Stem))
+                    special_walls[i].Draw(_spriteBatch);
+
             for (int i = 0; i < rivers.Count(); i++)
             {
                 if (!rivers[i].Intersects(camera_rect))
@@ -1305,7 +1309,8 @@ namespace PERSIST
                         DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
 
             for (int i = special_walls.Count - 1; i >= 0; i--)
-                special_walls[i].Draw(_spriteBatch);
+                if (special_walls[i].GetType() != typeof(Stem))
+                    special_walls[i].Draw(_spriteBatch);
 
             for (int i = particles.Count - 1; i >= 0; i--)
             {
