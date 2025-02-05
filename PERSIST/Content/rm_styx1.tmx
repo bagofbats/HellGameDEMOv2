@@ -989,7 +989,7 @@
   <object id="750" x="1464" y="440" width="40" height="16"/>
   <object id="757" x="1504" y="536" width="32" height="16"/>
   <object id="760" x="1104" y="600" width="120" height="120"/>
-  <object id="761" x="904" y="456" width="112" height="264"/>
+  <object id="761" x="904" y="464" width="112" height="256"/>
   <object id="765" x="1104" y="416" width="56" height="112"/>
   <object id="766" x="904" y="416" width="200" height="48"/>
  </objectgroup>

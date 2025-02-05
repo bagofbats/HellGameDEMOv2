@@ -1508,6 +1508,18 @@ namespace PERSIST
         //private float hp = 22;
         //private int max_hp = 22;
         new private StyxLevel root;
+        private Texture2D sprite;
+
+        private Rectangle frame = new Rectangle(256, 32, 32, 32);
+
+        private int h_oset = 8;
+        private int v_oset = 20;
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
 
         public Kanna_Boss(Vector2 pos, Player player, StyxLevel root)
         {
@@ -1516,34 +1528,36 @@ namespace PERSIST
             this.root = root;
         }
 
-        public override bool CheckCollision(Rectangle input)
-        {
-            throw new NotImplementedException();
-        }
 
-        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+
+        public override void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            throw new NotImplementedException();
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
         }
 
-        public override Rectangle GetHitBox(Rectangle input)
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
-            throw new NotImplementedException();
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
 
         public override void LoadAssets(Texture2D sprite)
         {
-            throw new NotImplementedException();
+            this.sprite = sprite;
         }
 
-        public override void Update(GameTime gameTime)
+        public override Rectangle GetHitBox(Rectangle input)
         {
-            throw new NotImplementedException();
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
         }
     }
 

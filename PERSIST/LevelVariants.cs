@@ -699,6 +699,7 @@ namespace PERSIST
         private Texture2D bg_dark;
         private Texture2D bg_rocks;
         private Texture2D spr_mushroom;
+        private Texture2D spr_kanna;
 
         private List<JumpSwitch> switches = new List<JumpSwitch>();
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
@@ -911,6 +912,14 @@ namespace PERSIST
                                 key_locations.Add(temp);
                             }
 
+                            if (l.objects[i].name == "kanna")
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Kanna_Boss(temp, player ,this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("kanna");
+                            }
+
                         }
 
                 }
@@ -942,11 +951,12 @@ namespace PERSIST
             bg_dark = root.Content.Load<Texture2D>("bgs/bg_styx");
             bg_rocks = root.Content.Load<Texture2D>("bgs/bg_styx_rocks");
             spr_mushroom = root.Content.Load<Texture2D>("sprites/spr_mushroom");
-            // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
+            spr_kanna = root.Content.Load<Texture2D>("sprites/spr_kanna");
 
             enemy_assets.Add(typeof(Walker), spr_mushroom);
             enemy_assets.Add(typeof(Trampoline), spr_mushroom);
             enemy_assets.Add(typeof(GhostBlock), tst_styx);
+            enemy_assets.Add(typeof(Kanna_Boss), spr_kanna);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -1108,6 +1118,9 @@ namespace PERSIST
 
                 if (enemy_types[i] == "walker")
                     AddEnemy(new Walker(enemy_locations[i], this));
+
+                if (enemy_types[i] == "kanna")
+                    AddEnemy(new Kanna_Boss(enemy_locations[i], player, this));
 
                 //if (enemy_types[i] == "trampoline")
                 //    AddEnemy(new Trampoline(enemy_locations[i], this));
