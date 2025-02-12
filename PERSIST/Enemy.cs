@@ -1513,6 +1513,11 @@ namespace PERSIST
         private bool flash = false;
         private float flash_timer = 0f;
         private float flash_limit = 0.1f;
+        private int state = 0;
+        private float state_timer = 0f;
+        private bool state_change = true;
+        private int num_states = 3;
+        private Random rd = new Random();
 
         private bool triggered = false;
         private bool trigger_watch = false;
@@ -1559,6 +1564,18 @@ namespace PERSIST
 
         private void ActualUpdate(GameTime gameTime)
         {
+            if (state_change)
+            {
+                state_change = false;
+
+                int next_state = rd.Next(num_states);
+
+                while (next_state == state)
+                    next_state = rd.Next(num_states);
+
+                state = next_state;
+            }
+
             if (flash)
             {
                 flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -1568,6 +1585,55 @@ namespace PERSIST
                     flash = false;
                     flash_timer = 0f;
                 }
+            }
+
+            if (state == 0)
+                AtkZero(gameTime);
+            if (state == 1)
+                AtkOne(gameTime);
+            if (state == 2)
+                AtkTwo(gameTime);
+        }
+
+        private void AtkZero(GameTime gameTime)
+        {
+            frame.X = 288;
+            frame.Y = 0;
+
+            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (state_timer > 0.5f)
+            {
+                state_timer = 0f;
+                state_change = true;
+            }
+        }
+
+        private void AtkOne(GameTime gameTime)
+        {
+            frame.X = 320;
+            frame.Y = 64;
+
+            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (state_timer > 0.3f)
+            {
+                state_timer = 0f;
+                state_change = true;
+            }
+        }
+
+        private void AtkTwo(GameTime gameTime)
+        {
+            frame.X = 128;
+            frame.Y = 64;
+
+            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (state_timer > 0.7f)
+            {
+                state_timer = 0f;
+                state_change = true;
             }
         }
 
