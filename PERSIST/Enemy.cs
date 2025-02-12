@@ -1510,10 +1510,17 @@ namespace PERSIST
         new private StyxLevel root;
         private Texture2D sprite;
 
-        private Rectangle frame = new Rectangle(256, 32, 32, 32);
+        private bool flash = false;
+        private float flash_timer = 0f;
+        private float flash_limit = 0.1f;
 
-        private int h_oset = 8;
-        private int v_oset = 20;
+        private bool triggered = false;
+        private bool trigger_watch = false;
+
+        private Rectangle frame = new Rectangle(256, 64, 32, 32);
+
+        private int h_oset = 11;
+        private int v_oset = 14;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
@@ -1526,18 +1533,58 @@ namespace PERSIST
             this.pos = pos;
             this.player = player;
             this.root = root;
+
+            hurtful = false;
         }
 
 
 
         public override void Update(GameTime gameTime)
         {
+            if (triggered)
+            {
+                ActualUpdate(gameTime);
+                return;
+            }
 
+            else
+            {
+                if (player.HitBox.Intersects(root.kanna_trigger))
+                    trigger_watch = true;
+
+                else if (player.HitBox.Y > root.kanna_trigger.Y && trigger_watch)
+                    triggered = true;
+            }
+        }
+
+        private void ActualUpdate(GameTime gameTime)
+        {
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (flash_timer > flash_limit)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                }
+            }
+        }
+
+        public override void Damage(float damage)
+        {
+            flash = true;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            if (flash)
+            {
+                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.5f);
+            }
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)

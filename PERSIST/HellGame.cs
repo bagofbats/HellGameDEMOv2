@@ -79,6 +79,10 @@ namespace PERSIST
             IsMouseVisible = true;
             bbuffer_color = Color.DarkSalmon;
 
+            // >>>>>>> change frame rate >>>>>>>>>>
+            //this.IsFixedTimeStep = true;//false;
+            //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d); //60);
+
             audioManager = new AudioManager(this);
 
             level_map = new Dictionary<(string, string), LevelStruct>()

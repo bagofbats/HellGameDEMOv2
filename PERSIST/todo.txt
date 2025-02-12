@@ -2,6 +2,7 @@
  - main menu
  - saving/reloading
  - inventory
+ - have tilting the joystick just a little bit make trigo walk slowly?
 
 art:
  - more advanced dust animation when blocks switch?

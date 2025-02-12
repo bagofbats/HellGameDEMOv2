@@ -721,6 +721,9 @@ namespace PERSIST
 
         private List<int> mouth_locs = new List<int>();
 
+        public Rectangle kanna_trigger
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The flame burns bright in the dark.", 'd', Color.White, 'c'),
             // new DialogueStruct("It energizes you.", 'd', Color.White, 'c', true),
@@ -919,6 +922,12 @@ namespace PERSIST
                                 enemy_locations.Add(temp);
                                 enemy_types.Add("kanna");
                             }
+
+                            if (l.objects[i].name == "kanna_trigger")
+                                kanna_trigger = new Rectangle((int)l.objects[i].x + t.location.X, 
+                                                                (int)l.objects[i].y + t.location.Y, 
+                                                                (int)l.objects[i].width, 
+                                                                (int)l.objects[i].height);
 
                         }
 
