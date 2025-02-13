@@ -1516,8 +1516,20 @@ namespace PERSIST
         private int state = 0;
         private float state_timer = 0f;
         private bool state_change = true;
+        private bool cooldown = true;
+        private bool short_cooldown = false;
+        private float cooldown_timer = 0f;
         private int num_states = 3;
         private Random rd = new Random();
+        private int player_dir = 1;
+        private float hspeed = 2.3f;
+        private int jmp_dst = 108;
+        private float vsp = 0f;
+        private float grav = 0.12f;
+        private float grav_max = 5f;
+        private float jmp_vsp = -3.7f;
+        private float air_time;
+        private float atk_zero_duration = 0.3f;
 
         private bool triggered = false;
         private bool trigger_watch = false;
@@ -1540,6 +1552,8 @@ namespace PERSIST
             this.root = root;
 
             hurtful = false;
+
+            air_time = jmp_vsp * jmp_vsp / grav;
         }
 
 
@@ -1548,7 +1562,11 @@ namespace PERSIST
         {
             if (triggered)
             {
-                ActualUpdate(gameTime);
+                if (cooldown)
+                    Cooldown(gameTime);
+
+                else
+                    ActualUpdate(gameTime);
                 return;
             }
 
@@ -1566,6 +1584,8 @@ namespace PERSIST
         {
             if (state_change)
             {
+
+                // change the state, save the player_dir, do attack specific setup
                 state_change = false;
 
                 int next_state = rd.Next(num_states);
@@ -1574,6 +1594,28 @@ namespace PERSIST
                     next_state = rd.Next(num_states);
 
                 state = next_state;
+
+                // player_dir
+                player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
+
+                if (player_dir == 0)
+                    player_dir = 1;
+
+
+                // atk specific setup
+                if (state == 2)
+                {
+                    vsp = jmp_vsp;
+                    if (!root.kanna_zone.Contains(new Vector2(pos.X + (jmp_dst * player_dir), pos.Y)))
+                        player_dir *= -1;
+                }
+
+                if (state == 0)
+                {
+                    if (!root.kanna_zone.Contains(new Vector2(pos.X + (hspeed * atk_zero_duration * 60 * player_dir * -1), pos.Y)))
+                        player_dir *= -1;
+                }
+                    
             }
 
             if (flash)
@@ -1589,16 +1631,58 @@ namespace PERSIST
 
             if (state == 0)
                 AtkZero(gameTime);
-            if (state == 1)
+            else if (state == 1)
                 AtkOne(gameTime);
-            if (state == 2)
+            else if (state == 2)
                 AtkTwo(gameTime);
+            
         }
 
         private void AtkZero(GameTime gameTime)
         {
+
+            /****** walk around ******/
+
+            float dist = hspeed * (float)gameTime.ElapsedGameTime.TotalSeconds * 60 * player_dir * -1;
+
+            //if (!root.kanna_zone.Contains(new Vector2(pos.X + dist, pos.Y)))
+            //{
+            //    player_dir *= -1;
+            //    dist *= -1;
+            //}
+                
+
+            pos.X += dist;
+
+            // animate
             frame.X = 288;
             frame.Y = 0;
+
+            if (player_dir == -1)
+                frame.Y = 64;
+
+
+            // change state
+            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (state_timer > atk_zero_duration)
+            {
+                state_timer = 0f;
+                state_change = true;
+                cooldown = true;
+                short_cooldown = true;
+            }
+        }
+
+        private void AtkOne(GameTime gameTime)
+        {
+            /****** fire shots ******/
+
+            frame.X = 320;
+            frame.Y = 0;
+
+            if (player_dir == -1)
+                frame.Y = 64;
 
             state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -1606,34 +1690,71 @@ namespace PERSIST
             {
                 state_timer = 0f;
                 state_change = true;
-            }
-        }
-
-        private void AtkOne(GameTime gameTime)
-        {
-            frame.X = 320;
-            frame.Y = 64;
-
-            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (state_timer > 0.3f)
-            {
-                state_timer = 0f;
-                state_change = true;
+                cooldown = true;
             }
         }
 
         private void AtkTwo(GameTime gameTime)
         {
-            frame.X = 128;
-            frame.Y = 64;
+            /****** jump & shoot ******/
 
-            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            vsp += grav;
 
-            if (state_timer > 0.7f)
+            if (vsp > grav_max)
+                vsp = grav_max;
+
+            float vsp_col_check = vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+            if (vsp_col_check > 0)
+                vsp_col_check += 1;
+            else
+                vsp_col_check -= 1;
+
+            Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
+
+            if (vcheck != null)
             {
+                if (vsp < 0)
+                    pos.Y = vcheck.bounds.Bottom - v_oset;
+                else
+                    pos.Y = vcheck.bounds.Top - PositionRectangle.Height;
+                vsp = 0;
+
+                // change state
                 state_timer = 0f;
                 state_change = true;
+                cooldown = true;
+            }
+
+            pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+
+            pos.X += jmp_dst / air_time * player_dir * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+
+
+            // animate
+
+            frame.X = 384;
+            frame.Y = 0;
+
+            if (player_dir == -1)
+                frame.Y = 64;
+            
+            
+        }
+
+        private void Cooldown(GameTime gameTime)
+        {
+            frame.X = 256;
+            frame.Y = 0;
+
+            if (player_dir == -1)
+                frame.Y = 64;
+
+            cooldown_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (cooldown_timer > 0.5f || (cooldown_timer > 0.2f && short_cooldown))
+            {
+                cooldown_timer = 0f;
+                cooldown = false;
             }
         }
 
