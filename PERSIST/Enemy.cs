@@ -1530,6 +1530,7 @@ namespace PERSIST
         private float jmp_vsp = -3.7f;
         private float air_time;
         private float atk_zero_duration = 0.3f;
+        private bool shots_fired = false;
 
         private bool triggered = false;
         private bool trigger_watch = false;
@@ -1567,6 +1568,18 @@ namespace PERSIST
 
                 else
                     ActualUpdate(gameTime);
+
+                if (flash)
+                {
+                    flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                    if (flash_timer > flash_limit)
+                    {
+                        flash = false;
+                        flash_timer = 0f;
+                    }
+                }
+
                 return;
             }
 
@@ -1587,6 +1600,8 @@ namespace PERSIST
 
                 // change the state, save the player_dir, do attack specific setup
                 state_change = false;
+
+                shots_fired = false;
 
                 int next_state = rd.Next(num_states);
 
@@ -1618,16 +1633,7 @@ namespace PERSIST
                     
             }
 
-            if (flash)
-            {
-                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-                if (flash_timer > flash_limit)
-                {
-                    flash = false;
-                    flash_timer = 0f;
-                }
-            }
+            
 
             if (state == 0)
                 AtkZero(gameTime);
@@ -1681,10 +1687,26 @@ namespace PERSIST
             frame.X = 320;
             frame.Y = 0;
 
+            if (shots_fired)
+                frame.X += 96;
+
             if (player_dir == -1)
                 frame.Y = 64;
 
             state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (state_timer > 0.2f && !shots_fired)
+            {
+                shots_fired = true;
+                var shot = new Kanna_Projectile(new Vector2(HitBox.X + (HitBox.Width/2), HitBox.Y + (HitBox.Height/2) - 2), 
+                                                root, 
+                                                sprite, 
+                                                player_dir == 1, 
+                                                false
+                                                );
+                root.AddEnemy(shot);
+
+            }
 
             if (state_timer > 0.5f)
             {
@@ -1730,10 +1752,34 @@ namespace PERSIST
             pos.X += jmp_dst / air_time * player_dir * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
 
 
+            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (state_timer > 0.4f && !shots_fired)
+            {
+                shots_fired = true;
+
+                int shot_xoset = - 4;
+                if (player_dir == -1)
+                    shot_xoset = 10;
+
+                var shot = new Kanna_Projectile(new Vector2(HitBox.X + (HitBox.Width / 2) - shot_xoset, HitBox.Y + (HitBox.Height / 2) - 1),
+                                                root,
+                                                sprite,
+                                                player_dir == 1,
+                                                true
+                                                );
+                root.AddEnemy(shot);
+
+            }
+
+
             // animate
 
             frame.X = 384;
             frame.Y = 0;
+
+            if (shots_fired)
+                frame.X += 96;
 
             if (player_dir == -1)
                 frame.Y = 64;
@@ -1782,6 +1828,150 @@ namespace PERSIST
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+    }
+
+    public class Kanna_Projectile : Enemy
+    {
+        private Texture2D img;
+
+        private Rectangle frame_left = new Rectangle(64, 283, 13, 5);
+        private Rectangle frame_right = new Rectangle(64, 267, 13, 5);
+        private Rectangle frame_diag_left = new Rectangle(80, 264, 8, 8);
+        private Rectangle frame_diag_right = new Rectangle(80, 280, 8, 8);
+
+        private bool right;
+        private bool diag;
+
+        private float hspeed = 6f / 2;
+        private float diagspeed = 5f / 2;
+
+        private Rectangle bounds;
+
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 3, 3); } }
+
+        public Rectangle DrawBox_Left
+        { get { return new Rectangle((int)pos.X - 1, (int)pos.Y - 1, 13, 5); } }
+
+        public Rectangle DrawBox_Right
+        { get { return new Rectangle((int)pos.X - 9, (int)pos.Y - 1, 13, 5); } }
+
+        public Rectangle DrawBox_DiagLeft
+        { get { return new Rectangle((int)pos.X, (int)pos.Y - 5, 8, 8); } }
+
+        public Rectangle DrawBox_DiagRight
+        { get { return new Rectangle((int)pos.X - 5, (int)pos.Y - 5, 8, 8); } }
+
+        public Kanna_Projectile(Vector2 pos, StyxLevel root, Texture2D img, bool right, bool diag)
+        {
+            this.pos = pos;
+            this.root = root;
+            this.img = img;
+            this.right = right;
+            this.diag = diag;
+
+            hurtful = true;
+            destroy_projectile = false;
+
+            bounds = root.RealGetRoom(pos).bounds;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            // nothing lol
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+
+            float frame_factor = (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+
+            if (!diag && right)
+                pos.X += hspeed * frame_factor;
+
+            else if (!diag && !right)
+                pos.X += hspeed * -1 * frame_factor;
+
+            else if (diag && right)
+            {
+                pos.X += diagspeed * frame_factor;
+                pos.Y += diagspeed * frame_factor;
+            }
+
+            else if (diag && !right)
+            {
+                pos.X += diagspeed * -1 * frame_factor;
+                pos.Y += diagspeed * frame_factor;
+            }
+
+            Wall check = root.SimpleCheckCollision(HitBox);
+
+            if (check != null)
+            {
+                int fx_xpos = check.bounds.Right - 8;
+                int fx_ypos = HitBox.Y - 7;
+                if (right && !diag)
+                    fx_xpos = check.bounds.Left - 8;
+                if (diag)
+                {
+                    fx_xpos = HitBox.X;
+                    fx_ypos = check.bounds.Top - 8;
+                }
+
+
+                RangedFX particle = new RangedFX(new Vector2(fx_xpos, fx_ypos), root.particle_img, root, true);
+
+                root.AddFX(particle);
+
+
+                root.RemoveEnemy(this);
+            }
+
+            if (!bounds.Contains(pos))
+                root.RemoveEnemy(this);
+                
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (diag && right)
+                spriteBatch.Draw(img, DrawBox_DiagRight, frame_diag_right, Color.White);
+
+            else if (!diag && right)
+                spriteBatch.Draw(img, DrawBox_Right, frame_right, Color.White);
+
+            else if (!diag && !right)
+                spriteBatch.Draw(img, DrawBox_Left, frame_left, Color.White);
+
+            else if (diag && !right)
+                spriteBatch.Draw(img, DrawBox_DiagLeft, frame_diag_left, Color.White);
+        }
+
+
+
+
+
+
+        
+
+
+
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
         }
 
         public override Rectangle GetHitBox(Rectangle input)
