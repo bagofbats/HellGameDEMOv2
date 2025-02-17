@@ -336,6 +336,16 @@ namespace PERSIST
         {
             journal_secret = true;
         }
+
+        public void EncounterKanna()
+        {
+            kanna_started = true;
+        }
+
+        public void DefeatKanna()
+        {
+            kanna_defeated = true;
+        }
     }
 
     public class AudioManager

@@ -727,6 +727,8 @@ namespace PERSIST
         public Rectangle kanna_zone
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
+        private Rectangle kanna_boss_blocks = new Rectangle(0, 0, 0, 0);
+
         private Kanna_Boss kanna_boss;
 
         DialogueStruct[] dialogue_ck = {
@@ -946,6 +948,12 @@ namespace PERSIST
                                                                 (int)l.objects[i].y + t.location.Y,
                                                                 (int)l.objects[i].width,
                                                                 (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "kanna_boss_blocks")
+                                kanna_boss_blocks = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                                  (int)l.objects[i].y + t.location.Y,
+                                                                  (int)l.objects[i].width,
+                                                                  (int)l.objects[i].height);
                         }
 
                 }
@@ -1291,6 +1299,9 @@ namespace PERSIST
                     player.DoAnimate(gameTime);
                 }
 
+                if (cutscene_timer > 0.9f)
+                    player.SetLastHdir(1);
+
                 if (cutscene_timer > 1.7f)
                 {
                     if (cutscene_code[1] == "empty")
@@ -1301,14 +1312,79 @@ namespace PERSIST
                     
                 }
 
-                if (cutscene_timer > 2.4f)
+                if (cutscene_timer > 2.6f)
+                {
+                    if (cutscene_code[2] == "empty")
+                    {
+                        cutscene_code[2] = "-";
+
+                        BossBlock temp1 = new BossBlock(new Rectangle(kanna_boss_blocks.X, kanna_boss_blocks.Y, 16, 16), this, new Rectangle(32, 144, 16, 16));
+                        BossBlock temp2 = new BossBlock(new Rectangle(kanna_boss_blocks.X, kanna_boss_blocks.Y + 16, 16, 16), this, new Rectangle(32, 144, 16, 16));
+
+                        temp1.Load(tst_styx);
+                        temp2.Load(tst_styx);
+
+                        AddSpecialWall(temp1);
+                        AddSpecialWall(temp2);
+                    }
+
+                    else
+                    {
+                        for (int i = special_walls.Count - 1; i >= 0; i--)
+                            special_walls[i].Update(gameTime);
+                    }
+                }
+
+                if (cutscene_timer > 3.2f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
                     door_trans = false;
                     kanna_boss.Trigger();
                     kanna_boss = null;
-                    //prog_manager.EncounterSlime();
+                    prog_manager.EncounterKanna();
+                }
+            }
+
+            if (cutscene_code[0] == "fightkanna_short")
+            {
+                if (cutscene_timer > 0f)
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+                }
+
+                if (cutscene_timer > 0.4f)
+                {
+                    if (cutscene_code[1] == "empty")
+                    {
+                        cutscene_code[1] = "-";
+
+                        BossBlock temp1 = new BossBlock(new Rectangle(kanna_boss_blocks.X, kanna_boss_blocks.Y, 16, 16), this, new Rectangle(32, 144, 16, 16));
+                        BossBlock temp2 = new BossBlock(new Rectangle(kanna_boss_blocks.X, kanna_boss_blocks.Y + 16, 16, 16), this, new Rectangle(32, 144, 16, 16));
+
+                        temp1.Load(tst_styx);
+                        temp2.Load(tst_styx);
+
+                        AddSpecialWall(temp1);
+                        AddSpecialWall(temp2);
+                    }
+
+                    else
+                    {
+                        for (int i = special_walls.Count - 1; i >= 0; i--)
+                            special_walls[i].Update(gameTime);
+                    }
+                }
+
+                if (cutscene_timer > 0.8f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                    kanna_boss.Trigger();
+                    kanna_boss = null;
                 }
             }
         }
@@ -1540,12 +1616,13 @@ namespace PERSIST
         {
             if (!prog_manager.kanna_started)
             {
-                HandleCutscene("fightkanna|empty", gameTime, true);
+                HandleCutscene("fightkanna|empty|empty", gameTime, true);
                 kanna_boss = kanna;
             }
             else
             {
-                kanna.Trigger();
+                HandleCutscene("fightkanna_short|empty", gameTime, true);
+                kanna_boss = kanna;
             }
         }
 

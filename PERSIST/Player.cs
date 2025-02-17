@@ -289,6 +289,11 @@ namespace PERSIST
             AnimateNormal(gameTime);
         }
 
+        public void SetLastHdir(int last_hdir)
+        {
+            this.last_hdir = last_hdir;
+        }
+
 
 
 
