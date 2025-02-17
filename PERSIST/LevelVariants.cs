@@ -727,6 +727,8 @@ namespace PERSIST
         public Rectangle kanna_zone
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
+        private Kanna_Boss kanna_boss;
+
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The flame burns bright in the dark.", 'd', Color.White, 'c'),
             // new DialogueStruct("It energizes you.", 'd', Color.White, 'c', true),
@@ -735,6 +737,13 @@ namespace PERSIST
             new DialogueStruct("( So many torches . . .\n  I wonder what they're for? )", 'd', Color.DodgerBlue, 'p', true, "",135, 45),
             //new DialogueStruct("( Who makes all these torches, anyway?\n  Are they getting paid? )", 'd', Color.DodgerBlue, 'p', false, "", 90, 0),
             //new DialogueStruct("( Maybe I should learn how to make torches.\n  Seems like a lucrative business )", 'd', Color.DodgerBlue, 'p', true, "", 90, 0),
+        };
+
+        DialogueStruct[] dialogue_kanna_fight = {
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct(". . . uh . . . \nHello!\nHow's it going?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct(". . .", 'd', Color.White, 'r', true, "", 270, 0),
         };
 
         // dialogue_key is inside the key object -- i know, confusing...
@@ -1272,6 +1281,36 @@ namespace PERSIST
         public override void HandleCutscene(string code, GameTime gameTime, bool start)
         {
             base.HandleCutscene(code, gameTime, start);
+
+            if (cutscene_code[0] == "fightkanna")
+            {
+                if (cutscene_timer > 0f)
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+                }
+
+                if (cutscene_timer > 1.7f)
+                {
+                    if (cutscene_code[1] == "empty")
+                    {
+                        cutscene_code[1] = "-";
+                        StartDialogue(dialogue_kanna_fight, 0, 'c', 25f, true);
+                    }
+                    
+                }
+
+                if (cutscene_timer > 2.4f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                    kanna_boss.Trigger();
+                    kanna_boss = null;
+                    //prog_manager.EncounterSlime();
+                }
+            }
         }
 
 
@@ -1492,6 +1531,25 @@ namespace PERSIST
         }
 
         // end optional override
+
+
+
+        // boss functions
+
+        public void FightKanna(Kanna_Boss kanna, GameTime gameTime)
+        {
+            if (!prog_manager.kanna_started)
+            {
+                HandleCutscene("fightkanna|empty", gameTime, true);
+                kanna_boss = kanna;
+            }
+            else
+            {
+                kanna.Trigger();
+            }
+        }
+
+        // end boss functions
 
 
 

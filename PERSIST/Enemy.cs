@@ -42,6 +42,13 @@ namespace PERSIST
             // nobody else should override this empty function
         }
 
+        public virtual void OnDamage()
+        {
+            // this method is intended for projectiles that detroy themselves when they hit the player
+            // but really any enemy COULD overwrite this with something if they wanted to
+            // if it is not overwritten, it is an empty function.
+        }
+
         protected Level root;
         public Room room { get; set; }
         protected Vector2 pos;
@@ -1505,18 +1512,18 @@ namespace PERSIST
     public class Kanna_Boss : Enemy
     {
         private Player player;
-        //private float hp = 22;
-        //private int max_hp = 22;
+        private float hp = 50;
+        private int max_hp = 50;
         new private StyxLevel root;
         private Texture2D sprite;
 
         private bool flash = false;
         private float flash_timer = 0f;
         private float flash_limit = 0.1f;
-        private int state = 0;
+        private int state = 1;
         private float state_timer = 0f;
-        private bool state_change = true;
-        private bool cooldown = true;
+        private bool state_change = false;
+        private bool cooldown = false;
         private bool short_cooldown = false;
         private float cooldown_timer = 0f;
         private int num_states = 3;
@@ -1563,22 +1570,7 @@ namespace PERSIST
         {
             if (triggered)
             {
-                if (cooldown)
-                    Cooldown(gameTime);
-
-                else
-                    ActualUpdate(gameTime);
-
-                if (flash)
-                {
-                    flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-                    if (flash_timer > flash_limit)
-                    {
-                        flash = false;
-                        flash_timer = 0f;
-                    }
-                }
+                ActualUpdate(gameTime);
 
                 return;
             }
@@ -1589,11 +1581,34 @@ namespace PERSIST
                     trigger_watch = true;
 
                 else if (player.HitBox.Y > root.kanna_trigger.Y && trigger_watch)
-                    triggered = true;
+                    root.FightKanna(this, gameTime);
             }
         }
 
         private void ActualUpdate(GameTime gameTime)
+        {
+
+            root.GetBossHP(hp, max_hp);
+
+            if (cooldown)
+                Cooldown(gameTime);
+
+            else
+                CycleAttacks(gameTime);
+
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (flash_timer > flash_limit)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                }
+            }
+        }
+
+        private void CycleAttacks(GameTime gameTime)
         {
             if (state_change)
             {
@@ -1621,19 +1636,19 @@ namespace PERSIST
                 if (state == 2)
                 {
                     vsp = jmp_vsp;
-                    if (!root.kanna_zone.Contains(new Vector2(pos.X + (jmp_dst * player_dir), pos.Y)))
+                    if (!root.kanna_zone.Contains(new Vector2(pos.X + (jmp_dst * player_dir) + 16, pos.Y + 16)))
                         player_dir *= -1;
                 }
 
                 if (state == 0)
                 {
-                    if (!root.kanna_zone.Contains(new Vector2(pos.X + (hspeed * atk_zero_duration * 60 * player_dir * -1), pos.Y)))
+                    if (!root.kanna_zone.Contains(new Vector2(pos.X + (hspeed * atk_zero_duration * 60 * player_dir * -1) + 16, pos.Y + 16)))
                         player_dir *= -1;
                 }
-                    
+
             }
 
-            
+
 
             if (state == 0)
                 AtkZero(gameTime);
@@ -1641,7 +1656,6 @@ namespace PERSIST
                 AtkOne(gameTime);
             else if (state == 2)
                 AtkTwo(gameTime);
-            
         }
 
         private void AtkZero(GameTime gameTime)
@@ -1695,7 +1709,7 @@ namespace PERSIST
 
             state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (state_timer > 0.2f && !shots_fired)
+            if (state_timer > 0.6f && !shots_fired)
             {
                 shots_fired = true;
                 var shot = new Kanna_Projectile(new Vector2(HitBox.X + (HitBox.Width/2), HitBox.Y + (HitBox.Height/2) - 2), 
@@ -1708,7 +1722,7 @@ namespace PERSIST
 
             }
 
-            if (state_timer > 0.5f)
+            if (state_timer > 1.1f)
             {
                 state_timer = 0f;
                 state_change = true;
@@ -1797,16 +1811,23 @@ namespace PERSIST
 
             cooldown_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (cooldown_timer > 0.5f || (cooldown_timer > 0.2f && short_cooldown))
+            if (cooldown_timer > 0.76f || (cooldown_timer > 0.6f && short_cooldown))
             {
                 cooldown_timer = 0f;
                 cooldown = false;
             }
         }
 
+        public void Trigger()
+        {
+            triggered = true;
+            player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
+        }
+
         public override void Damage(float damage)
         {
             flash = true;
+            hp -= 1;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -1882,8 +1903,9 @@ namespace PERSIST
             this.right = right;
             this.diag = diag;
 
-            hurtful = true;
+            //hurtful = false;
             destroy_projectile = false;
+            pogoable = false;
 
             bounds = root.RealGetRoom(pos).bounds;
         }
@@ -1959,12 +1981,21 @@ namespace PERSIST
                 spriteBatch.Draw(img, DrawBox_DiagLeft, frame_diag_left, Color.White);
         }
 
+        public override void OnDamage()
+        {
+            int xoset = 0;
+            if (!right)
+                xoset = -8;
+
+            RangedFX particle = new RangedFX(new Vector2(pos.X + xoset, pos.Y - 7), root.particle_img, root, true);
+            root.AddFX(particle);
+            root.RemoveEnemy(this);
+        }
 
 
 
 
 
-        
 
 
 

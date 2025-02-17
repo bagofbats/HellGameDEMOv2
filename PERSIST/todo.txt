@@ -9,6 +9,7 @@ art:
  - particle effects on wall slide
  - particle effects in general
  - animation for big slime dropping the ranger medallion
+ - adjust in-air sprites to be less misleading abt hitbox
 
  bugs:
  - ranged attacks get stopped by one-way platforms

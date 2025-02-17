@@ -274,6 +274,10 @@ namespace PERSIST
         { get; private set; }
         public bool slime_dead
         { get; private set; }
+        public bool kanna_started
+        { get; private set; }
+        public bool kanna_defeated
+        { get; private set; }
 
         // secrets
         public bool journal_secret
@@ -294,6 +298,8 @@ namespace PERSIST
             dash = true;
             locks = true;
             jump_blocks = true;
+            kanna_started = false;
+            kanna_defeated = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)

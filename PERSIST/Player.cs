@@ -246,6 +246,9 @@ namespace PERSIST
             dialogue = false;
         }
 
+
+
+        // wrapper functions for cutscenes
         public void EnterCutscene()
         {
             cutscene = true;
@@ -255,6 +258,37 @@ namespace PERSIST
         {
             cutscene = false;
         }
+
+        public void SetNoInput()
+        {
+            // for use in cutscenes
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            space = false;
+            enter = false;
+            shift = false;
+
+
+            space_pressed = false;
+            space_released = false;
+            enter_pressed = false;
+            enter_released = false;
+            shift_pressed = false;
+            shift_released = false;
+        }
+
+        public void DoMovement(GameTime gameTime)
+        {
+            HandleMovementAndCollisions(gameTime);
+        }
+
+        public void DoAnimate(GameTime gameTime)
+        {
+            AnimateNormal(gameTime);
+        }
+
 
 
 
@@ -277,6 +311,8 @@ namespace PERSIST
             shift_pressed = contManager.SHIFT_PRESSED;
             shift_released = contManager.SHIFT_RELEASED;
         }
+
+        
 
         private void Die(GameTime gameTime)
         {
@@ -353,6 +389,7 @@ namespace PERSIST
                 foreach (Enemy temp in e)
                     if (temp.hurtful && !just_pogoed)
                     {
+                        temp.OnDamage();
                         Die(gameTime);
                         return;
                     }

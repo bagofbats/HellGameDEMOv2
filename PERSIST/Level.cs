@@ -148,7 +148,7 @@ namespace PERSIST
 
 
             // cutscene nonsense
-            if (cutscene)
+            if (cutscene && !dialogue)
             {
                 cutscene_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
                 HandleCutscene("", gameTime);
@@ -722,6 +722,7 @@ namespace PERSIST
                     char dialogue_type = dialogue_txt[dialogue_num].type;
                     Rectangle portrait = dialogue_txt[dialogue_num].portrait;
                     Rectangle portrait_loc = new Rectangle((int)cam.GetPos().X + 2, (int)cam.GetPos().Y + 2, 45, 45);
+                    Rectangle right_portrait_loc = new Rectangle((int)cam.GetPos().X + 320 - 49, (int)cam.GetPos().Y + 2, 45, 45);
 
                     // default is to left-justify text, no portrait
                     Vector2 textMiddlePoint = new Vector2(0, 0);
@@ -750,6 +751,15 @@ namespace PERSIST
                         // left justify (no portrait)
                         textMiddlePoint = new Vector2(0, 0);
                         textDrawPoint = new Vector2(cam.GetPos().X + 8, cam.GetPos().Y + 2);
+                    }
+
+                    if (dialogue_loc == 'r')
+                    {
+                        // right justify (portrait)
+                        textMiddlePoint = new Vector2(0, 0);
+                        textDrawPoint = new Vector2(cam.GetPos().X + 8, cam.GetPos().Y + 2);
+
+                        _spriteBatch.Draw(spr_portrait, right_portrait_loc, portrait, Color.White);
                     }
 
                     textMiddlePoint.X = (int)textMiddlePoint.X;
