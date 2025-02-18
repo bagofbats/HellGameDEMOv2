@@ -772,7 +772,8 @@ namespace PERSIST
                         string[] opts = dialogue_txt[dialogue_num].text.Split('\n');
                         int opts_num = opts.Length;
 
-                        opts_highlighted = player.HandleDialogueOptions(opts_highlighted, opts_num);
+                        if (!root.pause)
+                            opts_highlighted = player.HandleDialogueOptions(opts_highlighted, opts_num);
 
                         for (int i = 0; i < opts_num; i++)
                         {
