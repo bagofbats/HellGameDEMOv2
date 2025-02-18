@@ -259,7 +259,7 @@ namespace PERSIST
         public bool ranged
         { get; private set; }
         public bool mask
-        { get; private set; }
+        { get; set; }
         public bool dash
         { get; private set; }
 

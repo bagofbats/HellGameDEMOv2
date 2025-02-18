@@ -1512,8 +1512,8 @@ namespace PERSIST
     public class Kanna_Boss : Enemy
     {
         private Player player;
-        private float hp = 50;
-        private int max_hp = 50;
+        private float hp = 24;
+        private int max_hp = 24;
         new private StyxLevel root;
         private Texture2D sprite;
 
@@ -1541,11 +1541,14 @@ namespace PERSIST
 
         private bool triggered = false;
         private bool trigger_watch = false;
+        public bool mask = true;
 
         private Rectangle frame = new Rectangle(256, 64, 32, 32);
 
         private int h_oset = 11;
         private int v_oset = 14;
+
+        private GameTime gt_copy;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
@@ -1568,14 +1571,16 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            if (triggered)
+            gt_copy = gameTime;
+
+            if (triggered && !root.prog_manager.kanna_defeated)
             {
                 ActualUpdate(gameTime);
 
                 return;
             }
 
-            else
+            else if (!root.prog_manager.kanna_defeated)
             {
                 if (player.HitBox.Intersects(root.kanna_trigger))
                     trigger_watch = true;
@@ -1583,11 +1588,16 @@ namespace PERSIST
                 else if (player.HitBox.Y > root.kanna_trigger.Y && trigger_watch)
                     root.FightKanna(this, gameTime);
             }
+
+            else
+            {
+                //HandleFlash(gameTime);
+                pogoable = false;
+            }
         }
 
         private void ActualUpdate(GameTime gameTime)
         {
-
             root.GetBossHP(hp, max_hp);
 
             if (cooldown)
@@ -1596,16 +1606,8 @@ namespace PERSIST
             else
                 CycleAttacks(gameTime);
 
-            if (flash)
-            {
-                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-                if (flash_timer > flash_limit)
-                {
-                    flash = false;
-                    flash_timer = 0f;
-                }
-            }
+            HandleFlash(gameTime);
+            
         }
 
         private void CycleAttacks(GameTime gameTime)
@@ -1824,19 +1826,87 @@ namespace PERSIST
             player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
         }
 
+        public void HandleFlash(GameTime gameTime)
+        {
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (flash_timer > flash_limit)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                }
+            }
+        }
+
+        public void DoPhysics(GameTime gameTime)
+        {
+            vsp += grav;
+
+            if (vsp > grav_max)
+                vsp = grav_max;
+
+            float vsp_col_check = vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+            if (vsp_col_check > 0)
+                vsp_col_check += 1;
+            else
+                vsp_col_check -= 1;
+
+            Wall vcheck = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp_col_check), HitBox.Width, HitBox.Height));
+
+            if (vcheck != null)
+            {
+                if (vsp < 0)
+                    pos.Y = vcheck.bounds.Bottom - v_oset;
+                else
+                    pos.Y = vcheck.bounds.Top - PositionRectangle.Height;
+                vsp = 0;
+
+                frame.X = 256;
+                frame.Y = 0;
+
+                player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
+
+                if (player_dir == -1)
+                    frame.Y = 64;
+            }
+
+            pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+        }
+
         public override void Damage(float damage)
         {
-            flash = true;
-            hp -= 1;
+            if (!root.prog_manager.kanna_defeated)
+            {
+                hp -= 1;
+                flash = true;
+
+                if (hp < 8)
+                {
+                    root.RemoveArrows();
+                    root.ResetBossHP();
+                    root.DefeatKanna(this, gt_copy);
+
+                    flash = false;
+                }
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            int mask_oset = 0;
+
+            if (!mask)
+                mask_oset -= 256;
+
+            Rectangle temp_frame = new Rectangle(frame.X + mask_oset, frame.Y, frame.Width, frame.Height);
+
+            spriteBatch.Draw(sprite, PositionRectangle, temp_frame, Color.White);
 
             if (flash)
             {
-                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
+                Rectangle flash_frame = new Rectangle(frame.X + mask_oset, frame.Y + 32, frame.Width, frame.Height);
                 spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.5f);
             }
         }
