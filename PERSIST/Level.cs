@@ -1222,6 +1222,11 @@ namespace PERSIST
         {
             // nothing
         }
+
+        public virtual void DestroySelf()
+        {
+
+        }
     }
 
     public class Obstacle
@@ -1544,6 +1549,7 @@ namespace PERSIST
         private Texture2D black;
         private float spawn_timer = 0;
         private bool white = true;
+        private bool destroy = false;
 
         public BossBlock(Rectangle bounds, Level root, Rectangle frame) : base(bounds)
         {
@@ -1574,7 +1580,19 @@ namespace PERSIST
             if (white)
                 spawn_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (spawn_timer > 0.08f)
+            {
                 white = false;
+
+                if (destroy)
+                    root.RemoveSpecialWall(this);
+            }
+        }
+
+        public override void DestroySelf()
+        {
+            white = true;
+            spawn_timer = 0f;
+            destroy = true;
         }
     }
 

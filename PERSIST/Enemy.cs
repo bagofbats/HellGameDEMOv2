@@ -1840,6 +1840,8 @@ namespace PERSIST
             }
         }
 
+
+        // for cutscene animation stuff
         public void DoPhysics(GameTime gameTime)
         {
             vsp += grav;
@@ -1874,6 +1876,12 @@ namespace PERSIST
 
             pos.Y += vsp * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
         }
+
+        public void DoWalk(GameTime gameTime)
+        {
+            pos.X += 1.6f * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+        }
+        // end cutscene animation stuff
 
         public override void Damage(float damage)
         {

@@ -756,13 +756,13 @@ namespace PERSIST
         DialogueStruct[] dialogue_kanna_fight_done_two = {
             new DialogueStruct(". . . \"How's it going\" ??", 'd', Color.White, 'r', false, "", 270, 45),
             new DialogueStruct(". . . ", 'd', Color.White, 'p', false, "", 135, 0),
-            new DialogueStruct(". . . y-yeah?", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct(". . . y-yeah?", 'd', Color.White, 'p', false, "", 135, 180),
             new DialogueStruct("You're not actually a demon, are you.", 'd', Color.White, 'r', false, "", 270, 90),
             new DialogueStruct("Yeah, you got me.\nNo, I'm a demon . . .\nYour MOM's not a demon!", 'o', Color.White, 'l', true, "exit 0|exit 1|exit 2"),
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_yes = {
-            new DialogueStruct("That's what I thought.", 'd', Color.White, 'r', false, "", 225, 0),
+            new DialogueStruct("Yeah, figures.", 'd', Color.White, 'r', false, "", 225, 0),
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_no = {
@@ -771,7 +771,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_kanna_fight_done_fin = {
             new DialogueStruct("Oh . . .\nAre you okay?", 'd', Color.White, 'p', false, "", 90, 135),
-            new DialogueStruct("My name's Trigo.\nSorry about that! I wasn't expecting to meet\nanother one down here.", 'd', Color.White, 'p', false, "", 45, 135),
+            new DialogueStruct("My name's Trigo.\nSorry about that!\nI wasn't expecting to meet another one down here.", 'd', Color.White, 'p', false, "", 45, 135),
             new DialogueStruct("Kanna.\nAnd I get it.", 'd', Color.White, 'r', false, "", 225, 0),
             new DialogueStruct("Nice to meet you, Kanna!", 'd', Color.White, 'p', false, "", 45, 45),
         };
@@ -779,7 +779,7 @@ namespace PERSIST
         DialogueStruct[] dialogue_kanna_fight_done_mom = {
             new DialogueStruct("I mean . . .\nI'm not wrong, am I?", 'd', Color.White, 'p', false, "", 45, 45),
             new DialogueStruct("I guess not . . .", 'd', Color.White, 'r', false, "", 225, 45),
-            new DialogueStruct("Name's Kanna.\nSorry for attacking you, I wasn't expecting to\nmeet another one down here.", 'd', Color.White, 'r', false, "", 225, 0),
+            new DialogueStruct("Name's Kanna.\nSorry for attacking you\nDidn't think I would meet another one down here.", 'd', Color.White, 'r', false, "", 225, 0),
             new DialogueStruct("Don't worry about it.\nI'm Trigo.", 'd', Color.White, 'p', false, "", 45, 0),
             new DialogueStruct("Nice to meet you, Kanna!", 'd', Color.White, 'p', false, "", 45, 45),
         };
@@ -789,7 +789,7 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_fin_thinking = {
-            new DialogueStruct("( All business with her, huh . . . )", 'd', Color.DodgerBlue, 'p', true, "", 45, 90),
+            new DialogueStruct("( A simple \"Nice to meet you, too\" goes a long way,\n  you know . . . )", 'd', Color.DodgerBlue, 'p', true, "", 45, 90),
         };
 
         // dialogue_key is inside the key object -- i know, confusing...
@@ -1197,7 +1197,7 @@ namespace PERSIST
                 if (enemy_types[i] == "walker")
                     AddEnemy(new Walker(enemy_locations[i], this));
 
-                if (enemy_types[i] == "kanna")
+                if (enemy_types[i] == "kanna" && !prog_manager.kanna_defeated)
                     AddEnemy(new Kanna_Boss(enemy_locations[i], player, this));
 
                 //if (enemy_types[i] == "trampoline")
@@ -1447,7 +1447,7 @@ namespace PERSIST
                     kanna_boss.HandleFlash(gameTime);
                     kanna_boss.DoPhysics(gameTime);
 
-                    if (cutscene_code[1] == "empty")
+                    if (cutscene_code[1] != "-")
                     {
                         cutscene_code[1] = "-";
                         StartDialogue(dialogue_kanna_fight_done_one, 0, 'c', 25f, false);
@@ -1456,7 +1456,7 @@ namespace PERSIST
 
                 if (cutscene_timer > 1f)
                 {
-                    if (cutscene_code[2] == "empty")
+                    if (cutscene_code[2] != "-")
                     {
                         cutscene_code[2] = "-";
                         StartDialogue(dialogue_kanna_fight_done_two, 0, 'c', 25f, true);
@@ -1470,7 +1470,7 @@ namespace PERSIST
 
                 if (cutscene_timer > 3f)
                 {
-                    if (cutscene_code[3] == "empty")
+                    if (cutscene_code[3] != "-")
                     {
                         cutscene_code[3] = "-";
 
@@ -1489,7 +1489,7 @@ namespace PERSIST
 
                 if (cutscene_timer > 4f)
                 {
-                    if (cutscene_code[4] == "empty")
+                    if (cutscene_code[4] != "-")
                     {
                         cutscene_code[4] = "-";
 
@@ -1501,11 +1501,60 @@ namespace PERSIST
                     }
                 }
 
-                if (cutscene_timer > 5f)
+                if (cutscene_timer > 4.3f)
+                {
+                    if (cutscene_code[5] != "-")
+                    {
+                        cutscene_code[5] = "-";
+
+                        for (int i = special_walls.Count - 1; i >= 0; i--)
+                            if (special_walls[i].GetType() == typeof(BossBlock))
+                                special_walls[i].DestroySelf();
+                    }
+
+                    else
+                    {
+                        for (int i = special_walls.Count - 1; i >= 0; i--)
+                            special_walls[i].Update(gameTime);
+                    }
+                }
+
+                if (cutscene_timer > 4.8f)
+                {
+
+                    if (kanna_boss_blocks.X > kanna_boss.Pos.X + 16)
+                    {
+                        cutscene_timer = 4.81f;
+                        kanna_boss.DoWalk(gameTime);
+                    }
+                }
+
+                if (cutscene_timer > 5.1f)
+                {
+                    if (cutscene_code[6] != "-")
+                    {
+                        cutscene_code[6] = "-";
+
+                        StartDialogue(dialogue_kanna_fight_done_fin_walking, 0, 'c', 25f, false);
+                    }
+                }
+
+                if (cutscene_timer > 5.4f)
+                {
+
+                    if (kanna_boss_blocks.X + 64 > kanna_boss.Pos.X - 16)
+                    {
+                        cutscene_timer = 5.41f;
+                        kanna_boss.DoWalk(gameTime);
+                    }
+                }
+
+                if (cutscene_timer > 5.8f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
                     door_trans = false;
+                    RemoveEnemy(kanna_boss);
                     kanna_boss = null;
                     prog_manager.DefeatKanna();
 
@@ -1756,7 +1805,7 @@ namespace PERSIST
         public void DefeatKanna(Kanna_Boss kanna, GameTime gameTime)
         {
             kanna_boss = kanna;
-            HandleCutscene("defeatkanna|empty|empty|empty|empty", gameTime, true);
+            HandleCutscene("defeatkanna|one|two|three|four|five|six", gameTime, true);
         }
 
         public void RemoveArrows()
