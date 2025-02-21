@@ -721,6 +721,7 @@ namespace PERSIST
         private String dialogue_exit_code = "";
 
         private List<int> mouth_locs = new List<int>();
+        private List<int> key_inits = new List<int>();
 
         public Rectangle kanna_trigger
         { get; private set; } = new Rectangle(0, 0, 0, 0);
@@ -750,7 +751,7 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_one = {
-            new DialogueStruct("Stop.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Stop.", 'd', Color.White, 'r', false, "", 270, 0, 10),
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_two = {
@@ -785,7 +786,7 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_fin_walking = {
-            new DialogueStruct("My place is back this way.\nYou're welcome to tag along.", 'd', Color.White, 'r', false, "", 225, 0),
+            new DialogueStruct("My place is back this way.\nYou're welcome to tag along.", 'd', Color.White, 'r', true, "", 225, 0),
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_fin_thinking = {
@@ -956,13 +957,29 @@ namespace PERSIST
                             {
                                 var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
 
+                                int key_init = 0;
+
+                                if (l.objects[i].properties.Count() != 0)
+                                    key_init = Int32.Parse(l.objects[i].properties[0].value);
+
                                 for (int j = 0; j < temp.Width; j += 16)
                                     for (int k = 0; k < temp.Height; k += 16)
                                     {
                                         Rectangle temp2 = new Rectangle(temp.X + j, temp.Y + k, 16, 16);
-                                        AddSpecialWall(new Lock(temp2, this, lock_block_frame));
+                                        var new_lock = new Lock(temp2, this, lock_block_frame);
+                                        AddSpecialWall(new_lock);
                                         special_walls_bounds.Add(temp2);
                                         special_walls_types.Add("lock");
+
+                                        if (key_init != 0)
+                                        {
+                                            new_lock.SetKeys(key_init);
+                                            new_lock.keys_set = true;
+                                            key_inits.Add(key_init);
+                                        }
+                                        else
+                                            key_inits.Add(0);
+                                            
                                     }
                             }
 
@@ -1074,7 +1091,7 @@ namespace PERSIST
                     c.GetSidewaysWall();
 
             foreach (Wall w in special_walls)
-                if (w.GetType() == typeof(Lock))
+                if (w.GetType() == typeof(Lock) && !w.keys_set)
                 {
                     Room r = RealGetRoom(new Vector2(w.bounds.X, w.bounds.Y));
 
@@ -1145,6 +1162,7 @@ namespace PERSIST
                 RemoveKey(keys[i]);
 
             int mouth_counter = 0;
+            int key_init_counter = 0;
 
             // replace special walls
             for (int i = 0; i < special_walls_bounds.Count; i++)
@@ -1169,7 +1187,19 @@ namespace PERSIST
                     AddEnemy(new GhostBlock(new Vector2(special_walls_bounds[i].X, special_walls_bounds[i].Y), this, ghost_block_frame));
 
                 else if (special_walls_types[i] == "lock")
-                    AddSpecialWall(new Lock(special_walls_bounds[i], this, lock_block_frame));
+                {
+                    var new_lock_temp = new Lock(special_walls_bounds[i], this, lock_block_frame);
+                    AddSpecialWall(new_lock_temp);
+
+                    if (key_inits[key_init_counter] != 0)
+                    {
+                        new_lock_temp.SetKeys(key_inits[key_init_counter]);
+                        new_lock_temp.keys_set = true;
+                    }
+
+                    key_init_counter++;
+                }
+                    
 
                 if (special_walls_types[i] == "oneway")
                     AddSpecialWall(new OneWay(special_walls_bounds[i], new Rectangle(8, 184, 8, 8), this));
@@ -1214,7 +1244,7 @@ namespace PERSIST
             }
 
             foreach (Wall w in special_walls)
-                if (w.GetType() == typeof(Lock))
+                if (w.GetType() == typeof(Lock) && !w.keys_set)
                 {
                     Room r = RealGetRoom(new Vector2(w.bounds.X, w.bounds.Y));
 
@@ -1535,7 +1565,7 @@ namespace PERSIST
                     {
                         cutscene_code[6] = "-";
 
-                        StartDialogue(dialogue_kanna_fight_done_fin_walking, 0, 'c', 25f, false);
+                        StartDialogue(dialogue_kanna_fight_done_fin_walking, 0, 'c', 25f, true);
                     }
                 }
 

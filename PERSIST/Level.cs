@@ -1191,6 +1191,8 @@ namespace PERSIST
         { get; protected set; } = false;
         public bool one_way
         { get; protected set; } = false;
+        public bool keys_set
+        { get; set; } = false;
 
         public Wall(Rectangle bounds)
         {
