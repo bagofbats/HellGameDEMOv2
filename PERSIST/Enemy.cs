@@ -2180,4 +2180,76 @@ namespace PERSIST
             frame.X += 32;
         }
     }
+
+    public class DeadGuyTwo : Enemy
+    {
+        Rectangle loc;
+        Texture2D sprite;
+        Rectangle frame = new Rectangle(240, 80, 32, 32);
+        Rectangle hitbox;
+        ProgressionManager progMan;
+
+        DialogueStruct[] dialogue_deadguy;
+
+        public DeadGuyTwo(Rectangle loc, DialogueStruct[] dialogue_deadguy, ProgressionManager progMan, Level root)
+        {
+            this.loc = loc;
+            hurtful = false;
+            pogoable = true;
+            hitbox = new Rectangle(loc.X + 8, loc.Y + 16, 13, 16);
+            this.dialogue_deadguy = dialogue_deadguy;
+            this.root = root;
+            this.progMan = progMan;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // nothing xd (for now)
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, loc, frame, Color.White);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, hitbox, Color.Blue * 0.3f);
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(hitbox);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return hitbox;
+        }
+
+        public override void Interact()
+        {
+            if (!progMan.dash)
+            {
+                root.StartDialogue(dialogue_deadguy, 0, 'c', 25f, true);
+                LearnDash();
+            }
+            else
+            {
+                root.StartDialogue(dialogue_deadguy, 7, 'c', 25f, true);
+            }
+
+
+        }
+
+        public void LearnDash()
+        {
+            progMan.LearnDash();
+        }
+    }
 }

@@ -1975,14 +1975,20 @@ namespace PERSIST
 
     public struct LevelStruct
     {
-        public LevelStruct(string map, string tileset)
+        public LevelStruct(string map, string tileset, string type)
         {
-            this.map = map;
+            this.map[0] = map;
             this.tileset = tileset;
+            this.type = type;
+
+            anchors[0] = new Vector2(0, 0);
         }
 
-        public string map;
+        public string[] map = new string[10];
         public string tileset;
+        public string type;
+        public Vector2[] anchors = new Vector2[10];
+        public int num_files = 1;
     }
 
     public struct DialogueStruct

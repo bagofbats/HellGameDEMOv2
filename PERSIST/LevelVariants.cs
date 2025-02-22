@@ -793,6 +793,25 @@ namespace PERSIST
             new DialogueStruct("( A simple \"Nice to meet you, too\" goes a long way,\n  you know . . . )", 'd', Color.DodgerBlue, 'p', true, "", 45, 90),
         };
 
+        DialogueStruct[] dialogue_keys = {
+            new DialogueStruct("Obtained the Key Medallion", 'd', Color.White, 'c'),
+        };
+
+        DialogueStruct[] dialogue_spectre = {
+            new DialogueStruct("Obtained the Spectral Medallion", 'd', Color.White, 'c'),
+        };
+
+        DialogueStruct[] dialogue_deadguy = {
+            new DialogueStruct("Another corpse.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is a crumpled up piece of paper in her pocket.", 'd', Color.White, 'c'),
+            new DialogueStruct("IN CASE I DIE HERE:\nMY NAME IS ALICE VIMES\nI AM 17 YEARS OLD.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
+            new DialogueStruct("I HAVE A BROTHER NAMED LUKAS VIMES\nWE WOKE UP HERE TOGETHER.\nTHAT IS ALL I CAN REMEMBER.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
+            new DialogueStruct("TAKE WHATEVER YOU NEED FROM ME.\nCARRY MY MEMORY WITH YOU.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
+            new DialogueStruct("GODSPEED TRAVELER.\nMAY YOU SUCCEED WHERE I DID NOT.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
+            new DialogueStruct(". . .", 'd', Color.White, 'c'),
+            new DialogueStruct("You learned how to dash!", 'd', Color.White, 'c', true),
+        };
+
         // dialogue_key is inside the key object -- i know, confusing...
 
         private Dictionary<Room, int> keys_in_room = new Dictionary<Room, int>();
@@ -1015,6 +1034,36 @@ namespace PERSIST
                                                                   (int)l.objects[i].y + t.location.Y,
                                                                   (int)l.objects[i].width,
                                                                   (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "key_pickup" && !prog_manager.locks)
+                            {
+                                var temp = new KeyPickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
+                                                            this,
+                                                            prog_manager,
+                                                            dialogue_keys
+                                                            );
+                                AddInteractable(temp);
+                            }
+
+                            if (l.objects[i].name == "shade_pickup" && !prog_manager.jump_blocks)
+                            {
+                                var temp = new ShadePickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
+                                                            this,
+                                                            prog_manager,
+                                                            dialogue_spectre
+                                                            );
+                                AddInteractable(temp);
+                            }
+
+                            if (l.objects[i].name == "deadguy")
+                            {
+                                var temp = new DeadGuyTwo(
+                                    new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 32, 32),
+                                    dialogue_deadguy, prog_manager, this);
+                                AddEnemy(temp);
+                                enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
+                                enemy_types.Add("deadguy");
+                            }
                         }
 
                 }
@@ -1052,6 +1101,7 @@ namespace PERSIST
             enemy_assets.Add(typeof(Trampoline), spr_mushroom);
             enemy_assets.Add(typeof(GhostBlock), tst_styx);
             enemy_assets.Add(typeof(Kanna_Boss), spr_kanna);
+            enemy_assets.Add(typeof(DeadGuyTwo), tst_styx);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -1078,6 +1128,9 @@ namespace PERSIST
                 else
                     keys_in_room.Add(r, 1);
             }
+
+            for (int i = 0; i < interactables.Count(); i++)
+                interactables[i].LoadAssets(tst_styx);
                 
 
             for (int i = 0; i < chunks.Count(); i++)
@@ -1105,6 +1158,9 @@ namespace PERSIST
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            if (name == "rm_styx1")
+                prog_manager.mask = true;
 
             river_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
 
@@ -1232,6 +1288,14 @@ namespace PERSIST
 
                 //if (enemy_types[i] == "trampoline")
                 //    AddEnemy(new Trampoline(enemy_locations[i], this));
+
+                if (enemy_types[i] == "deadguy")
+                {
+                    var temp = new DeadGuyTwo(
+                                    new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 32, 32),
+                                    dialogue_deadguy, prog_manager, this);
+                    AddEnemy(temp);
+                }
 
             }
 
@@ -1787,6 +1851,9 @@ namespace PERSIST
 
         public override void JumpAction()
         {
+            if (!prog_manager.jump_blocks)
+                return;
+
             Vector2 player_pos = player.GetPos();
 
             player_pos.X += 16;

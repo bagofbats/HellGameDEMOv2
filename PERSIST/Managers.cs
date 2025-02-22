@@ -268,7 +268,7 @@ namespace PERSIST
         { get; private set; }
         public bool locks
         { get; private set; }
-        
+
         // bosses and mini-bosses
         public bool slime_started
         { get; private set; }
@@ -295,9 +295,9 @@ namespace PERSIST
             mask = true;
             journal_secret = false;
             charons_blessing = false;
-            dash = true;
-            locks = true;
-            jump_blocks = true;
+            dash = false;
+            locks = false;
+            jump_blocks = false;
             kanna_started = false;
             kanna_defeated = false;
         }
@@ -321,7 +321,7 @@ namespace PERSIST
         {
             slime_started = true;
         }
-        
+
         public void DefeatSlime()
         {
             slime_dead = true;
@@ -345,6 +345,21 @@ namespace PERSIST
         public void DefeatKanna()
         {
             kanna_defeated = true;
+        }
+
+        public void Unlock()
+        {
+            locks = true;
+        }
+
+        public void ShadeBlocks()
+        {
+            jump_blocks = true;
+        }
+
+        public void LearnDash()
+        {
+            dash = true;
         }
     }
 

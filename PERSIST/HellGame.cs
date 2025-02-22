@@ -67,9 +67,12 @@ namespace PERSIST
 
         private Dictionary<(string, string), LevelStruct> level_map;
 
-        private LevelStruct tutorial_one = new LevelStruct("\\rm_tutorial1.tmx", "\\tst_tutorial.tsx");
-        private LevelStruct tutorial_two = new LevelStruct("\\rm_tutorial2.tmx", "\\tst_tutorial.tsx");
-        private LevelStruct tutorial_thr = new LevelStruct("\\rm_tutorial3.tmx", "\\tst_tutorial.tsx");
+        private LevelStruct tutorial_one = new LevelStruct("\\rm_tutorial1.tmx", "\\tst_tutorial.tsx", "tutorial");
+        private LevelStruct tutorial_two = new LevelStruct("\\rm_tutorial2.tmx", "\\tst_tutorial.tsx", "tutorial");
+        private LevelStruct tutorial_thr = new LevelStruct("\\rm_tutorial3.tmx", "\\tst_tutorial.tsx", "tutorial");
+
+        private LevelStruct styx_zero = new LevelStruct("\\rm_styx0.tmx", "\\tst_styx.tsx", "styx");
+        private LevelStruct styx_one = new LevelStruct("\\rm_styx1.tmx", "\\tst_styx.tsx", "styx");
 
         public HellGame()
         {
@@ -83,6 +86,10 @@ namespace PERSIST
             //this.IsFixedTimeStep = true;//false;
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d); //60);
 
+            styx_one.map[1] = "\\rm_styx2.tmx";
+            styx_one.anchors[1] = new Vector2(2096, 432 + (8 * 60));
+            styx_one.num_files = 2;
+
             audioManager = new AudioManager(this);
 
             level_map = new Dictionary<(string, string), LevelStruct>()
@@ -91,7 +98,9 @@ namespace PERSIST
                 {("rm_tutorial1", "blue"), tutorial_one },
                 {("rm_tutorial3", "red"), tutorial_thr },
                 {("rm_tutorial2", "red"), tutorial_two },
-                {("rm_tutorial3", "green"), tutorial_thr }
+                {("rm_tutorial3", "green"), tutorial_thr },
+                {("rm_styx0", "purple"), styx_zero },
+                {("rm_styx1", "purple"), styx_one },
             };
 
 
@@ -108,21 +117,21 @@ namespace PERSIST
 
             // styx level template
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx1.tmx");
-            TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
+            //TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
 
             List<Rectangle> bounds = new List<Rectangle>
             {
                 new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight),
-                new Rectangle(2096, 432 + (8 * 60), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
+                //    new Rectangle(2096, 432 + (8 * 60), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
             };
 
             TiledData one = new TiledData(bounds[0], one_map, one_tst);
-            TiledData two = new TiledData(bounds[1], two_map, one_tst);
+            //TiledData two = new TiledData(bounds[1], two_map, one_tst);
 
-            List<TiledData> tld = new List<TiledData>{one, two};
-            //List<TiledData> tld = new List<TiledData> {one};
+            //List<TiledData> tld = new List<TiledData>{one, two};
+            List<TiledData> tld = new List<TiledData> {one};
 
             // determine how much to scale the window up
             // given how big the monitor is
@@ -147,9 +156,9 @@ namespace PERSIST
             _graphics.ApplyChanges();
 
             Camera cam = new Camera(this);
-            //the_level = new TutorialLevel(this, new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
+            //the_level = new TutorialLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
-            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx1");
+            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx0");
 
             Window.Title = "Hell Escape [DEMO]";
         }
@@ -237,8 +246,6 @@ namespace PERSIST
 
         public void GoToLevel(string destination, string code, string cutscene="")
         {
-            Debug.WriteLine(cutscene);
-
             if (progManager.GetActiveCheckpoint().root.name == destination)
             {
                 SimpleGoToLevel(progManager.GetActiveCheckpoint().root);
@@ -251,16 +258,61 @@ namespace PERSIST
 
             LevelStruct dst_info = level_map[(destination, code)];
 
-            TiledMap map = new TiledMap(Content.RootDirectory + dst_info.map);
-            TiledTileset tst = new TiledTileset(Content.RootDirectory + dst_info.tileset);
-            TiledData data = new TiledData(new Rectangle(0, 0, 320, 240), map, tst);
 
-            List<TiledData> tld = new List<TiledData> { data };
+            // dont think this needs to be a special case but i dont want to mess with it xxd
+            if (dst_info.num_files == 1)
+            {
+                TiledMap map = new TiledMap(Content.RootDirectory + dst_info.map[0]);
+                TiledTileset tst = new TiledTileset(Content.RootDirectory + dst_info.tileset);
+                TiledData data = new TiledData(new Rectangle(0, 0, 320, 240), map, tst);
 
-            Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight), player, tld, cam, progManager, audioManager, debug, destination);
+                List<TiledData> tld = new List<TiledData> { data };
 
-            the_level.Load(spr_ui, code);
+                Camera cam = new Camera(this);
+
+                string type = dst_info.type;
+
+                if (type == "tutorial")
+                    the_level = new TutorialLevel(this, new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight), player, tld, cam, progManager, audioManager, debug, destination);
+
+                else if (type == "styx")
+                    the_level = new StyxLevel(this, new Rectangle(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight), player, tld, cam, progManager, audioManager, debug, destination);
+
+                the_level.Load(spr_ui, code);
+            }
+
+            else
+            {
+                List<TiledData> tld = new List<TiledData>();
+                List<Rectangle> bounds = new List<Rectangle>();
+
+                for (int i = 0; i < dst_info.num_files; i++)
+                {
+                    TiledMap map = new TiledMap(Content.RootDirectory + dst_info.map[i]);
+                    TiledTileset tst = new TiledTileset(Content.RootDirectory + dst_info.tileset);
+
+                    Rectangle b = new Rectangle((int)dst_info.anchors[i].X, (int)dst_info.anchors[i].Y, map.Width * map.TileWidth, map.Height * map.TileHeight);
+
+                    TiledData data = new TiledData(b, map, tst);
+
+                    tld.Add(data);
+                    bounds.Add(b);
+                }
+
+                Camera cam = new Camera(this);
+
+                string type = dst_info.type;
+
+                if (type == "tutorial")
+                    the_level = new TutorialLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, destination);
+
+                else if (type == "styx")
+                    the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, destination);
+
+                the_level.Load(spr_ui, code);
+            }
+
+            
 
             if (cutscene != "")
                 the_level.HandleCutscene(cutscene, null, true);

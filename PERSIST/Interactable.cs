@@ -71,12 +71,123 @@ namespace PERSIST
                 progman.GetRanged();
                 root.RemoveInteractable(this);
             }
-            
         }
 
         public override bool CheckCollision(Rectangle input)
         {
             return input.Intersects(pos);
+        }
+    }
+
+    public class KeyPickup : Interactable
+    {
+        private Texture2D sprite;
+        protected Rectangle pos;
+        private ProgressionManager progman;
+        private DialogueStruct[] dialogue;
+
+        private Rectangle frame = new Rectangle(240, 64, 16, 16);
+
+        private float timer = 0f;
+
+        public KeyPickup(Vector2 pos, Level root, ProgressionManager progman, DialogueStruct[] dialogue)
+        {
+            this.pos = new Rectangle((int)pos.X, (int)pos.Y, 16, 16);
+            this.root = root;
+            this.progman = progman;
+            this.dialogue = dialogue;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            frame.X = 240 + (16 * ((int)(timer * 10) % 6));
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, pos, frame, Color.White);
+        }
+
+        public override void Interact()
+        {
+            if (!progman.locks)
+            {
+                root.StartDialogue(dialogue, 0, 'c', 25f, true);
+                progman.Unlock();
+                root.RemoveInteractable(this);
+            }
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(pos);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, pos, Color.Blue * 0.3f);
+        }
+    }
+
+    public class ShadePickup : Interactable
+    {
+        private Texture2D sprite;
+        protected Rectangle pos;
+        private ProgressionManager progman;
+        private DialogueStruct[] dialogue;
+
+        private Rectangle frame = new Rectangle(240, 48, 16, 16);
+
+        private float timer = 0f;
+
+        public ShadePickup(Vector2 pos, Level root, ProgressionManager progman, DialogueStruct[] dialogue)
+        {
+            this.pos = new Rectangle((int)pos.X, (int)pos.Y, 16, 16);
+            this.root = root;
+            this.progman = progman;
+            this.dialogue = dialogue;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            frame.X = 240 + (16 * ((int)(timer * 10) % 6));
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, pos, frame, Color.White);
+        }
+
+        public override void Interact()
+        {
+            if (!progman.jump_blocks)
+            {
+                root.StartDialogue(dialogue, 0, 'c', 25f, true);
+                progman.ShadeBlocks();
+                root.RemoveInteractable(this);
+            }
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(pos);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, pos, Color.Blue * 0.3f);
         }
     }
 
