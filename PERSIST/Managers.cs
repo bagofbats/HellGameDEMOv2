@@ -44,7 +44,11 @@ namespace PERSIST
 
         public Dictionary<string, Keys> key_map;
         public Dictionary<string, Keys> key_defaults;
+        public Dictionary<string, Buttons> gp_map;
+        public Dictionary<string, Buttons> gp_extras;
         private Dictionary<string, int> key_nums;
+
+        private float joystick_threshold = 0.3f;
 
         private Keys[] list_defaults =
         {
@@ -52,9 +56,9 @@ namespace PERSIST
             Keys.Down,
             Keys.Left,
             Keys.Right,
-            Keys.Space,
-            Keys.Enter,
-            Keys.RightShift
+            Keys.Z,
+            Keys.X,
+            Keys.C
         };
 
         private Keys[] list_customs =
@@ -63,12 +67,11 @@ namespace PERSIST
             Keys.S,
             Keys.A,
             Keys.D,
-            Keys.None,
-            Keys.None,
-            Keys.None
+            Keys.Space,
+            Keys.Enter,
+            Keys.LeftShift
         };
 
-        private bool multiple_atk_buttons = true;
         private bool multiple_down_buttons = true;
 
         public bool UP
@@ -124,9 +127,9 @@ namespace PERSIST
                 {"down", Keys.S },
                 {"left", Keys.A },
                 {"right", Keys.D },
-                {"jump", Keys.None },
-                {"attack", Keys.None },
-                {"dash", Keys.None }
+                {"jump", Keys.Space },
+                {"attack", Keys.Enter },
+                {"dash", Keys.RightShift }
             };
 
             key_defaults = new Dictionary<string, Keys>
@@ -135,9 +138,28 @@ namespace PERSIST
                 {"down", Keys.Down },
                 {"left", Keys.Left },
                 {"right", Keys.Right },
-                {"jump", Keys.Space },
-                {"attack", Keys.Enter },
-                {"dash", Keys.RightShift }
+                {"jump", Keys.Z },
+                {"attack", Keys.X },
+                {"dash", Keys.C }
+            };
+
+            gp_map = new Dictionary<string, Buttons>
+            {
+                {"up", Buttons.DPadUp },
+                {"down", Buttons.DPadDown },
+                {"left", Buttons.DPadLeft },
+                {"right", Buttons.DPadRight },
+                {"jump", Buttons.A },
+                {"attack", Buttons.X },
+                {"dash", Buttons.LeftShoulder }
+            };
+
+            gp_extras = new Dictionary<string, Buttons>
+            {
+                {"down", Buttons.LeftTrigger },
+                {"jump", Buttons.None },
+                {"attack", Buttons.RightTrigger },
+                {"dash", Buttons.RightShoulder }
             };
 
             key_nums = new Dictionary<string, int>
@@ -154,13 +176,13 @@ namespace PERSIST
 
         public void GetInputs(KeyboardState key)
         {
-            up = key.IsKeyDown(Keys.Up) || key.IsKeyDown(key_map["up"]);
-            down = key.IsKeyDown(Keys.Down) || key.IsKeyDown(key_map["down"]);
-            left = key.IsKeyDown(Keys.Left) || key.IsKeyDown(key_map["left"]);
-            right = key.IsKeyDown(Keys.Right) || key.IsKeyDown(key_map["right"]);
-            new_space = key.IsKeyDown(Keys.Space) || key.IsKeyDown(key_map["jump"]);
-            new_enter = key.IsKeyDown(Keys.Enter) || key.IsKeyDown(key_map["attack"]);
-            new_shift = key.IsKeyDown(Keys.RightShift) || key.IsKeyDown(key_map["dash"]);
+            up = key.IsKeyDown(key_defaults["up"]) || key.IsKeyDown(key_map["up"]);
+            down = key.IsKeyDown(key_defaults["down"]) || key.IsKeyDown(key_map["down"]);
+            left = key.IsKeyDown(key_defaults["left"]) || key.IsKeyDown(key_map["left"]);
+            right = key.IsKeyDown(key_defaults["right"]) || key.IsKeyDown(key_map["right"]);
+            new_space = key.IsKeyDown(key_defaults["jump"]) || key.IsKeyDown(key_map["jump"]);
+            new_enter = key.IsKeyDown(key_defaults["attack"]) || key.IsKeyDown(key_map["attack"]);
+            new_shift = key.IsKeyDown(key_defaults["dash"]) || key.IsKeyDown(key_map["dash"]);
             new_esc = key.IsKeyDown(Keys.Escape);
 
             GamePadCapabilities capabilities = GamePad.GetCapabilities(PlayerIndex.One);
@@ -171,29 +193,27 @@ namespace PERSIST
 
                 if (capabilities.HasLeftXThumbStick)
                 {
-                    left = left || state.ThumbSticks.Left.X < -0.4f;
-                    right = right || state.ThumbSticks.Left.X > 0.4f;
+                    left = left || state.ThumbSticks.Left.X < -joystick_threshold;
+                    right = right || state.ThumbSticks.Left.X > joystick_threshold;
                 }
 
                 if (capabilities.HasLeftYThumbStick)
                 {
-                    up = up || state.ThumbSticks.Left.Y > 0.4f;
-                    down = down || state.ThumbSticks.Left.Y < -0.4f;
+                    up = up || state.ThumbSticks.Left.Y > joystick_threshold;
+                    down = down || state.ThumbSticks.Left.Y < -joystick_threshold;
                 }
 
                 if (capabilities.GamePadType == GamePadType.GamePad)
                 {
-                    new_space = new_space || state.IsButtonDown(Buttons.A);
-                    new_enter = new_enter || state.IsButtonDown(Buttons.X);
+                    new_space = new_space || state.IsButtonDown(gp_map["jump"]) || state.IsButtonDown(gp_extras["jump"]);
+                    new_enter = new_enter || state.IsButtonDown(gp_map["attack"]) || state.IsButtonDown(gp_extras["attack"]);
                     new_esc = new_esc || state.IsButtonDown(Buttons.Start);
+                    new_shift = new_shift || state.IsButtonDown(gp_map["dash"]) || state.IsButtonDown(gp_extras["dash"]);
 
-                    up = up || state.IsButtonDown(Buttons.DPadUp);
-                    down = down || state.IsButtonDown(Buttons.DPadDown);
-                    left = left || state.IsButtonDown(Buttons.DPadLeft);
-                    right = right || state.IsButtonDown(Buttons.DPadRight);
-
-                    if (multiple_atk_buttons)
-                        new_enter = new_enter || state.IsButtonDown(Buttons.RightTrigger);
+                    up = up || state.IsButtonDown(gp_map["up"]);
+                    down = down || state.IsButtonDown(gp_map["down"]) || state.IsButtonDown(gp_extras["down"]);
+                    left = left || state.IsButtonDown(gp_map["left"]);
+                    right = right || state.IsButtonDown(gp_map["right"]);
 
                     if (multiple_down_buttons)
                         down = down || state.IsButtonDown(Buttons.LeftTrigger);
@@ -292,10 +312,10 @@ namespace PERSIST
             ranged = true;
             slime_dead = false;
             slime_started = false;
-            mask = true;
+            mask = false;
             journal_secret = false;
             charons_blessing = false;
-            dash = false;
+            dash = true;
             locks = false;
             jump_blocks = false;
             kanna_started = false;

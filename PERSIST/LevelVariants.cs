@@ -772,7 +772,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_kanna_fight_done_fin = {
             new DialogueStruct("Oh . . .\nAre you okay?", 'd', Color.White, 'p', false, "", 90, 135),
-            new DialogueStruct("My name's Trigo.\nSorry about that!\nI wasn't expecting to meet another one down here.", 'd', Color.White, 'p', false, "", 45, 135),
+            new DialogueStruct("My name's Trigo.\nSorry about that!\nI wasn't expecting to meet another one down here.", 'd', Color.White, 'p', false, "", 90, 225),
             new DialogueStruct("Kanna.\nAnd I get it.", 'd', Color.White, 'r', false, "", 225, 0),
             new DialogueStruct("Nice to meet you, Kanna!", 'd', Color.White, 'p', false, "", 45, 45),
         };

@@ -14,7 +14,7 @@ namespace PERSIST
 {
     public class HellGame : Game
     {
-        private bool debug = true;
+        private bool debug = false;
         public bool opaque
         { get; private set; } = false;
 
@@ -22,6 +22,7 @@ namespace PERSIST
         { get; private set; }
 
         private bool options = false;
+        private bool keyboard = true;
         private int pause_selection = 0;
         private string[] pause_options =
         {
@@ -33,8 +34,9 @@ namespace PERSIST
         private int options_selection = 0;
         private string[] options_options =
         {
-            "", "", "", "", "", "", "", "Done"
+            "< Switch to Controller View >", "", "", "", "", "", "", "", "Done"
         };
+        private string controller_menu_string = "< Switch to Controller View >";
 
         private bool rebind = false;
         private float rebind_timer = 1f;
@@ -109,17 +111,17 @@ namespace PERSIST
             fpsCounter = new FPSCounter(player);
 
             // tutorial level template
-            //TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
-            //TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
-            //TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
+            TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
+            TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
-            //List<TiledData> tld = new List<TiledData>{one};
+            List<TiledData> tld = new List<TiledData>{one};
 
             // styx level template
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
+            //TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
             //TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
-            TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
+            //TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
 
             List<Rectangle> bounds = new List<Rectangle>
             {
@@ -127,11 +129,11 @@ namespace PERSIST
                 //    new Rectangle(2096, 432 + (8 * 60), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
             };
 
-            TiledData one = new TiledData(bounds[0], one_map, one_tst);
+            //TiledData one = new TiledData(bounds[0], one_map, one_tst);
             //TiledData two = new TiledData(bounds[1], two_map, one_tst);
 
             //List<TiledData> tld = new List<TiledData>{one, two};
-            List<TiledData> tld = new List<TiledData> {one};
+            //List<TiledData> tld = new List<TiledData> {one};
 
             // determine how much to scale the window up
             // given how big the monitor is
@@ -156,9 +158,9 @@ namespace PERSIST
             _graphics.ApplyChanges();
 
             Camera cam = new Camera(this);
-            //the_level = new TutorialLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
+            the_level = new TutorialLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
-            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx0");
+            //the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx0");
 
             Window.Title = "Hell Escape [DEMO]";
         }
@@ -352,7 +354,7 @@ namespace PERSIST
             }
 
             // options menu
-            else
+            else if (keyboard)
             {
                 string[] keys =
                 {
@@ -378,6 +380,9 @@ namespace PERSIST
                         if (options_options[options_selection] == "Done")
                             options = false;
 
+                        else if (options_options[options_selection] == controller_menu_string)
+                            options = false;
+
                         else
                             rebind = true;
                     }
@@ -386,11 +391,11 @@ namespace PERSIST
                 {
                     rebind_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 4;
 
-                    Keys new_key = contManager.GetCurrentlyPressedKey(options_selection);
+                    Keys new_key = contManager.GetCurrentlyPressedKey(options_selection - 1);
 
                     if (new_key != Keys.None)
                     {
-                        string selection = keys[options_selection].ToLower();
+                        string selection = keys[options_selection - 1].ToLower();
                         contManager.Rebind(selection, new_key);
                         rebind = false;
                         rebound_recently = true;
@@ -409,7 +414,7 @@ namespace PERSIST
                     pause_msg += " | " + contManager.key_defaults[keys[i].ToLower()].ToString();
 
                     string key = contManager.key_map[keys[i].ToLower()].ToString();
-                    if (rebind && i == options_selection)
+                    if (rebind && i == options_selection - 1)
                     {
                         pause_msg += " or";
                         if ((int)rebind_timer % 2 == 1)
@@ -418,7 +423,7 @@ namespace PERSIST
                     else if (key != "None")
                         pause_msg += " or " + contManager.key_map[keys[i].ToLower()].ToString();
 
-                    options_options[i] = pause_msg;
+                    options_options[i + 1] = pause_msg;
                 }
 
                 if (rebound_recently)
@@ -470,15 +475,15 @@ namespace PERSIST
                 }
             }
 
-            else
+            else if (keyboard)
             {
-                string pause_msg = "[ OPTIONS ]";
+                string pause_msg = "[ KEYBOARD ]";
                 Vector2 textMiddlePoint = bm_font.MeasureString(pause_msg) / 2;
                 textMiddlePoint.X = (int)textMiddlePoint.X;
                 textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
                 _spriteBatch.DrawString(bm_font, pause_msg,
-                                        new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2), _screenRectangle.Y + (_screenRectangle.Height / 4f)),
+                                        new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2), _screenRectangle.Y + (_screenRectangle.Height / 4.9f)),
                                         Color.Gray * 0.7f, 0, textMiddlePoint, scale * 2f, SpriteEffects.None, 0f
                                         );
 
@@ -492,7 +497,7 @@ namespace PERSIST
                         text_color = Color.White;
                     }
 
-                    if (options_options[i] != "Done")
+                    if (options_options[i] != "Done" && options_options[i] != controller_menu_string)
                     {
                         string first_half = options_options[i].Split('|')[0];
                         int xoffset = (int)((Vector2)bm_font.MeasureString(first_half)).X;
@@ -500,7 +505,7 @@ namespace PERSIST
                         string options_txt_draw_idk = options_options[i];
 
                         _spriteBatch.DrawString(bm_font, options_txt_draw_idk,
-                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f) - (xoffset * scale), _screenRectangle.Y + (_screenRectangle.Height / 3) + (12 * i * scale)),
+                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f) - (xoffset * scale), _screenRectangle.Y + (_screenRectangle.Height / 3f) + (12 * i * scale)),
                                                 text_color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0f
                                                 );
                     }
@@ -512,7 +517,7 @@ namespace PERSIST
                         textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
                         _spriteBatch.DrawString(bm_font, options_options[i],
-                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f), _screenRectangle.Y + (_screenRectangle.Height / 3) + (14 * i * scale)),
+                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f), _screenRectangle.Y + (_screenRectangle.Height / 3.4f) + (16 * i * scale)),
                                                 text_color, 0, textMiddlePoint, scale, SpriteEffects.None, 0f
                                                 );
                     }
