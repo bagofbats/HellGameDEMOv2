@@ -156,7 +156,10 @@ namespace PERSIST
 
             gp_extras = new Dictionary<string, Buttons>
             {
+                {"up", Buttons.None },
                 {"down", Buttons.LeftTrigger },
+                {"left", Buttons.None },
+                {"right", Buttons.None },
                 {"jump", Buttons.None },
                 {"attack", Buttons.RightTrigger },
                 {"dash", Buttons.RightShoulder }

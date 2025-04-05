@@ -34,9 +34,10 @@ namespace PERSIST
         private int options_selection = 0;
         private string[] options_options =
         {
-            "< Switch to Controller View >", "", "", "", "", "", "", "", "Done"
+            "", "", "", "", "", "", "", "", "Done"
         };
         private string controller_menu_string = "< Switch to Controller View >";
+        private string keyboard_menu_string = "< Switch to Keyboard View >";
 
         private bool rebind = false;
         private float rebind_timer = 1f;
@@ -353,7 +354,7 @@ namespace PERSIST
 
             }
 
-            // options menu
+            // keyboard options menu
             else if (keyboard)
             {
                 string[] keys =
@@ -381,7 +382,7 @@ namespace PERSIST
                             options = false;
 
                         else if (options_options[options_selection] == controller_menu_string)
-                            options = false;
+                            keyboard = false;
 
                         else
                             rebind = true;
@@ -402,7 +403,7 @@ namespace PERSIST
                     }
                 }
 
-                
+                options_options[0] = controller_menu_string;
 
                 for (int i = 0; i < contManager.key_map.Keys.Count; i++)
                 {
@@ -434,6 +435,62 @@ namespace PERSIST
                         rebind_buffer = 0;
                         rebound_recently = false;
                     }
+                }
+            }
+
+
+            // controller options menu
+            else
+            {
+                string[] keys =
+                {
+                    "UP", "DOWN", "LEFT", "RIGHT", "JUMP", "ATTACK", "DASH"
+                };
+
+                if (!rebind)
+                {
+                    rebind_timer = 1f;
+
+                    if (contManager.DOWN_PRESSED && !rebound_recently)
+                        options_selection = (options_selection + 1) % options_options.Length;
+
+                    if (contManager.UP_PRESSED && !rebound_recently)
+                    {
+                        options_selection -= 1;
+                        if (options_selection < 0)
+                            options_selection = options_options.Length - 1;
+                    }
+
+                    if ((contManager.ENTER_PRESSED || contManager.SPACE_PRESSED) && !rebound_recently)
+                    {
+                        if (options_options[options_selection] == "Done")
+                            options = false;
+
+                        else if (options_options[options_selection] == keyboard_menu_string)
+                            keyboard = true;
+
+                        //else
+                        //    rebind = true;
+                    }
+                }
+
+                options_options[0] = keyboard_menu_string;
+
+                for (int i = 0; i < contManager.key_map.Keys.Count; i++)
+                {
+                    string pause_msg = keys[i];
+
+                    if (pause_msg == "DOWN")
+                        pause_msg += "/INTERACT";
+
+                    pause_msg += " | " + contManager.gp_map[keys[i].ToLower()].ToString();
+
+                    string key = contManager.gp_extras[keys[i].ToLower()].ToString();
+
+                    if (key != "None")
+                        pause_msg += " or " + contManager.gp_extras[keys[i].ToLower()].ToString();
+
+                    options_options[i + 1] = pause_msg;
                 }
             }
         }
@@ -497,7 +554,7 @@ namespace PERSIST
                         text_color = Color.White;
                     }
 
-                    if (options_options[i] != "Done" && options_options[i] != controller_menu_string)
+                    if (options_options[i] != "Done" && i != 0) // <--- i != 0 special case for switching keyboard/controller view
                     {
                         string first_half = options_options[i].Split('|')[0];
                         int xoffset = (int)((Vector2)bm_font.MeasureString(first_half)).X;
@@ -510,6 +567,56 @@ namespace PERSIST
                                                 );
                     }
                     
+                    else
+                    {
+                        textMiddlePoint = bm_font.MeasureString(options_options[i]) / 2;
+                        textMiddlePoint.X = (int)textMiddlePoint.X;
+                        textMiddlePoint.Y = (int)textMiddlePoint.Y;
+
+                        _spriteBatch.DrawString(bm_font, options_options[i],
+                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f), _screenRectangle.Y + (_screenRectangle.Height / 3.4f) + (16 * i * scale)),
+                                                text_color, 0, textMiddlePoint, scale, SpriteEffects.None, 0f
+                                                );
+                    }
+                }
+            }
+
+            // controller menu
+            else
+            {
+                string pause_msg = "[ CONTROLLER ]";
+                Vector2 textMiddlePoint = bm_font.MeasureString(pause_msg) / 2;
+                textMiddlePoint.X = (int)textMiddlePoint.X;
+                textMiddlePoint.Y = (int)textMiddlePoint.Y;
+
+                _spriteBatch.DrawString(bm_font, pause_msg,
+                                        new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2), _screenRectangle.Y + (_screenRectangle.Height / 4.9f)),
+                                        Color.Gray * 0.7f, 0, textMiddlePoint, scale * 2f, SpriteEffects.None, 0f
+                                        );
+
+
+
+                for (int i = 0; i < options_options.Length; i++)
+                {
+                    Color text_color = Color.Gray;
+                    if (i == options_selection)
+                    {
+                        text_color = Color.White;
+                    }
+
+                    if (options_options[i] != "Done" && i != 0)
+                    {
+                        string first_half = options_options[i].Split('|')[0];
+                        int xoffset = (int)((Vector2)bm_font.MeasureString(first_half)).X;
+
+                        string options_txt_draw_idk = options_options[i];
+
+                        _spriteBatch.DrawString(bm_font, options_txt_draw_idk,
+                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f) - (xoffset * scale), _screenRectangle.Y + (_screenRectangle.Height / 3f) + (12 * i * scale)),
+                                                text_color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0f
+                                                );
+                    }
+
                     else
                     {
                         textMiddlePoint = bm_font.MeasureString(options_options[i]) / 2;
