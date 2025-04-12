@@ -1711,7 +1711,7 @@ namespace PERSIST
 
             state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (state_timer > 0.6f && !shots_fired)
+            if (state_timer > 0.4f && !shots_fired)
             {
                 shots_fired = true;
                 var shot = new Kanna_Projectile(new Vector2(HitBox.X + (HitBox.Width/2), HitBox.Y + (HitBox.Height/2) - 2), 
@@ -1724,7 +1724,7 @@ namespace PERSIST
 
             }
 
-            if (state_timer > 1.1f)
+            if (state_timer > 0.86f)
             {
                 state_timer = 0f;
                 state_change = true;
@@ -1813,7 +1813,7 @@ namespace PERSIST
 
             cooldown_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (cooldown_timer > 0.76f || (cooldown_timer > 0.6f && short_cooldown))
+            if (cooldown_timer > 0.57f || (cooldown_timer > 0.48f && short_cooldown))
             {
                 cooldown_timer = 0f;
                 cooldown = false;

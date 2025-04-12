@@ -127,7 +127,7 @@ namespace PERSIST
             List<Rectangle> bounds = new List<Rectangle>
             {
                 new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight),
-                //    new Rectangle(2096, 432 + (8 * 60), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
+                //new Rectangle(2096, 432 + (8 * 60), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
             };
 
             //TiledData one = new TiledData(bounds[0], one_map, one_tst);
@@ -409,8 +409,8 @@ namespace PERSIST
                 {
                     string pause_msg = keys[i];
 
-                    if (pause_msg == "DOWN")
-                        pause_msg += "/INTERACT";
+                    //if (pause_msg == "DOWN")
+                    //    pause_msg += "/INTERACT";
 
                     pause_msg += " | " + contManager.key_defaults[keys[i].ToLower()].ToString();
 
@@ -480,10 +480,16 @@ namespace PERSIST
                 {
                     string pause_msg = keys[i];
 
-                    if (pause_msg == "DOWN")
-                        pause_msg += "/INTERACT";
+                    //if (pause_msg == "DOWN")
+                    //    pause_msg += "/INTERACT";
 
-                    pause_msg += " | " + contManager.gp_map[keys[i].ToLower()].ToString();
+                    pause_msg += " | ";
+
+                    if (contManager.HAS_JOYSTICK)
+                        if (keys[i] == "UP" || keys[i] == "DOWN" || keys[i] == "LEFT" || keys[i] == "RIGHT")
+                            pause_msg += "Joystick or ";
+
+                    pause_msg += contManager.gp_map[keys[i].ToLower()].ToString();
 
                     string key = contManager.gp_extras[keys[i].ToLower()].ToString();
 
@@ -562,7 +568,7 @@ namespace PERSIST
                         string options_txt_draw_idk = options_options[i];
 
                         _spriteBatch.DrawString(bm_font, options_txt_draw_idk,
-                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f) - (xoffset * scale), _screenRectangle.Y + (_screenRectangle.Height / 3f) + (12 * i * scale)),
+                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 3.4f) - (xoffset * scale), _screenRectangle.Y + (_screenRectangle.Height / 3f) + (12 * i * scale)),
                                                 text_color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0f
                                                 );
                     }
@@ -612,7 +618,7 @@ namespace PERSIST
                         string options_txt_draw_idk = options_options[i];
 
                         _spriteBatch.DrawString(bm_font, options_txt_draw_idk,
-                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 2f) - (xoffset * scale), _screenRectangle.Y + (_screenRectangle.Height / 3f) + (12 * i * scale)),
+                                                new Vector2(_screenRectangle.X + (_screenRectangle.Width / 3.4f) - (xoffset * scale), _screenRectangle.Y + (_screenRectangle.Height / 3f) + (12 * i * scale)),
                                                 text_color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 0f
                                                 );
                     }

@@ -42,6 +42,8 @@ namespace PERSIST
         private bool shift_pressed;
         private bool shift_released;
 
+        private bool has_joystick;
+
         public Dictionary<string, Keys> key_map;
         public Dictionary<string, Keys> key_defaults;
         public Dictionary<string, Buttons> gp_map;
@@ -118,6 +120,9 @@ namespace PERSIST
         { get { return esc_pressed; } }
         public bool ESC_RELEASED
         { get { return esc_released; } }
+
+        public bool HAS_JOYSTICK
+        { get { return has_joystick; } }
 
         public ControllerManager()
         {
@@ -205,6 +210,8 @@ namespace PERSIST
                     up = up || state.ThumbSticks.Left.Y > joystick_threshold;
                     down = down || state.ThumbSticks.Left.Y < -joystick_threshold;
                 }
+
+                has_joystick = capabilities.HasLeftXThumbStick && capabilities.HasLeftYThumbStick;
 
                 if (capabilities.GamePadType == GamePadType.GamePad)
                 {
@@ -311,14 +318,14 @@ namespace PERSIST
 
         public ProgressionManager()
         {
-            knife = true;
-            ranged = true;
+            knife = false;
+            ranged = false;
             slime_dead = false;
             slime_started = false;
             mask = false;
             journal_secret = false;
             charons_blessing = false;
-            dash = true;
+            dash = false;
             locks = false;
             jump_blocks = false;
             kanna_started = false;

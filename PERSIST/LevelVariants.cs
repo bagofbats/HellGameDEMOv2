@@ -1772,7 +1772,7 @@ namespace PERSIST
 
                 var overlay_rect = new Rectangle(cam_x, cam_y, 320, 12);
 
-                float opacity = 1f;
+                float opacity = 0.3f;
 
                 if (overlay_rect.Intersects(player.HitBox))
                     opacity = 0.3f;
