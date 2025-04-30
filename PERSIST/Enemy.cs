@@ -1538,6 +1538,7 @@ namespace PERSIST
         private float air_time;
         private float atk_zero_duration = 0.3f;
         private bool shots_fired = false;
+        private float walk_timer = 0f;
 
         private bool triggered = false;
         private bool trigger_watch = false;
@@ -1880,6 +1881,11 @@ namespace PERSIST
         public void DoWalk(GameTime gameTime)
         {
             pos.X += 1.6f * (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+
+            frame.X = 256 + (32 * ((int)walk_timer % 8));
+            frame.Y = 128;
+
+            walk_timer += 14 * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         // end cutscene animation stuff
 
@@ -1922,6 +1928,8 @@ namespace PERSIST
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+
+            
         }
 
         public override void LoadAssets(Texture2D sprite)

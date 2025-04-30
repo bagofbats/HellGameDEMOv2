@@ -786,7 +786,7 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_fin_walking = {
-            new DialogueStruct("My place is back this way.\nYou're welcome to tag along.", 'd', Color.White, 'r', true, "", 225, 0),
+            new DialogueStruct("Just try to stay out of my way, okay?\nI don't need more enemies down here . . .", 'd', Color.White, 'r', true, "", 270, 0),
         };
 
         DialogueStruct[] dialogue_kanna_fight_done_fin_thinking = {
@@ -1557,7 +1557,7 @@ namespace PERSIST
                     }
                 }
 
-                if (cutscene_timer > 1.6f)
+                if (cutscene_timer > 1.6f && cutscene_timer <= 4.95f)
                 {
                     kanna_boss.mask = false;
                 }
@@ -1625,6 +1625,12 @@ namespace PERSIST
 
                 if (cutscene_timer > 5.1f)
                 {
+                    kanna_boss.mask = true;
+                }
+
+                if (cutscene_timer > 5.3f)
+                {
+
                     if (cutscene_code[6] != "-")
                     {
                         cutscene_code[6] = "-";
@@ -1633,17 +1639,17 @@ namespace PERSIST
                     }
                 }
 
-                if (cutscene_timer > 5.4f)
+                if (cutscene_timer > 5.6f)
                 {
 
                     if (kanna_boss_blocks.X + 64 > kanna_boss.Pos.X - 16)
                     {
-                        cutscene_timer = 5.41f;
+                        cutscene_timer = 5.61f;
                         kanna_boss.DoWalk(gameTime);
                     }
                 }
 
-                if (cutscene_timer > 5.8f)
+                if (cutscene_timer > 6.0f)
                 {
                     player.ExitCutscene();
                     cutscene = false;

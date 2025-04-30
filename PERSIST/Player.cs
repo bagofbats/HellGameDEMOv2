@@ -286,6 +286,8 @@ namespace PERSIST
 
         public void DoAnimate(GameTime gameTime)
         {
+            thrown = false;
+            thrown_timer = 0;
             AnimateNormal(gameTime);
         }
 
