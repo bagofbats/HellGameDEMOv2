@@ -392,9 +392,10 @@ namespace PERSIST
     public class Walker : Enemy
     {
         Texture2D sprite;
+        Texture2D vfx_sprite;
 
-        private int h_oset = 8;
-        private int v_oset = 10;
+        private int h_oset = 9;
+        private int v_oset = 15;
         private float animation_timer = 0f;
         private bool flash = false;
         private float flash_timer = 0f;
@@ -407,6 +408,11 @@ namespace PERSIST
         private float vsp = 0f;
 
         private float hp = 5f;
+
+        private int shake_xoset = 0;
+        private int shake_yoset = 0;
+
+        private Random rnd = new Random();
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
@@ -431,6 +437,7 @@ namespace PERSIST
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
+            vfx_sprite = sprite;
         }
 
         public override void Update(GameTime gameTime)
@@ -448,10 +455,21 @@ namespace PERSIST
             flash = true;
             flash_timer = 0;
 
+            //root.AddFX(new MushroomFX(new Vector2(pos.X + 16, pos.Y + 16), vfx_sprite, root, new Vector2(-0.64f ,-0.8f)));
+            //root.AddFX(new MushroomFX(new Vector2(pos.X + 16, pos.Y + 16), vfx_sprite, root, new Vector2(0.6f, -0.9f)));
+            //root.AddFX(new MushroomFX(new Vector2(pos.X + 16, pos.Y + 16), vfx_sprite, root, new Vector2(0.2f, -0.8f)));
+
             hp -= damage;
 
             if (hp <= 0)
+            {
                 root.RemoveEnemy(this);
+
+                root.AddFX(new MushroomFX(new Vector2(pos.X + 16, pos.Y + 16), vfx_sprite, root, new Vector2(-0.64f, -0.8f)));
+                root.AddFX(new MushroomFX(new Vector2(pos.X + 16, pos.Y + 16), vfx_sprite, root, new Vector2(0.6f, -0.9f)));
+                root.AddFX(new MushroomFX(new Vector2(pos.X + 16, pos.Y + 16), vfx_sprite, root, new Vector2(0.2f, -0.8f)));
+            }
+
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -463,12 +481,14 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            Rectangle draw_rectangle = new Rectangle(PositionRectangle.X + shake_xoset, PositionRectangle.Y, PositionRectangle.Width, PositionRectangle.Height);
+
+            spriteBatch.Draw(sprite, draw_rectangle, frame, Color.White);
 
             if (flash)
             {
                 var flash_frame = new Rectangle(frame.X, frame.Y + 64, frame.Width, frame.Height);
-                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+                spriteBatch.Draw(sprite, draw_rectangle, flash_frame, Color.White * 0.4f);
             }
         }
 
@@ -543,6 +563,15 @@ namespace PERSIST
                     flash = false;
                     flash_timer = 0f;
                 }
+
+                shake_xoset = (int)((rnd.Next(0, 2) - 0.5f) * 2);
+                shake_yoset = (int)((rnd.Next(0, 2) - 0.5f) * 2);
+            }
+
+            else
+            {
+                shake_xoset = 0;
+                shake_yoset = 0;
             }
 
 
@@ -558,6 +587,7 @@ namespace PERSIST
         private float flash_timer = 0f;
 
         private Rectangle frame = new Rectangle(128, 0, 32, 32);
+        private Random rnd = new Random();
 
         public bool flash
         { get; set; } = false;
@@ -605,6 +635,12 @@ namespace PERSIST
         {
             flash = true;
             flash_timer = 0f;
+
+            int particle_oset = rnd.Next(0, 5);
+
+            root.AddFX(new MushroomFX(new Vector2(pos.X + 15, pos.Y + 18), sprite, root, new Vector2(-1.2f, -1.1f)));
+            root.AddFX(new MushroomFX(new Vector2(pos.X + 17, pos.Y + 16), sprite, root, new Vector2(0.8f, -1.5f)));
+            root.AddFX(new MushroomFX(new Vector2(pos.X + 14 + particle_oset, pos.Y + 18), sprite, root, new Vector2(0.2f, -1.3f)));
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)

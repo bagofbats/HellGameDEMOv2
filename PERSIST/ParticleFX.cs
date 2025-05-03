@@ -230,6 +230,54 @@ namespace PERSIST
         }
     }
 
+    public class MushroomFX : ParticleFX
+    {
+        private Rectangle frame = new Rectangle(128, 80, 16, 16);
+        private Texture2D img;
+        //private Rectangle pos;
+        private float animate_timer = 0;
+        private Vector2 traj;
+
+        private Random rnd = new Random();
+
+        public MushroomFX(Vector2 pos, Texture2D img, Level root, Vector2 traj)
+        {
+            this.pos = new Rectangle((int)pos.X - 8, (int)pos.Y - 8, 16, 16);
+            this.root = root;
+            this.img = img;
+            this.traj = traj;
+
+            this.traj.X += ((float)rnd.NextDouble() + Math.Sign(this.traj.X)) * 0.4f;
+            this.traj.Y += ((float)rnd.NextDouble() - 1f) * 1f;
+
+            //while(Math.Abs(this.traj.X) < 0.5)
+            //    this.traj.X += ((float)rnd.NextDouble() - 0.5f) * 1f;
+
+            //while (Math.Abs(this.traj.Y) < 0.5)
+            //    this.traj.Y += ((float)rnd.NextDouble() - 1f) * 1f;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            animate_timer += 14 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            frame.X = 128 + (16 * ((int)animate_timer));
+
+            pos = new Rectangle(pos.X + (int)(2.3f * traj.X), pos.Y + (int)(2.3f * traj.Y), pos.Width, pos.Height);
+
+            traj.X *= 0.91f;
+            traj.Y *= 0.91f;
+
+
+            if (frame.X >= 176)
+                root.RemoveFX(this);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(img, pos, frame, Color.White * Math.Abs(traj.Y) * 0.8f);
+        }
+    }
+
     public class KeyFX : ParticleFX
     {
         private Rectangle frame = new Rectangle(304, 120, 16, 8);
