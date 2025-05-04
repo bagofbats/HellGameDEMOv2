@@ -262,10 +262,10 @@ namespace PERSIST
             animate_timer += 14 * (float)gameTime.ElapsedGameTime.TotalSeconds;
             frame.X = 128 + (16 * ((int)animate_timer));
 
-            pos = new Rectangle(pos.X + (int)(2.3f * traj.X), pos.Y + (int)(2.3f * traj.Y), pos.Width, pos.Height);
+            pos = new Rectangle(pos.X + (int)(2.2f * traj.X), pos.Y + (int)(2.2f * traj.Y), pos.Width, pos.Height);
 
-            traj.X *= 0.91f;
-            traj.Y *= 0.91f;
+            traj.X *= 0.89f;
+            traj.Y *= 0.89f;
 
 
             if (frame.X >= 176)

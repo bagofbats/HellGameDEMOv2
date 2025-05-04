@@ -326,8 +326,8 @@ namespace PERSIST
             journal_secret = false;
             charons_blessing = false;
             dash = false;
-            locks = false;
-            jump_blocks = false;
+            locks = true;
+            jump_blocks = true;
             kanna_started = false;
             kanna_defeated = false;
         }

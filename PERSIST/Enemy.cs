@@ -2138,6 +2138,46 @@ namespace PERSIST
         }
     }
 
+    public class Mushroom_Boss : Enemy
+    {
+
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            throw new NotImplementedException();
+        }
+
+        
+    }
+
     // miscellaneous/weird cases
 
     public class DeadGuy : Enemy
