@@ -1017,6 +1017,14 @@ namespace PERSIST
                                 enemy_types.Add("kanna");
                             }
 
+                            if (l.objects[i].name == "mushroom_boss" && !prog_manager.mushroom_defeated)
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Mushroom_Boss(temp, player, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("mushroom_boss");
+                            }
+
                             if (l.objects[i].name == "kanna_trigger")
                                 kanna_trigger = new Rectangle((int)l.objects[i].x + t.location.X, 
                                                                 (int)l.objects[i].y + t.location.Y, 
@@ -1102,6 +1110,7 @@ namespace PERSIST
             enemy_assets.Add(typeof(GhostBlock), tst_styx);
             enemy_assets.Add(typeof(Kanna_Boss), spr_kanna);
             enemy_assets.Add(typeof(DeadGuyTwo), tst_styx);
+            enemy_assets.Add(typeof(Mushroom_Boss), spr_mushroom);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -1284,6 +1293,9 @@ namespace PERSIST
                     AddEnemy(new Walker(enemy_locations[i], this));
 
                 if (enemy_types[i] == "kanna" && !prog_manager.kanna_defeated)
+                    AddEnemy(new Kanna_Boss(enemy_locations[i], player, this));
+
+                if (enemy_types[i] == "mushroom_boss" && !prog_manager.mushroom_defeated)
                     AddEnemy(new Kanna_Boss(enemy_locations[i], player, this));
 
                 //if (enemy_types[i] == "trampoline")

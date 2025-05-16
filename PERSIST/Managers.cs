@@ -308,6 +308,8 @@ namespace PERSIST
         { get; private set; }
         public bool kanna_defeated
         { get; private set; }
+        public bool mushroom_defeated
+        { get; private set; }
 
         // secrets
         public bool journal_secret
@@ -326,10 +328,11 @@ namespace PERSIST
             journal_secret = false;
             charons_blessing = false;
             dash = false;
-            locks = true;
+            locks = false;
             jump_blocks = true;
             kanna_started = false;
             kanna_defeated = false;
+            mushroom_defeated = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)

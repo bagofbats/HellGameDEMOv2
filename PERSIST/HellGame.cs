@@ -14,7 +14,7 @@ namespace PERSIST
 {
     public class HellGame : Game
     {
-        private bool debug = false;
+        private bool debug = true;
         public bool opaque
         { get; private set; } = false;
 
@@ -127,7 +127,7 @@ namespace PERSIST
             List<Rectangle> bounds = new List<Rectangle>
             {
                 new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight),
-                new Rectangle(2096, 432 + (8 * 60), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
+                new Rectangle(2096, 432 + (8 * 70), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight)
             };
 
             TiledData one = new TiledData(bounds[0], one_map, one_tst);
