@@ -83,7 +83,7 @@
   <object id="226" name="key" x="256" y="168">
    <point/>
   </object>
-  <object id="228" name="key_pickup" x="504" y="176">
+  <object id="228" name="key_pickup" x="320" y="128">
    <point/>
   </object>
   <object id="237" name="oneway" x="648" y="336" width="32" height="8"/>
@@ -106,7 +106,7 @@
   <object id="273" name="player" x="776" y="48">
    <point/>
   </object>
-  <object id="274" name="mushroom_boss" x="536" y="160">
+  <object id="274" name="mushroom_boss" x="504" y="120">
    <point/>
   </object>
  </objectgroup>

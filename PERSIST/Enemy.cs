@@ -2146,14 +2146,17 @@ namespace PERSIST
         new private StyxLevel root;
         private Texture2D sprite;
 
+        private Mushroom_Hand left_hand;
+        private Mushroom_Hand right_hand;
+
         private int h_oset = 11;
-        private int v_oset = 14;
+        private int v_oset = 11;
 
         public Rectangle PositionRectangle
-        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 72, 72); } }
 
         public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 72 - (h_oset * 2), 72 - v_oset); } }
 
         public Mushroom_Boss(Vector2 pos, Player player, StyxLevel root)
         {
@@ -2162,6 +2165,10 @@ namespace PERSIST
             this.root = root;
 
             hurtful = false;
+            super_pogo = true;
+
+            right_hand = new Mushroom_Hand(new Vector2(pos.X + 72, pos.Y + 40), player, root);
+            root.AddEnemy(right_hand);
         }
 
 
@@ -2199,6 +2206,67 @@ namespace PERSIST
         }
 
         
+    }
+
+    public class Mushroom_Hand : Enemy
+    {
+        private Player player;
+        private float hp = 24;
+        private int max_hp = 24;
+        new private StyxLevel root;
+        private Texture2D sprite;
+
+        private int h_oset = 5;
+        private int v_oset = 3;
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
+
+        public Mushroom_Hand(Vector2 pos, Player player, StyxLevel root)
+        {
+            this.pos = pos;
+            this.player = player;
+            this.root = root;
+
+            hurtful = false;
+            super_pogo = true;
+        }
+
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+
     }
 
     // miscellaneous/weird cases
