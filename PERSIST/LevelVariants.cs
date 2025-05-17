@@ -753,55 +753,31 @@ namespace PERSIST
             new DialogueStruct(". . .", 'd', Color.White, 'r', true, "", 270, 0),
         };
 
-        DialogueStruct[] dialogue_kanna_fight_done_one = {
-            new DialogueStruct("Stop.", 'd', Color.White, 'r', false, "", 270, 0, 10),
-        };
-
-        DialogueStruct[] dialogue_kanna_fight_done_two = {
-            new DialogueStruct(". . . \"How's it going\" ??", 'd', Color.White, 'r', false, "", 270, 45),
+        DialogueStruct[] dialogue_kanna_fight_done = {
+            new DialogueStruct("Stop.", 'd', Color.White, 'r', true, "", 270, 0, 10),
+            new DialogueStruct(". . . \"How's it going\" ??", 'd', Color.White, 'r', false, "", 270, 45),      // one
             new DialogueStruct(". . . ", 'd', Color.White, 'p', false, "", 135, 0),
             new DialogueStruct(". . . y-yeah?", 'd', Color.White, 'p', false, "", 135, 180),
             new DialogueStruct("You're not actually a demon, are you.", 'd', Color.White, 'r', false, "", 270, 90),
             new DialogueStruct("Yeah, you got me.\nNo, I'm a demon . . .\nYour MOM's not a demon!", 'o', Color.White, 'l', true, "exit 0|exit 1|exit 2"),
-        };
-
-        DialogueStruct[] dialogue_kanna_fight_done_yes = {
-            new DialogueStruct("Yeah, figures.", 'd', Color.White, 'r', false, "", 225, 0),
-        };
-
-        DialogueStruct[] dialogue_kanna_fight_done_no = {
-            new DialogueStruct("Really, man?", 'd', Color.White, 'r', false, "", 225, 135),
-        };
-
-        DialogueStruct[] dialogue_kanna_fight_done_fin = {
-            new DialogueStruct("Oh . . .\nAre you okay?", 'd', Color.White, 'p', false, "", 90, 135),
+            new DialogueStruct("Yeah, figures.", 'd', Color.White, 'r', true, "", 225, 0),                  // six
+            new DialogueStruct("Really, man?", 'd', Color.White, 'r', true, "", 225, 135),                  // seven
+            new DialogueStruct("Oh . . .\nAre you okay?", 'd', Color.White, 'p', false, "", 90, 135),       // eight
             new DialogueStruct("My name's Trigo.\nSorry about that!\nI wasn't expecting to meet another one down here.", 'd', Color.White, 'p', false, "", 90, 225),
             new DialogueStruct("Kanna.\nAnd I get it.", 'd', Color.White, 'r', false, "", 225, 0),
-            new DialogueStruct("Nice to meet you, Kanna!", 'd', Color.White, 'p', false, "", 45, 45),
-        };
-
-        DialogueStruct[] dialogue_kanna_fight_done_mom = {
-            new DialogueStruct("I mean . . .\nI'm not wrong, am I?", 'd', Color.White, 'p', false, "", 45, 45),
+            new DialogueStruct("Nice to meet you, Kanna!", 'd', Color.White, 'p', true, "", 45, 45),
+            new DialogueStruct("I mean . . .\nI'm not wrong, am I?", 'd', Color.White, 'p', false, "", 45, 45),     // twelve
             new DialogueStruct("I guess not . . .", 'd', Color.White, 'r', false, "", 225, 45),
             new DialogueStruct("Name's Kanna.\nSorry for attacking you\nDidn't think I would meet another one down here.", 'd', Color.White, 'r', false, "", 225, 0),
             new DialogueStruct("Don't worry about it.\nI'm Trigo.", 'd', Color.White, 'p', false, "", 45, 0),
-            new DialogueStruct("Nice to meet you, Kanna!", 'd', Color.White, 'p', false, "", 45, 45),
+            new DialogueStruct("Nice to meet you, Kanna!", 'd', Color.White, 'p', true, "", 45, 45),
+            new DialogueStruct("Just try to stay out of my way, okay?\nI don't need more enemies down here . . .", 'd', Color.White, 'r', true, "", 270, 0),        // seventeen
+            new DialogueStruct("( A simple \"Nice to meet you, too\" goes a long way,\n  you know . . . )", 'd', Color.DodgerBlue, 'p', true, "", 45, 90),          // eighteen
         };
 
-        DialogueStruct[] dialogue_kanna_fight_done_fin_walking = {
-            new DialogueStruct("Just try to stay out of my way, okay?\nI don't need more enemies down here . . .", 'd', Color.White, 'r', true, "", 270, 0),
-        };
-
-        DialogueStruct[] dialogue_kanna_fight_done_fin_thinking = {
-            new DialogueStruct("( A simple \"Nice to meet you, too\" goes a long way,\n  you know . . . )", 'd', Color.DodgerBlue, 'p', true, "", 45, 90),
-        };
-
-        DialogueStruct[] dialogue_keys = {
-            new DialogueStruct("Obtained the Key Medallion", 'd', Color.White, 'c'),
-        };
-
-        DialogueStruct[] dialogue_spectre = {
-            new DialogueStruct("Obtained the Spectral Medallion", 'd', Color.White, 'c'),
+        DialogueStruct[] dialogue_pickup = {
+            new DialogueStruct("Obtained the Key Medallion", 'd', Color.White, 'c', true),
+            new DialogueStruct("Obtained the Spectral Medallion", 'd', Color.White, 'c', true),
         };
 
         DialogueStruct[] dialogue_deadguy = {
@@ -1057,7 +1033,8 @@ namespace PERSIST
                                 var temp = new KeyPickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
                                                             this,
                                                             prog_manager,
-                                                            dialogue_keys
+                                                            dialogue_pickup,
+                                                            0
                                                             );
                                 AddInteractable(temp);
                             }
@@ -1067,7 +1044,8 @@ namespace PERSIST
                                 var temp = new ShadePickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
                                                             this,
                                                             prog_manager,
-                                                            dialogue_spectre
+                                                            dialogue_pickup,
+                                                            1
                                                             );
                                 AddInteractable(temp);
                             }
@@ -1566,7 +1544,7 @@ namespace PERSIST
                     if (cutscene_code[1] != "-")
                     {
                         cutscene_code[1] = "-";
-                        StartDialogue(dialogue_kanna_fight_done_one, 0, 'c', 25f, false);
+                        StartDialogue(dialogue_kanna_fight_done, 0, 'c', 25f, false);
                     }
                 }
 
@@ -1575,7 +1553,7 @@ namespace PERSIST
                     if (cutscene_code[2] != "-")
                     {
                         cutscene_code[2] = "-";
-                        StartDialogue(dialogue_kanna_fight_done_two, 0, 'c', 25f, true);
+                        StartDialogue(dialogue_kanna_fight_done, 1, 'c', 25f, true);
                     }
                 }
 
@@ -1591,10 +1569,10 @@ namespace PERSIST
                         cutscene_code[3] = "-";
 
                         if (dialogue_exit_code == "0")
-                            StartDialogue(dialogue_kanna_fight_done_yes, 0, 'c', 25f, true);
+                            StartDialogue(dialogue_kanna_fight_done, 6, 'c', 25f, true);
 
                         else
-                            StartDialogue(dialogue_kanna_fight_done_no, 0, 'c', 25f, true);
+                            StartDialogue(dialogue_kanna_fight_done, 7, 'c', 25f, true);
                     }
                 }
 
@@ -1610,10 +1588,10 @@ namespace PERSIST
                         cutscene_code[4] = "-";
 
                         if (dialogue_exit_code == "2")
-                            StartDialogue(dialogue_kanna_fight_done_mom, 0, 'c', 25f, true);
+                            StartDialogue(dialogue_kanna_fight_done, 12, 'c', 25f, true);
 
                         else
-                            StartDialogue(dialogue_kanna_fight_done_fin, 0, 'c', 25f, true);
+                            StartDialogue(dialogue_kanna_fight_done, 8, 'c', 25f, true);
                     }
                 }
 
@@ -1657,7 +1635,7 @@ namespace PERSIST
                     {
                         cutscene_code[6] = "-";
 
-                        StartDialogue(dialogue_kanna_fight_done_fin_walking, 0, 'c', 25f, true);
+                        StartDialogue(dialogue_kanna_fight_done, 17, 'c', 25f, true);
                     }
                 }
 
@@ -1680,7 +1658,7 @@ namespace PERSIST
                     kanna_boss = null;
                     prog_manager.DefeatKanna();
 
-                    StartDialogue(dialogue_kanna_fight_done_fin_thinking, 0, 'c', 25f, true);
+                    StartDialogue(dialogue_kanna_fight_done, 18, 'c', 25f, true);
                 }
 
                 

@@ -83,7 +83,7 @@
   <object id="226" name="key" x="256" y="168">
    <point/>
   </object>
-  <object id="228" name="key_pickup" x="320" y="128">
+  <object id="228" name="key_pickup" x="392" y="176">
    <point/>
   </object>
   <object id="237" name="oneway" x="648" y="336" width="32" height="8"/>

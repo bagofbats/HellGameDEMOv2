@@ -329,7 +329,7 @@ namespace PERSIST
             charons_blessing = false;
             dash = false;
             locks = false;
-            jump_blocks = true;
+            jump_blocks = false;
             kanna_started = false;
             kanna_defeated = false;
             mushroom_defeated = false;

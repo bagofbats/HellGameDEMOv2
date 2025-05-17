@@ -3,7 +3,7 @@
  - saving/reloading
  - inventory
  - have tilting the joystick just a little bit make trigo walk slowly?
- - refactor dialogue for kanna cutscene to use only one array of dialoguestructs
+ - interactable little guys on the reused level parts
 
 art:
  - more advanced dust animation when blocks switch?

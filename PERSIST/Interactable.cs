@@ -85,17 +85,19 @@ namespace PERSIST
         protected Rectangle pos;
         private ProgressionManager progman;
         private DialogueStruct[] dialogue;
+        private int dialogue_num;
 
         private Rectangle frame = new Rectangle(240, 64, 16, 16);
 
         private float timer = 0f;
 
-        public KeyPickup(Vector2 pos, Level root, ProgressionManager progman, DialogueStruct[] dialogue)
+        public KeyPickup(Vector2 pos, Level root, ProgressionManager progman, DialogueStruct[] dialogue, int dialogue_num)
         {
             this.pos = new Rectangle((int)pos.X, (int)pos.Y, 16, 16);
             this.root = root;
             this.progman = progman;
             this.dialogue = dialogue;
+            this.dialogue_num = dialogue_num;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -118,7 +120,7 @@ namespace PERSIST
         {
             if (!progman.locks)
             {
-                root.StartDialogue(dialogue, 0, 'c', 25f, true);
+                root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
                 progman.Unlock();
                 root.RemoveInteractable(this);
             }
@@ -141,17 +143,19 @@ namespace PERSIST
         protected Rectangle pos;
         private ProgressionManager progman;
         private DialogueStruct[] dialogue;
+        private int dialogue_num;
 
         private Rectangle frame = new Rectangle(240, 48, 16, 16);
 
         private float timer = 0f;
 
-        public ShadePickup(Vector2 pos, Level root, ProgressionManager progman, DialogueStruct[] dialogue)
+        public ShadePickup(Vector2 pos, Level root, ProgressionManager progman, DialogueStruct[] dialogue, int dialogue_num)
         {
             this.pos = new Rectangle((int)pos.X, (int)pos.Y, 16, 16);
             this.root = root;
             this.progman = progman;
             this.dialogue = dialogue;
+            this.dialogue_num = dialogue_num;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -174,7 +178,7 @@ namespace PERSIST
         {
             if (!progman.jump_blocks)
             {
-                root.StartDialogue(dialogue, 0, 'c', 25f, true);
+                root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
                 progman.ShadeBlocks();
                 root.RemoveInteractable(this);
             }
