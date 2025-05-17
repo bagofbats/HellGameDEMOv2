@@ -775,6 +775,36 @@ namespace PERSIST
             new DialogueStruct("( A simple \"Nice to meet you, too\" goes a long way,\n  you know . . . )", 'd', Color.DodgerBlue, 'p', true, "", 45, 90),          // eighteen
         };
 
+        DialogueStruct[] dialogue_lukas_pickup = {
+            new DialogueStruct("I wouldn't bother picking that thing up if I were you.", 'd', Color.White, 'l', false), // <--- change this to true later
+            new DialogueStruct("It's practically useless in its current form.\nYou're better off leaving it there.", 'p', Color.White, 'p', false, "", 180, 180),
+            new DialogueStruct("Oh, okay . . .", 'd', Color.White, 'r', false, "", 315, 90),
+            new DialogueStruct("Hey, hold on a sec --\nDidn't you try to kill me earlier?", 'd', Color.White, 'r', false, "", 315, 0),
+            new DialogueStruct("Sure did.", 'p', Color.White, 'p', false, "", 180, 180),
+            new DialogueStruct("And now you're trying to give me advice?", 'd', Color.White, 'r', false, "", 315, 45),
+            new DialogueStruct("Sure am.", 'd', Color.White, 'p', false, "", 180, 180),
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 315, 225),
+            new DialogueStruct("Thanks for not attacking me again.\nWhy should I trust you?\nYou're a freak.", 'o', Color.White, 'l', false, "lukas1 0|lukas1 1|lukas1 2"),
+            new DialogueStruct("What happened earlier wasn't really up to me.\nNow that I'm a shade, I'm part of this place's\ndefenses.", 'd', Color.White, 'p', false, "", 180, 90),
+            new DialogueStruct("If I see someone who doesn't belong, I have to\nattack.\nRight now, I'm lucky you have that disguise on.", 'd', Color.White, 'p', false, "", 180, 180),
+            new DialogueStruct("Oh . . . I see.", 'd', Color.White, 'r', false, "", 315, 0),
+            new DialogueStruct("I'm sorry.\n\"Now\" that you're a shade? What were you before?", 'o', Color.White, 'l', false, "lukas2 0|lukas2 1"),
+            new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 180, 90),                         // thirteen
+            new DialogueStruct("About that medallion, you can go ahead and pick it\nup now.", 'd', Color.White, 'p', false, "", 180, 0),
+            new DialogueStruct("It'll give you access to secret passages.\nMaybe you can make use of it.", 'd', Color.White, 'p', false, "", 180, 225),
+            new DialogueStruct(". . . \nThanks.", 'o', Color.White, 'l', false, "lukas3 0|lukas3 1"),
+            new DialogueStruct("Yeah, sure.", 'd', Color.White, 'p', false, "", 180, 0),
+            new DialogueStruct("Good luck, hero.", 'd', Color.White, 'p', true, "", 180, 225),
+            new DialogueStruct("You got that right.", 'd', Color.White, 'p', false, "", 180, 180),             // nineteen
+            new DialogueStruct("A mindless sentry, forced to attack intruders.\nIt's a freakish existance.", 'd', Color.White, 'p', false, "", 180, 90),
+            new DialogueStruct("\"Forced\", huh?", 'd', Color.White, 'r', false, "", 315, 45),
+            new DialogueStruct("You mean you didn't want to attack me?", 'd', Color.White, 'r', false, "", 315, 0),
+            new DialogueStruct("That's right.\nNow that I'm a shade, I'm part of this place's\ndefenses.", 'd', Color.White, 'p', false, "", 180, 90),
+            new DialogueStruct("If I see someone who doesn't belong, I have to\nattack.\nRight now, I'm lucky you have that disguise on.", 'd', Color.White, 'p', false, "", 180, 180),
+            new DialogueStruct("Oh . . . I see.", 'd', Color.White, 'r', false, "", 315, 0),
+            new DialogueStruct("I'm sorry.\n\"Now\" that you're a shade? What were you before?", 'o', Color.White, 'l', false, "lukas2 0|lukas2 1"),
+        };
+
         DialogueStruct[] dialogue_pickup = {
             new DialogueStruct("Obtained the Key Medallion", 'd', Color.White, 'c', true),
             new DialogueStruct("Obtained the Spectral Medallion", 'd', Color.White, 'c', true),
@@ -1044,8 +1074,8 @@ namespace PERSIST
                                 var temp = new ShadePickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
                                                             this,
                                                             prog_manager,
-                                                            dialogue_pickup,
-                                                            1
+                                                            dialogue_lukas_pickup,
+                                                            0
                                                             );
                                 AddInteractable(temp);
                             }
@@ -1284,7 +1314,7 @@ namespace PERSIST
                     AddEnemy(new Kanna_Boss(enemy_locations[i], player, this));
 
                 if (enemy_types[i] == "mushroom_boss" && !prog_manager.mushroom_defeated)
-                    AddEnemy(new Kanna_Boss(enemy_locations[i], player, this));
+                    AddEnemy(new Mushroom_Boss(enemy_locations[i], player, this));
 
                 //if (enemy_types[i] == "trampoline")
                 //    AddEnemy(new Trampoline(enemy_locations[i], this));
@@ -1424,6 +1454,49 @@ namespace PERSIST
                 dialogue_letter = 0f;
                 dialogue_num = 0;
                 return;
+            }
+
+            if (code[0] == "lukas1" && code.Length > 1)
+            {
+                if (code[1] == "0" || code[1] == "1")
+                {
+                    dialogue_num++;
+                    dialogue_letter = 0f;
+                    return;
+                }
+
+                else if (code[1] == "2")
+                {
+                    dialogue_num = 19;
+                    dialogue_letter = 0f;
+                    return;
+                }
+            }
+
+            if (code[0] == "lukas2" && code.Length > 1)
+            {
+                dialogue_num = 13;
+                dialogue_letter = 0f;
+                return;
+            }
+
+            if (code[0] == "lukas3" && code.Length > 1)
+            {
+                if (code[1] == "1")
+                {
+                    dialogue_num++;
+                    dialogue_letter = 0f;
+                    return;
+                }
+
+                else
+                {
+                    player.LeaveDialogue();
+                    dialogue = false;
+                    dialogue_letter = 0f;
+                    dialogue_num = 0;
+                    return;
+                }
             }
         }
 
@@ -1662,6 +1735,24 @@ namespace PERSIST
                 }
 
                 
+            }
+
+            if (cutscene_code[0] == "lukaspickup")
+            {
+                if (cutscene_timer > 0f && cutscene_code[1] == "empty")
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+                    StartDialogue(dialogue_lukas_pickup, 0, 'c', 25f, true);
+                    cutscene_code[1] = "-";
+                }
+
+                if (cutscene_timer > 3.2f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+                }
             }
         }
 

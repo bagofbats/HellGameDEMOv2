@@ -4,6 +4,8 @@
  - inventory
  - have tilting the joystick just a little bit make trigo walk slowly?
  - interactable little guys on the reused level parts
+ - have some collapsable blocks go behind styx
+ - think harder abt dashing and attacking at the same time
 
 art:
  - more advanced dust animation when blocks switch?

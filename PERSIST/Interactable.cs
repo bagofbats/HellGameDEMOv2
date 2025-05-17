@@ -144,6 +144,8 @@ namespace PERSIST
         private ProgressionManager progman;
         private DialogueStruct[] dialogue;
         private int dialogue_num;
+        private bool cutscene = false;
+        private GameTime saved_gameTime;
 
         private Rectangle frame = new Rectangle(240, 48, 16, 16);
 
@@ -167,6 +169,8 @@ namespace PERSIST
         {
             frame.X = 240 + (16 * ((int)(timer * 10) % 6));
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            saved_gameTime = gameTime;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -178,9 +182,12 @@ namespace PERSIST
         {
             if (!progman.jump_blocks)
             {
-                root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
-                progman.ShadeBlocks();
-                root.RemoveInteractable(this);
+                //root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
+                //progman.ShadeBlocks();
+                //root.RemoveInteractable(this);
+
+                cutscene = true;
+                root.HandleCutscene("lukaspickup|empty", saved_gameTime, true);
             }
         }
 
