@@ -729,6 +729,9 @@ namespace PERSIST
         public Rectangle kanna_zone
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
+        public Rectangle mushroom_trigger
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
         private Rectangle kanna_boss_blocks = new Rectangle(0, 0, 0, 0);
 
         private Kanna_Boss kanna_boss;
@@ -1029,6 +1032,12 @@ namespace PERSIST
                                 kanna_trigger = new Rectangle((int)l.objects[i].x + t.location.X, 
                                                                 (int)l.objects[i].y + t.location.Y, 
                                                                 (int)l.objects[i].width, 
+                                                                (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "mushroom_trigger")
+                                mushroom_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                                (int)l.objects[i].y + t.location.Y,
+                                                                (int)l.objects[i].width,
                                                                 (int)l.objects[i].height);
 
                             if (l.objects[i].name == "kanna_zone")

@@ -2149,8 +2149,11 @@ namespace PERSIST
         private Mushroom_Hand left_hand;
         private Mushroom_Hand right_hand;
 
+        private bool sleep = true;
+        private bool trigger_watch = false;
+
         private int h_oset = 11;
-        private int v_oset = 11;
+        private int v_oset = 16;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 72, 72); } }
@@ -2179,7 +2182,23 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            
+            if (sleep)
+            {
+                Sleep(gameTime);
+                return;
+            }
+
+
+                
+        }
+
+        public void Sleep(GameTime gameTime)
+        {
+            if (player.HitBox.Intersects(root.mushroom_trigger))
+                trigger_watch = true;
+
+            else if (player.HitBox.X < root.mushroom_trigger.X && trigger_watch)
+                sleep = false;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
