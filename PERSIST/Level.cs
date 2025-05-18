@@ -75,6 +75,9 @@ namespace PERSIST
         protected float dialogue_speed_multiplier = 1f;
         protected bool dialogue_skippable = true;
         protected int opts_highlighted = 0;
+        protected bool cutscene_cam = false;
+        protected Vector2 cutscene_cam_pos = new Vector2(0, 0);
+        protected float cutscene_cam_speed = 5f;
 
         protected float boss_hp = 0;
         protected int boss_max_hp = 0;
@@ -170,6 +173,8 @@ namespace PERSIST
 
                 for (int i = special_walls.Count - 1; i >= 0; i--)
                     special_walls[i].Update(gameTime);
+
+                cutscene_cam = false;     // <---- resetting cutscene cam here just in case
             }
 
             for (int i = particles.Count - 1; i >= 0; i--)
@@ -198,34 +203,44 @@ namespace PERSIST
             Vector2 camera_pos = cam.GetPos();
             Rectangle camera_room = GetRoom(camera_pos);
 
-            if (current_room.Width == 0 || current_room.Height == 0)
+            if (!cutscene_cam)
             {
-                // default case that (hopefully) never happens
-                //int tempX = (player.PositionRectangle.X + 16) / 320;
-                //int tempY = (player.PositionRectangle.Y + 16) / 240;
-                //cam.Follow(new Vector2(player.DrawBox.X - 160 + 16, player.DrawBox.Y - 120 + 16));
-                cam.Follow(player.GetPos(player_dead) + new Vector2(-160 + 16, -120 + 16));
+                if (current_room.Width == 0 || current_room.Height == 0)
+                {
+                    // default case that (hopefully) never happens
+                    //int tempX = (player.PositionRectangle.X + 16) / 320;
+                    //int tempY = (player.PositionRectangle.Y + 16) / 240;
+                    //cam.Follow(new Vector2(player.DrawBox.X - 160 + 16, player.DrawBox.Y - 120 + 16));
+                    cam.Follow(player.GetPos(player_dead) + new Vector2(-160 + 16, -120 + 16));
+                }
+
+                else
+                {
+                    int tempX = (int)player.GetPos(player_dead).X + 16 - 160;
+                    int tempY = (int)player.GetPos(player_dead).Y + 16 - 120;
+
+                    tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
+                    tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));
+
+                    if (current_room != camera_room
+                        || camera_pos.X > current_room.X + current_room.Width - 320
+                        || camera_pos.Y > current_room.Y + current_room.Height - 240)
+                        cam.TargetFollow(new Vector2(tempX, tempY)); // transitions between rooms
+                    else
+                    {
+                        cam.Follow(new Vector2(tempX, tempY)); // panning within the room
+                        cam.stable = true;
+                    }
+
+                }
             }
 
             else
             {
-                int tempX = (int)player.GetPos(player_dead).X + 16 - 160;
-                int tempY = (int)player.GetPos(player_dead).Y + 16 - 120;
-
-                tempX = Math.Clamp(tempX, current_room.X, current_room.X + current_room.Width - 320);
-                tempY = Math.Clamp(tempY, current_room.Y, Math.Max(current_room.Y + current_room.Height - 240, current_room.Y));
-
-                if (current_room != camera_room
-                    || camera_pos.X > current_room.X + current_room.Width - 320
-                    || camera_pos.Y > current_room.Y + current_room.Height - 240)
-                    cam.TargetFollow(new Vector2(tempX, tempY)); // transitions between rooms
-                else
-                {
-                    cam.Follow(new Vector2(tempX, tempY)); // panning within the room
-                    cam.stable = true;
-                }
-                    
+                cam.TargetFollow(cutscene_cam_pos, cutscene_cam_speed);
             }
+
+            
 
             screenwipe_rect.Y = (int)cam.GetPos().Y;
 

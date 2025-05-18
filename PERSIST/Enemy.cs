@@ -2446,4 +2446,65 @@ namespace PERSIST
             progMan.LearnDash();
         }
     }
+
+    public class Lukas_Cutscene : Enemy
+    {
+
+        new private StyxLevel root;
+        private Texture2D sprite;
+
+        private float timer = 0f;
+        private int frame_reset = 4;
+        private int frame_base = 0;
+        private string type;
+
+        private Rectangle frame = new Rectangle(0, 352, 32, 32);
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+
+        public Lukas_Cutscene(Vector2 pos, StyxLevel root, String type)
+        {
+            this.pos = pos;
+            this.root = root;
+            this.type = type;
+
+            hurtful = false;
+            pogoable = false;
+        }
+
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            frame.X = frame_base + (32 * ((int)(timer * 10) % frame_reset));
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return PositionRectangle.Intersects(input);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return PositionRectangle;
+        }
+
+        
+    }
 }

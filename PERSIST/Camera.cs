@@ -19,6 +19,8 @@ namespace PERSIST
 
         private HellGame root;
 
+        private bool cutscene = false;
+
         public bool stable
         { get; set; }
 
@@ -46,12 +48,12 @@ namespace PERSIST
             Transform = position * offset;
         }
 
-        public void TargetFollow(Vector2 target)
+        public void TargetFollow(Vector2 target, float speed = 5f)
         {
             if (current_x != target.X)
-                current_x += (target.X - current_x) / 5;
+                current_x += (target.X - current_x) / speed;
             if (current_y != target.Y)
-                current_y += (target.Y - current_y) / 5;
+                current_y += (target.Y - current_y) / speed;
 
             if (Math.Abs(current_x - target.X) <= 0.3)
                 current_x = target.X;

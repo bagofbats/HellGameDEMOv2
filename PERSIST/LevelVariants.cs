@@ -700,6 +700,7 @@ namespace PERSIST
         private Texture2D bg_rocks;
         private Texture2D spr_mushroom;
         private Texture2D spr_kanna;
+        private Texture2D spr_lukas;
 
         private List<JumpSwitch> switches = new List<JumpSwitch>();
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
@@ -735,6 +736,10 @@ namespace PERSIST
         private Rectangle kanna_boss_blocks = new Rectangle(0, 0, 0, 0);
 
         private Kanna_Boss kanna_boss;
+        private Lukas_Cutscene lukas_cutscene;
+
+        private float saved_camera_x = 0f;
+        private float saved_camera_y = 0f;
 
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The flame burns bright in the dark.", 'd', Color.White, 'c'),
@@ -776,7 +781,7 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_lukas_pickup = {
-            new DialogueStruct("I wouldn't bother picking that thing up if I were you.", 'd', Color.White, 'l', false), // <--- change this to true later
+            new DialogueStruct("I wouldn't bother picking that thing up if I were you.", 'd', Color.White, 'l', true), // <--- change this to true later
             new DialogueStruct("It's practically useless in its current form.\nYou're better off leaving it there.", 'p', Color.White, 'p', false, "", 180, 180),
             new DialogueStruct("Oh, okay . . .", 'd', Color.White, 'r', false, "", 315, 90),
             new DialogueStruct("Hey, hold on a sec --\nDidn't you try to kill me earlier?", 'd', Color.White, 'r', false, "", 315, 0),
@@ -789,7 +794,7 @@ namespace PERSIST
             new DialogueStruct("If I see someone who doesn't belong, I have to\nattack.\nRight now, I'm lucky you have that disguise on.", 'd', Color.White, 'p', false, "", 180, 180),
             new DialogueStruct("Oh . . . I see.", 'd', Color.White, 'r', false, "", 315, 0),
             new DialogueStruct("I'm sorry.\n\"Now\" that you're a shade? What were you before?", 'o', Color.White, 'l', false, "lukas2 0|lukas2 1"),
-            new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 180, 90),                         // thirteen
+            new DialogueStruct(". . .", 'd', Color.White, 'p', true, "", 180, 90),                         // thirteen
             new DialogueStruct("About that medallion, you can go ahead and pick it\nup now.", 'd', Color.White, 'p', false, "", 180, 0),
             new DialogueStruct("It'll give you access to secret passages.\nMaybe you can make use of it.", 'd', Color.White, 'p', false, "", 180, 225),
             new DialogueStruct(". . . \nThanks.", 'o', Color.White, 'l', false, "lukas3 0|lukas3 1"),
@@ -1089,6 +1094,14 @@ namespace PERSIST
                                 enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
                                 enemy_types.Add("deadguy");
                             }
+
+                            if (l.objects[i].name == "lukas_cutscene_pickup" && !prog_manager.locks)
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Lukas_Cutscene(temp, this, "pickup"));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("lukas_cutscene_pickup");
+                            }
                         }
 
                 }
@@ -1121,6 +1134,7 @@ namespace PERSIST
             bg_rocks = root.Content.Load<Texture2D>("bgs/bg_styx_rocks");
             spr_mushroom = root.Content.Load<Texture2D>("sprites/spr_mushroom");
             spr_kanna = root.Content.Load<Texture2D>("sprites/spr_kanna");
+            spr_lukas = root.Content.Load<Texture2D>("sprites/spr_lukas");
 
             enemy_assets.Add(typeof(Walker), spr_mushroom);
             enemy_assets.Add(typeof(Trampoline), spr_mushroom);
@@ -1129,6 +1143,7 @@ namespace PERSIST
             enemy_assets.Add(typeof(DeadGuyTwo), tst_styx);
             enemy_assets.Add(typeof(Mushroom_Boss), spr_mushroom);
             enemy_assets.Add(typeof(Mushroom_Hand), spr_mushroom);
+            enemy_assets.Add(typeof(Lukas_Cutscene), spr_lukas);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -1327,6 +1342,8 @@ namespace PERSIST
                     AddEnemy(temp);
                 }
 
+                if (enemy_types[i] == "lukas_cutscene_pickup" && !prog_manager.locks)
+                    AddEnemy(new Lukas_Cutscene(enemy_locations[i], this, "pickup"));
             }
 
             // replace keys
@@ -1746,10 +1763,38 @@ namespace PERSIST
                     player.DoAnimate(gameTime);
                     StartDialogue(dialogue_lukas_pickup, 0, 'c', 25f, true);
                     cutscene_code[1] = "-";
+
+                    saved_camera_x = cam.GetPos().X;
+                    saved_camera_y = cam.GetPos().Y;
                 }
 
-                if (cutscene_timer > 3.2f)
+                if (cutscene_timer > 0.03f)
                 {
+                    cutscene_cam = true;
+                    cutscene_cam_speed = 10f;
+                    cutscene_cam_pos = new Vector2(saved_camera_x - 120, saved_camera_y);
+                }
+
+                if (cutscene_timer > 1.3f && cutscene_code[2] == "empty")
+                {
+                    StartDialogue(dialogue_lukas_pickup, 1, 'c', 25f, true);
+                    cutscene_code[2] = "-";
+                }
+
+                if (cutscene_timer > 3.2f && cutscene_code[3] == "empty")
+                {
+                    StartDialogue(dialogue_lukas_pickup, 14, 'c', 25f, true);
+                    cutscene_code[3] = "-";
+                }
+
+                if (cutscene_timer > 3.23f)
+                {
+                    cutscene_cam_pos = new Vector2(saved_camera_x, saved_camera_y);
+                }
+
+                if (cutscene_timer > 4.3f)
+                {
+                    cutscene_cam = false;
                     player.ExitCutscene();
                     cutscene = false;
                 }

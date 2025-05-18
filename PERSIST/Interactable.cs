@@ -147,7 +147,7 @@ namespace PERSIST
         private bool cutscene = false;
         private GameTime saved_gameTime;
 
-        private Rectangle frame = new Rectangle(240, 48, 16, 16);
+        private Rectangle frame = new Rectangle(240, 32, 16, 16);
 
         private float timer = 0f;
 
@@ -187,7 +187,7 @@ namespace PERSIST
                 //root.RemoveInteractable(this);
 
                 cutscene = true;
-                root.HandleCutscene("lukaspickup|empty", saved_gameTime, true);
+                root.HandleCutscene("lukaspickup|empty|empty|empty|empty|empty", saved_gameTime, true);
             }
         }
 
