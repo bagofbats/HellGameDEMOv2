@@ -91,7 +91,11 @@ namespace PERSIST
 
         private float timer = 0f;
 
-        public KeyPickup(Vector2 pos, Level root, ProgressionManager progman, DialogueStruct[] dialogue, int dialogue_num)
+        protected new StyxLevel root;
+
+        
+
+        public KeyPickup(Vector2 pos, StyxLevel root, ProgressionManager progman, DialogueStruct[] dialogue, int dialogue_num)
         {
             this.pos = new Rectangle((int)pos.X, (int)pos.Y, 16, 16);
             this.root = root;
@@ -123,6 +127,7 @@ namespace PERSIST
                 root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
                 progman.Unlock();
                 root.RemoveInteractable(this);
+                root.RemoveLukas();
             }
         }
 
@@ -146,10 +151,19 @@ namespace PERSIST
         private int dialogue_num;
         private bool cutscene = false;
         private GameTime saved_gameTime;
+        private bool transformed = false;
 
         private Rectangle frame = new Rectangle(240, 32, 16, 16);
 
         private float timer = 0f;
+        private float flash_timer = 0f;
+
+        private float normal_y = 0f;
+        private float floating_y = 0f;
+        private float drawing_y = 0f;
+
+        public bool floating
+        { get; set; } = false;
 
         public ShadePickup(Vector2 pos, Level root, ProgressionManager progman, DialogueStruct[] dialogue, int dialogue_num)
         {
@@ -158,6 +172,11 @@ namespace PERSIST
             this.progman = progman;
             this.dialogue = dialogue;
             this.dialogue_num = dialogue_num;
+
+            normal_y = pos.Y;
+            floating_y = pos.Y - 64;
+
+            drawing_y = normal_y;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -171,11 +190,41 @@ namespace PERSIST
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             saved_gameTime = gameTime;
+
+            if (frame.Y == 80)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (flash_timer > 0.08)
+                    frame.Y = 48;
+            }
+
+            if (floating)
+            {
+                // current_y += (target.Y - current_y) / speed;
+
+                drawing_y += (floating_y - drawing_y) / 17;
+
+                if (Math.Abs(drawing_y - floating_y) <= 0.3)
+                    drawing_y = floating_y;
+            }
+
+            else
+            {
+                drawing_y += (normal_y - drawing_y) / 17;
+
+                if (Math.Abs(drawing_y - normal_y) <= 0.3)
+                    drawing_y = normal_y;
+
+                //drawing_y = normal_y;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, pos, frame, Color.White);
+            Rectangle draw_rect = new Rectangle(pos.X, (int)drawing_y, pos.Width, pos.Height);
+
+            spriteBatch.Draw(sprite, draw_rect, frame, Color.White);
         }
 
         public override void Interact()
@@ -186,9 +235,24 @@ namespace PERSIST
                 //progman.ShadeBlocks();
                 //root.RemoveInteractable(this);
 
-                cutscene = true;
-                root.HandleCutscene("lukaspickup|empty|empty|empty|empty|empty", saved_gameTime, true);
+                if (!transformed)
+                {
+                    cutscene = true;
+                    root.HandleCutscene("lukaspickup|empty|empty|empty|empty|empty", saved_gameTime, true);
+                }
+                else
+                {
+                    root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
+                    progman.ShadeBlocks();
+                    root.RemoveInteractable(this);
+                }
             }
+        }
+
+        public void Transform()
+        {
+            frame.Y = 80; //frame.Y = 48;
+            transformed = true;
         }
 
         public override bool CheckCollision(Rectangle input)

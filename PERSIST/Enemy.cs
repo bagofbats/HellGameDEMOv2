@@ -1601,6 +1601,7 @@ namespace PERSIST
 
             hurtful = false;
 
+            // i have no idea how i came up with this LMAOOO
             air_time = jmp_vsp * jmp_vsp / grav;
         }
 
@@ -2140,6 +2141,18 @@ namespace PERSIST
 
     public class Mushroom_Boss : Enemy
     {
+        /*
+         * BOSS OVERVIEW:
+         *  - this boss is a GIANT MUSHROOM with one hand
+         *  - it attacks by slamming its hand into the ground, releasing a SHOCK WAVE towards the player
+         *  - after it slams the player can POGO off the hand like a TRAMPOLINE
+         *  - the player can POGO off the boss itself to deal damage
+         *  - if the player is above the boss too long, it releases a SPORE CLOUD
+         *  - the player will have to POGO on top of the boss to hurt it
+         *    and then back off when it releases SPORES
+         */
+
+
         private Player player;
         private float hp = 24;
         private int max_hp = 24;
@@ -2151,6 +2164,18 @@ namespace PERSIST
 
         private bool sleep = true;
         private bool trigger_watch = false;
+
+        private float atk_timer = 0f;
+        private float atk0_threshold = 2.7f;
+        private float atk1_threshold = 1.8f;
+        private float atk999_threshold = 3f;
+        private float atk0_smash_threshold = 0.6f;
+        private int atk = 0;
+        private int dir = 1;
+        private bool state_change = false;
+        private int move_dist = 72;
+        private bool smashed = false;
+        private bool hand_right = true;
 
         private int h_oset = 11;
         private int v_oset = 16;
@@ -2189,7 +2214,139 @@ namespace PERSIST
             }
 
 
-                
+
+
+
+            // *** not asleep, boss fight time!!! ***
+
+            if (state_change)
+            {
+                state_change = false;
+                smashed = false;
+                atk_timer = 0f;
+
+                CalculateDir();
+
+                if (player.GetPos().Y < HitBox.Y && PositionRectangle.Contains(new Vector2(player.GetPos().X + (player.DrawBox.Width / 2), HitBox.Y + 4)))
+                {
+                    // spore attack
+                    atk = 999;
+                }
+
+                else
+                {
+                    if (atk == 1)
+                        atk = 0;
+                    else
+                        atk = 1;
+                }
+
+
+                if (atk == 1 && !root.mushroom_zone.Contains(new Rectangle(HitBox.X + (dir * move_dist),
+                                                                           HitBox.Y, HitBox.Width, HitBox.Height)))
+                {
+                    dir *= -1;
+                }
+            }
+
+            root.GetBossHP(hp, max_hp);
+
+            atk_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (atk == 0)
+                AtkZero(gameTime);
+            if (atk == 1)
+                AtkOne(gameTime);
+            if (atk == 999)
+                Atk999(gameTime);
+        }
+
+        private void CalculateDir()
+        {
+            if ((int)player.GetPos().X < (int)pos.X + 18)
+                dir = -1;
+            else if ((int)player.GetPos().X > (int)pos.X + 18)
+                dir = 1;
+            else
+                dir = 0;
+        }
+
+        private void AtkZero(GameTime gameTime)
+        {
+            // SMASH !!!
+
+            if (atk_timer > atk0_threshold)
+            {
+                state_change = true;
+            }
+
+            if (atk_timer > atk0_smash_threshold && !smashed)
+            {
+                smashed = true;
+
+                right_hand.SetPosY(pos.Y + 40);
+
+                var shock = new Shockwave(
+                    new Vector2(right_hand.HitBox.X + (right_hand.HitBox.Width / 2), right_hand.HitBox.Y + right_hand.HitBox.Height - 10),
+                    root,
+                    sprite,
+                    dir == 1
+                    );
+
+                root.AddEnemy(shock);
+            }
+
+            if (dir == -1)
+                right_hand.SetPosX(pos.X - 32);
+            else
+                right_hand.SetPosX(pos.X + 72);
+
+
+            if (smashed)
+                right_hand.SetPosY(pos.Y + 40);
+            else
+                right_hand.SetPosY(pos.Y);
+        }
+
+        private void AtkOne(GameTime gameTime)
+        {
+            // walk around
+
+            if (atk_timer > atk1_threshold)
+            {
+                state_change = true;
+            }
+
+            pos.X += ((float)move_dist / (atk1_threshold * 60)) * dir * 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+
+
+            if ((int)player.GetPos().X < (int)pos.X + 08 && hand_right)
+                hand_right = false;
+
+            if ((int)player.GetPos().X > (int)pos.X + 28 && !hand_right)
+                hand_right = true;
+
+
+            if (!hand_right)
+                right_hand.SetPosX(pos.X - 32);
+            else
+                right_hand.SetPosX(pos.X + 72);
+
+            right_hand.SetPosY(pos.Y + 10);
+        }
+
+        private void Atk999(GameTime gameTime)
+        {
+            // spore attack
+
+            if (atk_timer > atk999_threshold)
+            {
+                state_change = true;
+            }
+
+            right_hand.SetPosX(pos.X + 18);
+            right_hand.SetPosY(pos.Y + 18);
         }
 
         public void Sleep(GameTime gameTime)
@@ -2211,6 +2368,7 @@ namespace PERSIST
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+            //spriteBatch.Draw(blue, PositionRectangle, Color.Blue * 0.3f);
         }
 
 
@@ -2270,6 +2428,16 @@ namespace PERSIST
             
         }
 
+        public void SetPosX(float x)
+        {
+            pos.X = x;
+        }
+
+        public void SetPosY(float y)
+        {
+            pos.Y = y;
+        }
+
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
@@ -2286,6 +2454,87 @@ namespace PERSIST
         }
 
 
+    }
+
+
+
+    // generic projectiles
+    public class Shockwave : Enemy
+    {
+        private Texture2D img;
+        private Rectangle bounds;
+        private bool right;
+        private float hspeed = 6f / 2;
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 10); } }
+
+        public Shockwave(Vector2 pos, StyxLevel root, Texture2D img, bool right)
+        {
+            this.pos = pos;
+            this.root = root;
+            this.img = img;
+            this.right = right;
+
+            hurtful = false;
+            destroy_projectile = false;
+            pogoable = false;
+
+            bounds = root.RealGetRoom(pos).bounds;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            // nothing (yet)
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            float frame_factor = (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+
+            if (right)
+                pos.X += hspeed * frame_factor;
+
+            else
+                pos.X += hspeed * -1 * frame_factor;
+
+            Wall check = root.SimpleCheckCollision(HitBox);
+
+            if (check != null)
+            {
+                root.RemoveEnemy(this);
+            }
+
+            if (!bounds.Contains(HitBox))
+            {
+                root.RemoveEnemy(this);
+            }
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            // nothing lol
+        }
+
+
+
+
+
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
     }
 
     // miscellaneous/weird cases
@@ -2463,6 +2712,12 @@ namespace PERSIST
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
 
+        public bool looking
+        { get; set; } = false;
+
+        public bool magic
+        { get; set; } = false;
+
         public Lukas_Cutscene(Vector2 pos, StyxLevel root, String type)
         {
             this.pos = pos;
@@ -2481,6 +2736,24 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            if (looking)
+                frame_base = 128;
+            else
+                frame_base = 0;
+
+            if (magic)
+            {
+                frame.Y = 384;
+                frame_base = 0;
+                frame_reset = 6;
+            }
+            else
+            {
+                frame.Y = 352;
+                frame_reset = 4;
+            }
+                
+
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             frame.X = frame_base + (32 * ((int)(timer * 10) % frame_reset));
         }
@@ -2506,5 +2779,38 @@ namespace PERSIST
         }
 
         
+    }
+
+    public class Kanna_Cutscene : Enemy
+    {
+        public override bool CheckCollision(Rectangle input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

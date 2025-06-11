@@ -733,10 +733,14 @@ namespace PERSIST
         public Rectangle mushroom_trigger
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
+        public Rectangle mushroom_zone
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
         private Rectangle kanna_boss_blocks = new Rectangle(0, 0, 0, 0);
 
         private Kanna_Boss kanna_boss;
-        private Lukas_Cutscene lukas_cutscene;
+        private Lukas_Cutscene lukas_cutscene = null;
+        private ShadePickup shade_pickup = null;
 
         private float saved_camera_x = 0f;
         private float saved_camera_y = 0f;
@@ -782,7 +786,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_lukas_pickup = {
             new DialogueStruct("I wouldn't bother picking that thing up if I were you.", 'd', Color.White, 'l', true), // <--- change this to true later
-            new DialogueStruct("It's practically useless in its current form.\nYou're better off leaving it there.", 'p', Color.White, 'p', false, "", 180, 180),
+            new DialogueStruct("It's practically useless in its current form.\nYou're better off leaving it there.", 'd', Color.White, 'p', false, "", 180, 180),
             new DialogueStruct("Oh, okay . . .", 'd', Color.White, 'r', false, "", 315, 90),
             new DialogueStruct("Hey, hold on a sec --\nDidn't you try to kill me earlier?", 'd', Color.White, 'r', false, "", 315, 0),
             new DialogueStruct("Sure did.", 'p', Color.White, 'p', false, "", 180, 180),
@@ -795,7 +799,7 @@ namespace PERSIST
             new DialogueStruct("Oh . . . I see.", 'd', Color.White, 'r', false, "", 315, 0),
             new DialogueStruct("I'm sorry.\n\"Now\" that you're a shade? What were you before?", 'o', Color.White, 'l', false, "lukas2 0|lukas2 1"),
             new DialogueStruct(". . .", 'd', Color.White, 'p', true, "", 180, 90),                         // thirteen
-            new DialogueStruct("About that medallion, you can go ahead and pick it\nup now.", 'd', Color.White, 'p', false, "", 180, 0),
+            new DialogueStruct("You can go ahead and pick up that medallion now.", 'd', Color.White, 'p', false, "", 180, 0),
             new DialogueStruct("It'll give you access to secret passages.\nMaybe you can make use of it.", 'd', Color.White, 'p', false, "", 180, 225),
             new DialogueStruct(". . . \nThanks.", 'o', Color.White, 'l', false, "lukas3 0|lukas3 1"),
             new DialogueStruct("Yeah, sure.", 'd', Color.White, 'p', false, "", 180, 0),
@@ -805,6 +809,10 @@ namespace PERSIST
             new DialogueStruct("\"Forced\", huh?", 'd', Color.White, 'r', false, "", 315, 45),
             new DialogueStruct("You mean you didn't want to attack me?", 'd', Color.White, 'r', false, "", 315, 0),
             new DialogueStruct("That's right.\nNow that I'm a shade, I'm part of this place's\ndefenses.", 'd', Color.White, 'p', false, "", 180, 90),
+            new DialogueStruct("If I see someone who doesn't belong, I have to\nattack.\nRight now, I'm lucky you have that disguise on.", 'd', Color.White, 'p', false, "", 180, 180),
+            new DialogueStruct("Oh . . . I see.", 'd', Color.White, 'r', false, "", 315, 0),
+            new DialogueStruct("I'm sorry.\n\"Now\" that you're a shade? What were you before?", 'o', Color.White, 'l', false, "lukas2 0|lukas2 1"),
+            new DialogueStruct("Thanks, but it's not really up to me.\nNow that I'm a shade, I'm part of this place's\ndefenses.", 'd', Color.White, 'p', false, "", 180, 90),
             new DialogueStruct("If I see someone who doesn't belong, I have to\nattack.\nRight now, I'm lucky you have that disguise on.", 'd', Color.White, 'p', false, "", 180, 180),
             new DialogueStruct("Oh . . . I see.", 'd', Color.White, 'r', false, "", 315, 0),
             new DialogueStruct("I'm sorry.\n\"Now\" that you're a shade? What were you before?", 'o', Color.White, 'l', false, "lukas2 0|lukas2 1"),
@@ -1057,6 +1065,12 @@ namespace PERSIST
                                                                 (int)l.objects[i].width,
                                                                 (int)l.objects[i].height);
 
+                            if (l.objects[i].name == "mushroom_zone")
+                                mushroom_zone = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                                (int)l.objects[i].y + t.location.Y,
+                                                                (int)l.objects[i].width,
+                                                                (int)l.objects[i].height);
+
                             if (l.objects[i].name == "kanna_boss_blocks")
                                 kanna_boss_blocks = new Rectangle((int)l.objects[i].x + t.location.X,
                                                                   (int)l.objects[i].y + t.location.Y,
@@ -1079,8 +1093,8 @@ namespace PERSIST
                                 var temp = new ShadePickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
                                                             this,
                                                             prog_manager,
-                                                            dialogue_lukas_pickup,
-                                                            0
+                                                            dialogue_pickup,
+                                                            1
                                                             );
                                 AddInteractable(temp);
                             }
@@ -1203,6 +1217,9 @@ namespace PERSIST
 
             if (name == "rm_styx1")
                 prog_manager.mask = true;
+
+            if (lukas_cutscene != null && dialogue)
+                lukas_cutscene.Update(gameTime);
 
             river_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
 
@@ -1475,9 +1492,16 @@ namespace PERSIST
 
             if (code[0] == "lukas1" && code.Length > 1)
             {
-                if (code[1] == "0" || code[1] == "1")
+                if (code[1] == "1")
                 {
                     dialogue_num++;
+                    dialogue_letter = 0f;
+                    return;
+                }
+
+                else if (code[1] == "0")
+                {
+                    dialogue_num = 27;
                     dialogue_letter = 0f;
                     return;
                 }
@@ -1756,8 +1780,33 @@ namespace PERSIST
 
             if (cutscene_code[0] == "lukaspickup")
             {
+
+                // note that this doesn't cause lukas to update during dialogue
+                // so there's also a special clause in this level's update function now
+                // is that dumb? probably lol whatever
+                if (lukas_cutscene != null)
+                    lukas_cutscene.Update(gameTime);
+
+
                 if (cutscene_timer > 0f && cutscene_code[1] == "empty")
                 {
+                    foreach (Enemy e in enemies)
+                        if (e.GetType() == typeof(Lukas_Cutscene))
+                            lukas_cutscene = (Lukas_Cutscene)e;
+
+                    foreach (Interactable i in interactables)
+                        if (i.GetType() == typeof(ShadePickup))
+                            shade_pickup = (ShadePickup)i;
+
+                    if (lukas_cutscene == null || shade_pickup == null)
+                    {
+                        cutscene = false;
+                        player.ExitCutscene();
+                        return;
+                    }
+
+                    lukas_cutscene.looking = true;
+
                     player.SetNoInput();
                     player.DoMovement(gameTime);
                     player.DoAnimate(gameTime);
@@ -1772,7 +1821,7 @@ namespace PERSIST
                 {
                     cutscene_cam = true;
                     cutscene_cam_speed = 10f;
-                    cutscene_cam_pos = new Vector2(saved_camera_x - 120, saved_camera_y);
+                    cutscene_cam_pos = new Vector2(saved_camera_x - 96, saved_camera_y);
                 }
 
                 if (cutscene_timer > 1.3f && cutscene_code[2] == "empty")
@@ -1781,19 +1830,39 @@ namespace PERSIST
                     cutscene_code[2] = "-";
                 }
 
-                if (cutscene_timer > 3.2f && cutscene_code[3] == "empty")
+                if (cutscene_timer > 1.8f)
                 {
-                    StartDialogue(dialogue_lukas_pickup, 14, 'c', 25f, true);
+                    lukas_cutscene.magic = true;
+                    shade_pickup.floating = true;
+                }
+
+                if (cutscene_timer > 3.5f && cutscene_code[3] == "empty")
+                {
+                    shade_pickup.Transform();
                     cutscene_code[3] = "-";
                 }
 
-                if (cutscene_timer > 3.23f)
+                if (cutscene_timer > 4.5f)
+                {
+                    shade_pickup.floating = false;
+                    lukas_cutscene.magic = false;
+                }
+
+                if (cutscene_timer > 5.8f && cutscene_code[4] == "empty")
+                {
+                    StartDialogue(dialogue_lukas_pickup, 14, 'c', 25f, true);
+                    cutscene_code[4] = "-";
+                }
+
+                if (cutscene_timer > 5.83f)
                 {
                     cutscene_cam_pos = new Vector2(saved_camera_x, saved_camera_y);
                 }
 
-                if (cutscene_timer > 4.3f)
+                if (cutscene_timer > 7.0f)
                 {
+                    lukas_cutscene.looking = false;
+                    lukas_cutscene = null;
                     cutscene_cam = false;
                     player.ExitCutscene();
                     cutscene = false;
@@ -2086,6 +2155,16 @@ namespace PERSIST
                 return w.GetType() == typeof(Crumble);
 
             return false;
+        }
+
+        public void RemoveLukas()
+        {
+            foreach (Enemy e in enemies)
+                if (e.GetType() == typeof(Lukas_Cutscene))
+                {
+                    RemoveEnemy(e);
+                    break;
+                }
         }
     }
 }

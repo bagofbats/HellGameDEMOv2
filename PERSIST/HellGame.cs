@@ -14,7 +14,7 @@ namespace PERSIST
 {
     public class HellGame : Game
     {
-        private bool debug = false;
+        private bool debug = true;
         public bool opaque
         { get; private set; } = false;
 
