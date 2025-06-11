@@ -26,6 +26,18 @@
 /processorParam:Quality=Best
 /build:audio/snd_hit.wav
 
+#begin audio/snd_tick.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/snd_tick.wav
+
+#begin audio/snd_tock.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/snd_tock.wav
+
 #begin bgs/bg_brick2.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -6,6 +6,8 @@
  - interactable little guys on the reused level parts
  - have some collapsable blocks go behind styx
  - think harder abt dashing and attacking at the same time
+ - have different levels be able to load/unload sounds from audio manager
+   so all the sounds aren't always loaded into memory all the time
 
 art:
  - more advanced dust animation when blocks switch?
@@ -15,12 +17,15 @@ art:
  - adjust in-air sprites to be less misleading abt hitbox
  - death animation for mushroom ppl
  - adjust trigo's in-air sprites to better align with hitbox??
+ - fix the stone bg tiles in the tileset
 
  bugs:
  - ranged attacks get stopped by one-way platforms
  - ranged attack particle vfx fuckin sugks
     - if the particle breaks on the corner of a wall the poof vfx is misplaced
  - make key non-interactable during boss fight
+ - have it so when kanna jumps away from you she still fires the arrow in your direction
+ - try chaning frame rate to see if anything breaks
 
  area plan:
   - on new save file:

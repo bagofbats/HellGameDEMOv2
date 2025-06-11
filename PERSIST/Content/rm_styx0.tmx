@@ -15,7 +15,7 @@
   <object id="316" x="3520" y="640" width="320" height="240"/>
  </objectgroup>
  <objectgroup id="2" name="entities">
-  <object id="3" name="player" x="3304" y="512">
+  <object id="3" name="player" x="3280" y="512">
    <point/>
   </object>
   <object id="10" name="fake_checkpoint" x="240" y="560">

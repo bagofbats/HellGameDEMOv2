@@ -1156,6 +1156,7 @@ namespace PERSIST
             enemy_assets.Add(typeof(Kanna_Boss), spr_kanna);
             enemy_assets.Add(typeof(DeadGuyTwo), tst_styx);
             enemy_assets.Add(typeof(Mushroom_Boss), spr_mushroom);
+            enemy_assets.Add(typeof(Mushroom_Body), spr_mushroom);
             enemy_assets.Add(typeof(Mushroom_Hand), spr_mushroom);
             enemy_assets.Add(typeof(Lukas_Cutscene), spr_lukas);
 
@@ -1429,6 +1430,9 @@ namespace PERSIST
                                 }
                     }
                 }
+
+
+                //audio_manager.PlaySound("tick");
                     
 
             }
@@ -1459,6 +1463,8 @@ namespace PERSIST
                                 }
                     }
                 }
+
+                //audio_manager.PlaySound("tock");
             }
 
             foreach (JumpSwitch s in switches)

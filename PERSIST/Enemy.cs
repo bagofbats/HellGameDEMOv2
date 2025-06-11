@@ -1930,7 +1930,7 @@ namespace PERSIST
         {
             if (!root.prog_manager.kanna_defeated)
             {
-                hp -= 1;
+                hp -= damage;
                 flash = true;
 
                 if (hp < 8)
@@ -2159,8 +2159,8 @@ namespace PERSIST
         new private StyxLevel root;
         private Texture2D sprite;
 
-        private Mushroom_Hand left_hand;
         private Mushroom_Hand right_hand;
+        private Mushroom_Body body;
 
         private bool sleep = true;
         private bool trigger_watch = false;
@@ -2170,6 +2170,7 @@ namespace PERSIST
         private float atk1_threshold = 1.8f;
         private float atk999_threshold = 3f;
         private float atk0_smash_threshold = 0.6f;
+        private float atk999_spore_threshold = 1f;
         private int atk = 0;
         private int dir = 1;
         private bool state_change = false;
@@ -2177,14 +2178,14 @@ namespace PERSIST
         private bool smashed = false;
         private bool hand_right = true;
 
-        private int h_oset = 11;
+        private int h_oset = 9;
         private int v_oset = 16;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 72, 72); } }
 
         public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 72 - (h_oset * 2), 72 - v_oset); } }
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 72 - (h_oset * 2), 16); } }
 
         public Mushroom_Boss(Vector2 pos, Player player, StyxLevel root)
         {
@@ -2196,7 +2197,9 @@ namespace PERSIST
             super_pogo = true;
 
             right_hand = new Mushroom_Hand(new Vector2(pos.X + 72, pos.Y + 40), player, root);
+            body = new Mushroom_Body(new Vector2(pos.X, pos.Y), player, root);
             root.AddEnemy(right_hand);
+            root.AddEnemy(body);
         }
 
 
@@ -2207,6 +2210,11 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+
+            body.SetPosX(pos.X + 0);
+            body.SetPosY(pos.Y + 8);
+
+
             if (sleep)
             {
                 Sleep(gameTime);
@@ -2345,6 +2353,20 @@ namespace PERSIST
                 state_change = true;
             }
 
+            if (atk_timer > atk999_spore_threshold)
+            {
+                if ((int)(atk_timer * 60) % 30 == 0)
+                {
+                    var spore = new Mushroom_Spore(
+                        new Vector2(pos.X + (PositionRectangle.Width / 2), pos.Y + v_oset),
+                        root,
+                        sprite
+                    );
+
+                    root.AddEnemy(spore);
+                }
+            }
+
             right_hand.SetPosX(pos.X + 18);
             right_hand.SetPosY(pos.Y + 18);
         }
@@ -2361,6 +2383,11 @@ namespace PERSIST
         public override void Draw(SpriteBatch spriteBatch)
         {
             
+        }
+
+        public override void Damage(float damage)
+        {
+            hp -= damage;
         }
 
 
@@ -2385,11 +2412,83 @@ namespace PERSIST
         
     }
 
+    public class Mushroom_Body : Enemy
+    {
+        private Player player;
+        new private StyxLevel root;
+        private Texture2D sprite;
+
+        private int h_oset = 11;
+        private int v_oset = 32;
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 72, 72); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 72 - (h_oset * 2), 64 - v_oset); } }
+
+        public Mushroom_Body(Vector2 pos, Player player, StyxLevel root)
+        {
+            this.pos = pos;
+            this.player = player;
+            this.root = root;
+
+            hurtful = false;
+            super_pogo = false;
+        }
+
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // throw new NotImplementedException();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            // throw new NotImplementedException();
+        }
+
+        public void SetPosX(float x)
+        {
+            pos.X = x;
+        }
+
+        public void SetPosY(float y)
+        {
+            pos.Y = y;
+        }
+
+
+
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+            //spriteBatch.Draw(blue, PositionRectangle, Color.Blue * 0.3f);
+        }
+
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+
+    }
+
     public class Mushroom_Hand : Enemy
     {
         private Player player;
-        private float hp = 24;
-        private int max_hp = 24;
         new private StyxLevel root;
         private Texture2D sprite;
 
@@ -2454,6 +2553,68 @@ namespace PERSIST
         }
 
 
+    }
+
+    public class Mushroom_Spore : Enemy
+    {
+
+        private Texture2D img;
+        private Rectangle bounds;
+
+        private float speed = -1.7f;
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X - 3, (int)pos.Y - 3, 6, 6); } }
+
+        public Mushroom_Spore(Vector2 pos, StyxLevel root, Texture2D img)
+        {
+            this.pos = pos;
+            this.root = root;
+            this.img = img;
+
+            hurtful = false;
+            destroy_projectile = false;
+            pogoable = false;
+
+            bounds = root.RealGetRoom(pos).bounds;
+        }
+
+
+        public override void Update(GameTime gameTime)
+        {
+            pos.Y += speed * 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (!bounds.Contains(HitBox))
+            {
+                root.RemoveEnemy(this);
+            }
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            // nothing (for now)
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            // nothing lol
+        }
+
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
     }
 
 

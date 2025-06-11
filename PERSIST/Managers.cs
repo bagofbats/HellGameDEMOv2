@@ -326,7 +326,7 @@ namespace PERSIST
             slime_started = false;
             mask = true;
             journal_secret = false;
-            charons_blessing = false;
+            charons_blessing = true;
             dash = false;
             locks = false;
             jump_blocks = false;
@@ -411,6 +411,8 @@ namespace PERSIST
         {
             sfx.Add("atk", root.Content.Load<SoundEffect>("audio/snd_atk"));
             sfx.Add("hit", root.Content.Load<SoundEffect>("audio/snd_hit"));
+            sfx.Add("tick", root.Content.Load<SoundEffect>("audio/snd_tick"));
+            sfx.Add("tock", root.Content.Load<SoundEffect>("audio/snd_tock"));
         }
 
         public void PlaySound(string snd)
