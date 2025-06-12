@@ -2158,6 +2158,7 @@ namespace PERSIST
         private int max_hp = 24;
         new private StyxLevel root;
         private Texture2D sprite;
+        private Random rnd;
 
         private Mushroom_Hand right_hand;
         private Mushroom_Body body;
@@ -2180,6 +2181,9 @@ namespace PERSIST
 
         private int h_oset = 9;
         private int v_oset = 16;
+        private int[] spore_osets = { 10, 20, 30, 40, 50, 60 };
+        private int spore_index = 0;
+        private int spore_index_old = 0;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 72, 72); } }
@@ -2193,13 +2197,15 @@ namespace PERSIST
             this.player = player;
             this.root = root;
 
-            hurtful = false;
+            hurtful = true;
             super_pogo = true;
 
             right_hand = new Mushroom_Hand(new Vector2(pos.X + 72, pos.Y + 40), player, root);
             body = new Mushroom_Body(new Vector2(pos.X, pos.Y), player, root);
             root.AddEnemy(right_hand);
             root.AddEnemy(body);
+
+            rnd = new();
         }
 
 
@@ -2355,10 +2361,16 @@ namespace PERSIST
 
             if (atk_timer > atk999_spore_threshold)
             {
-                if ((int)(atk_timer * 60) % 30 == 0)
+                if ((int)(atk_timer * 60) % 10 == 0)
                 {
+
+                    while(spore_index == spore_index_old)
+                        spore_index = rnd.Next(spore_osets.Length);
+
+                    spore_index_old = spore_index;
+
                     var spore = new Mushroom_Spore(
-                        new Vector2(pos.X + (PositionRectangle.Width / 2), pos.Y + v_oset),
+                        new Vector2(pos.X + spore_osets[spore_index], pos.Y + v_oset),
                         root,
                         sprite
                     );
@@ -2433,7 +2445,7 @@ namespace PERSIST
             this.player = player;
             this.root = root;
 
-            hurtful = false;
+            hurtful = true;
             super_pogo = false;
         }
 
@@ -2507,7 +2519,7 @@ namespace PERSIST
             this.player = player;
             this.root = root;
 
-            hurtful = false;
+            hurtful = true;
             super_pogo = true;
         }
 
@@ -2572,7 +2584,7 @@ namespace PERSIST
             this.root = root;
             this.img = img;
 
-            hurtful = false;
+            hurtful = true;
             destroy_projectile = false;
             pogoable = false;
 
@@ -2637,7 +2649,7 @@ namespace PERSIST
             this.img = img;
             this.right = right;
 
-            hurtful = false;
+            hurtful = true;
             destroy_projectile = false;
             pogoable = false;
 
