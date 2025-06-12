@@ -2159,6 +2159,7 @@ namespace PERSIST
         new private StyxLevel root;
         private Texture2D sprite;
         private Random rnd;
+        private Rectangle frame = new Rectangle(72, 128, 72, 72);
 
         private Mushroom_Hand right_hand;
         private Mushroom_Body body;
@@ -2320,6 +2321,11 @@ namespace PERSIST
                 right_hand.SetPosY(pos.Y + 40);
             else
                 right_hand.SetPosY(pos.Y);
+
+            if (smashed)
+                frame.X = 72 * 2;
+            else
+                frame.X = 0;
         }
 
         private void AtkOne(GameTime gameTime)
@@ -2332,6 +2338,8 @@ namespace PERSIST
             }
 
             pos.X += ((float)move_dist / (atk1_threshold * 60)) * dir * 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            frame.X = 72;
 
 
 
@@ -2394,7 +2402,7 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
         }
 
         public override void Damage(float damage)
@@ -2507,6 +2515,8 @@ namespace PERSIST
         private int h_oset = 5;
         private int v_oset = 3;
 
+        private Rectangle frame = new Rectangle(192, 0, 32, 32);
+
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
 
@@ -2536,7 +2546,7 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
         }
 
         public void SetPosX(float x)
