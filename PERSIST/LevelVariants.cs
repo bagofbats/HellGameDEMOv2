@@ -736,11 +736,15 @@ namespace PERSIST
         public Rectangle mushroom_zone
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
+        public Rectangle hideout_trigger
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
         private Rectangle kanna_boss_blocks = new Rectangle(0, 0, 0, 0);
 
         private Kanna_Boss kanna_boss;
         private Lukas_Cutscene lukas_cutscene = null;
         private ShadePickup shade_pickup = null;
+        private Kanna_Cutscene kanna_cutscene = null;
 
         private float saved_camera_x = 0f;
         private float saved_camera_y = 0f;
@@ -832,6 +836,31 @@ namespace PERSIST
             new DialogueStruct("GODSPEED TRAVELER.\nMAY YOU SUCCEED WHERE I DID NOT.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
             new DialogueStruct(". . .", 'd', Color.White, 'c'),
             new DialogueStruct("You learned how to dash!", 'd', Color.White, 'c', true),
+        };
+
+        DialogueStruct[] dialogue_hideout =
+        {
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct(". . . I'll leave.", 'd', Color.White, 'p', false, "", 135, 180),
+            new DialogueStruct("No, it's alright.\nYou can stay.", 'd', Color.White, 'r', false, "", 270, 135),
+            new DialogueStruct("This is my hideout.\nMake yourself at home, I guess.", 'd', Color.White, 'r', true, "", 270, 0),
+            new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\n\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 1|hideout0 2"), // <--- index 5
+            new DialogueStruct("Yeah, I guess I did say that, huh . . .", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("Well, sharing my hideout isn't so bad.\nJust make sure you don't blow my cover.", 'd', Color.White, 'p', true, "", 405, 0),
+            new DialogueStruct("Yep. My hideout.", 'd', Color.White, 'p', false, "", 405, 0),                                                                            // <------ index 8
+            new DialogueStruct("What do you think?\nTakes a lot of energy pretending all the time.\nNice to have a space where I won't be seen.", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("It's cool!\nIt sucks.\nIt's somewhere between 'cool' and 'sucks'.", 'o', Color.White, 'l', false, "hideout1 0|hideout1 1|hideout1 2"), // <--- index 10
+            new DialogueStruct("Is it? I dunno.\nI'd still rather be anywhere else, honestly.\nBut it's better than nothing.", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("And you can swing by whenever.\nI don't mind having company.", 'd', Color.White, 'p', true, "", 405, 0),
+            new DialogueStruct("rude.", 'd', Color.White, 'p', false, "", 405, 0),                                                                                     // <------ index 13
+            new DialogueStruct("But also pretty true, this does kinda suck.\nI'd rather be anywhere else, honestly.", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("But a sucky hideout is still better than nothing.\nYou're welcome to swing by whenever if you want\na break.", 'd', Color.White, 'p', true, "", 405, 0),
+            new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 405, 90),                                                                                      // <------ index 16
+            new DialogueStruct("You know, I was thinking the same thing about\nyou.", 'd', Color.White, 'p', true, "", 405, 90),
+            new DialogueStruct("\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 1|hideout0 2"),                                          // <------- index 18
+            new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 2"),       // <--- index 19
+            new DialogueStruct("Nevermind.", 'o', Color.White, 'l', false, "hideout0 2"),       // <--- index 20
         };
 
         // dialogue_key is inside the key object -- i know, confusing...
@@ -1077,6 +1106,12 @@ namespace PERSIST
                                                                   (int)l.objects[i].width,
                                                                   (int)l.objects[i].height);
 
+                            if (l.objects[i].name == "hideout_trigger")
+                                hideout_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                                  (int)l.objects[i].y + t.location.Y,
+                                                                  (int)l.objects[i].width,
+                                                                  (int)l.objects[i].height);
+
                             if (l.objects[i].name == "key_pickup" && !prog_manager.locks)
                             {
                                 var temp = new KeyPickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
@@ -1115,6 +1150,16 @@ namespace PERSIST
                                 AddEnemy(new Lukas_Cutscene(temp, this, "pickup"));
                                 enemy_locations.Add(temp);
                                 enemy_types.Add("lukas_cutscene_pickup");
+                            }
+
+                            if (l.objects[i].name == "kanna_cutscene_hideout" && !prog_manager.dash)
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                var kanna = new Kanna_Cutscene(temp, this, player, "hideout", dialogue_hideout);
+                                AddEnemy(kanna);
+                                kanna_cutscene = kanna;
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("kanna_cutscene_hideout");
                             }
                         }
 
@@ -1159,6 +1204,7 @@ namespace PERSIST
             enemy_assets.Add(typeof(Mushroom_Body), spr_mushroom);
             enemy_assets.Add(typeof(Mushroom_Hand), spr_mushroom);
             enemy_assets.Add(typeof(Lukas_Cutscene), spr_lukas);
+            enemy_assets.Add(typeof(Kanna_Cutscene), spr_kanna);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(enemy_assets[enemy.GetType()]);
@@ -1266,6 +1312,8 @@ namespace PERSIST
 
         public override void ResetUponDeath()
         {
+            kanna_cutscene = null;
+
             // reset breakable walls
             for (int i = special_walls.Count - 1; i >= 0; i--)
                 RemoveSpecialWall(special_walls[i]);
@@ -1362,6 +1410,14 @@ namespace PERSIST
 
                 if (enemy_types[i] == "lukas_cutscene_pickup" && !prog_manager.locks)
                     AddEnemy(new Lukas_Cutscene(enemy_locations[i], this, "pickup"));
+
+                if (enemy_types[i] == "kanna_cutscene_hideout" && !prog_manager.dash)
+                {
+                    var temp = new Kanna_Cutscene(enemy_locations[i], this, player, "hideout", dialogue_hideout);
+                    AddEnemy(temp);
+                    kanna_cutscene = temp;
+                }
+                    
             }
 
             // replace keys
@@ -1542,6 +1598,60 @@ namespace PERSIST
                     dialogue = false;
                     dialogue_letter = 0f;
                     dialogue_num = 0;
+                    return;
+                }
+            }
+
+            if (code[0] == "hideout0" && code.Length > 1)
+            {
+
+                if (code[1] == "0")
+                {
+                    dialogue_num = 6;
+                    dialogue_letter = 0f;
+                    kanna_cutscene.stay_out_of_way = true;
+                    return;
+                }
+
+                if (code[1] == "1")
+                {
+                    dialogue_num = 8;
+                    dialogue_letter = 0f;
+                    kanna_cutscene.ask_hideout = true;
+                    return;
+                }
+
+                if (code[1] == "2")
+                {
+                    player.LeaveDialogue();
+                    dialogue = false;
+                    dialogue_letter = 0f;
+                    dialogue_num = 0;
+                    return;
+                }
+            }
+
+            if (code[0] == "hideout1" && code.Length > 1)
+            {
+
+                if (code[1] == "0")
+                {
+                    dialogue_num++;
+                    dialogue_letter = 0f;
+                    return;
+                }
+
+                if (code[1] == "1")
+                {
+                    dialogue_num = 13;
+                    dialogue_letter = 0f;
+                    return;
+                }
+
+                if (code[1] == "2")
+                {
+                    dialogue_num = 16;
+                    dialogue_letter = 0f;
                     return;
                 }
             }
@@ -1874,6 +1984,38 @@ namespace PERSIST
                     cutscene = false;
                 }
             }
+
+            if (cutscene_code[0] == "enterhideout")
+            {
+                player.SetNoInput();
+                player.DoMovement(gameTime);
+                player.DoAnimate(gameTime);
+
+                if (cutscene_timer > 0.8f)
+                {
+                    player.SetLastHdir(1);
+                }
+
+                if (cutscene_timer > 1.5f && cutscene_code[1] == "empty")
+                {
+                    StartDialogue(dialogue_hideout, 0, 'c', 25f, true);
+                    cutscene_code[1] = "-";
+                }
+
+
+                if (cutscene_timer > 1.53f)
+                {
+                    Room r = RealGetRoom(player.GetPos());
+
+                    if (null != r)
+                        r.name = "Hideout";
+
+                    player.ExitCutscene();
+                    cutscene = false;
+                    prog_manager.EnterHideout();
+                }
+                    
+            }
         }
 
 
@@ -2127,6 +2269,14 @@ namespace PERSIST
             for (int i = enemies.Count - 1; i > 0; i--)
                 if (enemies[i].GetType() == typeof(Kanna_Projectile))
                     RemoveEnemy(enemies[i]);
+        }
+
+        public void EnterHideout(GameTime gameTime)
+        {
+            if (!prog_manager.hideout_entered)
+            {
+                HandleCutscene("enterhideout|empty", gameTime, true);
+            }
         }
 
         // end boss functions

@@ -112,9 +112,6 @@
     <property name="danger" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="279" name="player" x="760" y="48">
-   <point/>
-  </object>
   <object id="280" name="mushroom_zone" x="408" y="16" width="248" height="176"/>
  </objectgroup>
  <layer id="2" name="background_lower" width="160" height="60">

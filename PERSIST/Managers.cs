@@ -311,6 +311,10 @@ namespace PERSIST
         public bool mushroom_defeated
         { get; private set; }
 
+        // cutscenes
+        public bool hideout_entered
+        { get; private set; }
+
         // secrets
         public bool journal_secret
         { get; private set; }
@@ -326,13 +330,14 @@ namespace PERSIST
             slime_started = false;
             mask = true;
             journal_secret = false;
-            charons_blessing = true;
+            charons_blessing = false;
             dash = false;
             locks = false;
             jump_blocks = false;
             kanna_started = false;
             kanna_defeated = false;
             mushroom_defeated = false;
+            hideout_entered = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
@@ -393,6 +398,11 @@ namespace PERSIST
         public void LearnDash()
         {
             dash = true;
+        }
+
+        public void EnterHideout()
+        {
+            hideout_entered = true;
         }
     }
 

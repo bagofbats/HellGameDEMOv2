@@ -729,8 +729,7 @@ namespace PERSIST
             var current_room = RealGetRoom(cam.GetPos());
 
             if (current_room != null && cam.stable && !(player_dead || finish_player_dead))
-
-
+            {
                 if (dialogue)
                 {
                     dialogue_loc = dialogue_txt[dialogue_num].loc;
@@ -826,6 +825,7 @@ namespace PERSIST
                     Vector2 textDrawPoint = new Vector2(cam.GetPos().X + 159, cam.GetPos().Y + 3);
                     _spriteBatch.DrawString(bm_font, current_room.name, textDrawPoint, Color.White, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
                 }
+            }
 
             _spriteBatch.End();
 
@@ -1162,7 +1162,7 @@ namespace PERSIST
         private List<Enemy> enemies = new List<Enemy>();
 
         public String name
-        { get; private set; }
+        { get; set; }
 
         public Room(Rectangle bounds, String name)
         { 

@@ -8,6 +8,8 @@
  - think harder abt dashing and attacking at the same time
  - have different levels be able to load/unload sounds from audio manager
    so all the sounds aren't always loaded into memory all the time
+ - have room not be named "hideout" until after cutscene starts
+ - dialogue options being first dialogue causes down to interact to register as moving down options
 
 art:
  - more advanced dust animation when blocks switch?

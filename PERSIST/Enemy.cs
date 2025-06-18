@@ -1625,6 +1625,9 @@ namespace PERSIST
 
                 else if (player.HitBox.Y > root.kanna_trigger.Y && trigger_watch)
                     root.FightKanna(this, gameTime);
+
+                else
+                    trigger_watch = false;
             }
 
             else
@@ -2966,34 +2969,113 @@ namespace PERSIST
 
     public class Kanna_Cutscene : Enemy
     {
-        public override bool CheckCollision(Rectangle input)
-        {
-            throw new NotImplementedException();
-        }
 
-        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
-        {
-            throw new NotImplementedException();
-        }
+        new private StyxLevel root;
+        private Texture2D sprite;
+        private String type;
+        private Player player;
+        DialogueStruct[] diastruct;
 
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            throw new NotImplementedException();
-        }
+        private bool triggered = false;
+        private bool trigger_watch = false;
+        public bool mask = true;
 
-        public override Rectangle GetHitBox(Rectangle input)
-        {
-            throw new NotImplementedException();
-        }
+        public bool stay_out_of_way = false;
+        public bool ask_hideout = false;
 
-        public override void LoadAssets(Texture2D sprite)
+        private Rectangle frame = new Rectangle(256, 64, 32, 32);
+
+        private int h_oset = 11;
+        private int v_oset = 14;
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
+
+        public Kanna_Cutscene(Vector2 pos, StyxLevel root, Player player, String type, DialogueStruct[] diastruct=null)
         {
-            throw new NotImplementedException();
+            this.pos = pos;
+            this.root = root;
+            this.type = type;
+            this.player = player;
+            this.diastruct = diastruct;
+
+            hurtful = false;
+            pogoable = false;
+            destroy_projectile = false;
         }
 
         public override void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            // nothing (for now)
+
+            if (!root.prog_manager.hideout_entered)
+            {
+                if (player.HitBox.Intersects(root.hideout_trigger))
+                    trigger_watch = true;
+
+                else if (player.HitBox.Y < root.hideout_trigger.Y && trigger_watch)
+                    root.EnterHideout(gameTime);
+
+                else
+                    trigger_watch = false;
+            }
         }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            int mask_oset = 0;
+
+            if (!mask)
+                mask_oset -= 256;
+
+            Rectangle temp_frame = new Rectangle(frame.X + mask_oset, frame.Y, frame.Width, frame.Height);
+
+            spriteBatch.Draw(sprite, PositionRectangle, temp_frame, Color.White);
+        }
+
+        public override void Interact()
+        {
+            if (diastruct == null)
+                return;
+
+            int index = 5;
+
+            if (stay_out_of_way && !ask_hideout)
+                index = 18;
+            else if (!stay_out_of_way && ask_hideout)
+                index = 19;
+            else if (stay_out_of_way && ask_hideout)
+                index = 20;
+
+            root.StartDialogue(diastruct, index, 'c', 25f, true);
+        }
+
+
+
+        // trivial functions
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+
     }
 }

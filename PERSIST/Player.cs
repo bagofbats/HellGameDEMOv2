@@ -36,12 +36,15 @@ namespace PERSIST
         private bool enter_released;
         private bool shift_pressed;
         private bool shift_released;
+        private bool down_pressed;
+        private bool down_released;
 
         // state fields
         private bool dialogue = false;
         private bool cutscene = false;
         private bool pogoed = false;
         private bool attacking = false;
+        private bool just_entered_dialogue = false;
 
         // gameplay fields
         private Vector2 pos;
@@ -239,6 +242,8 @@ namespace PERSIST
                 AnimateTree(game_time);
             }
 
+            just_entered_dialogue = true;
+
         }
 
         public void LeaveDialogue()
@@ -317,6 +322,8 @@ namespace PERSIST
             enter_released = contManager.ENTER_RELEASED;
             shift_pressed = contManager.SHIFT_PRESSED;
             shift_released = contManager.SHIFT_RELEASED;
+            down_pressed = contManager.DOWN_PRESSED;
+            down_released = contManager.DOWN_RELEASED;
         }
 
         
@@ -827,6 +834,15 @@ namespace PERSIST
 
         public int HandleDialogueOptions(int option, int max_options)
         {
+            // clause for when you interact with someone
+            // and the first dialogue box is interactable
+            // this prevents the down to interact from also doing a down to change dialogue option
+            if (just_entered_dialogue)
+            {
+                just_entered_dialogue = false;
+                return option;
+            }
+
             if (contManager.DOWN_PRESSED)
             {
                 option += 1;
