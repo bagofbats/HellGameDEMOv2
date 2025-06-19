@@ -19,6 +19,7 @@ namespace PERSIST
         public const float angle60 = 1.0472f;
         public const float angle75 = 1.309f;
         public const float angle90 = 1.5708f;
+        public const float flash_limit = 0.1f;
     }
 
     public class HellGame : Game

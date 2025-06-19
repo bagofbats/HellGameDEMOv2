@@ -80,7 +80,8 @@ namespace PERSIST
         protected float cutscene_cam_speed = 5f;
 
         protected float boss_hp = 0;
-        protected int boss_max_hp = 0;
+        public int boss_max_hp
+        { get; protected set; } = 0;
 
         public bool cutscene
         { get; protected set; } = false;
@@ -1812,16 +1813,18 @@ namespace PERSIST
 
         public void Interact()
         {
-            if (!interacted)
+            if (root.boss_max_hp == 0)
             {
-                interacted = true;
-                root.StartDialogue(dialogue_key, 0, 'c', 25f, true);
+                if (!interacted)
+                {
+                    interacted = true;
+                    root.StartDialogue(dialogue_key, 0, 'c', 25f, true);
+                }
+                else
+                {
+                    root.StartDialogue(dialogue_key, 2, 'c', 25f, true);
+                }
             }
-            else
-            {
-                root.StartDialogue(dialogue_key, 2, 'c', 25f, true);
-            }
-            
         }
     }
 

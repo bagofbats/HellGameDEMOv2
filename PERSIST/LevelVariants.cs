@@ -2045,7 +2045,8 @@ namespace PERSIST
                 checkpoints[i].Draw(_spriteBatch);
 
             for (int i = enemies.Count - 1; i >= 0; i--)
-                enemies[i].Draw(_spriteBatch);
+                if (enemies[i].GetType() != typeof(Mushroom_Hand))  // special case for mushroom boss
+                    enemies[i].Draw(_spriteBatch);
 
             for (int i = interactables.Count - 1; i >= 0; i--)
                 interactables[i].Draw(_spriteBatch);

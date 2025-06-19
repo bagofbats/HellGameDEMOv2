@@ -2148,8 +2148,8 @@ namespace PERSIST
     public class Mushroom_Boss : Enemy
     {
         private Player player;
-        private float hp = 14;
-        private int max_hp = 14;
+        private float hp = 13;
+        private int max_hp = 13;
         new private StyxLevel root;
         private Texture2D sprite;
         private Random rnd;
@@ -2176,6 +2176,9 @@ namespace PERSIST
         private int ground_y = 0;
         private bool projectiled = false;
         private bool burrowed = false;
+        private bool flash = false;
+        private float flash_timer = 0.0f;
+        private bool damaged;
 
         private int h_oset = 8;
         private int v_oset = 17;
@@ -2233,6 +2236,17 @@ namespace PERSIST
 
             body.SetPosX(pos.X + 0);
             body.SetPosY(pos.Y + 8);
+
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (flash_timer > CONSTANTS.flash_limit)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                }
+            }
 
 
             if (sleep)
@@ -2302,8 +2316,12 @@ namespace PERSIST
 
                 right_hand.SetPosY(pos.Y + 40);
 
+                int x_oset = -4;
+                if (dir == -1)
+                    x_oset = (right_hand.HitBox.Width / 2) + 4;
+
                 var shock = new Shockwave(
-                    new Vector2(right_hand.HitBox.X + (right_hand.HitBox.Width / 2), right_hand.HitBox.Y + right_hand.HitBox.Height - 10),
+                    new Vector2(right_hand.HitBox.X + x_oset, right_hand.HitBox.Y + right_hand.HitBox.Height - 10),
                     root,
                     sprite,
                     new Rectangle(128, 112, 6, 16),
@@ -2325,6 +2343,16 @@ namespace PERSIST
                 right_hand.SetPosY(pos.Y + 40);
             else
                 right_hand.SetPosY(pos.Y);
+
+
+            // animate
+
+            if (dir == -1 && !damaged)
+                frame.X = 72;
+            else if (!damaged)
+                frame.X = 0;
+            else
+                frame.X = 72 * 3;
         }
 
         private void AtkOne(GameTime gameTime)
@@ -2338,13 +2366,13 @@ namespace PERSIST
 
             float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-
             // change boss properties
             if (atk_timer < atk1_threshold - atk1_emerge_threshold)
             {
                 burrowed = true;
                 pogoable = false;
                 hurtful = false;
+                damaged = false;
             }
             else
             {
@@ -2403,10 +2431,15 @@ namespace PERSIST
 
                     projectiled = true;
                 }
-                
+
             }
 
-            right_hand.SetPosX(pos.X + 16);
+
+            // animate
+            if (atk_timer > atk1_threshold - atk1_emerge_threshold)
+                frame.X = 72 * 2;
+
+            right_hand.SetPosX(pos.X + 20);
             right_hand.SetPosY(pos.Y + 40);
         }
 
@@ -2421,7 +2454,15 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            right_hand.Draw(spriteBatch);
+
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            if (flash)
+            {
+                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 72, 72, 72);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+            }
         }
 
         public override void Damage(float damage)
@@ -2430,6 +2471,12 @@ namespace PERSIST
                 return;
 
             hp -= damage;
+
+            flash = true;
+
+            damaged = true;
+
+            int particle_oset = rnd.Next(0, 5);
 
             if (hp <= 0)
                 Die();
@@ -2548,6 +2595,11 @@ namespace PERSIST
         private int h_oset = 5;
         private int v_oset = 3;
 
+        private bool flash = false;
+        private float flash_timer = 0f;
+
+        private Random rnd;
+
         private Rectangle frame = new Rectangle(192, 0, 32, 32);
 
         public Rectangle PositionRectangle
@@ -2564,6 +2616,8 @@ namespace PERSIST
 
             hurtful = true;
             super_pogo = true;
+
+            rnd = new Random();
         }
 
 
@@ -2574,12 +2628,28 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (flash_timer > CONSTANTS.flash_limit)
+                {
+                    flash_timer = 0;
+                    flash = false;
+                }
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            if (flash)
+            {
+                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + frame.Height, frame.Width, frame.Height);
+
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+            }
         }
 
         public void SetPosX(float x)
@@ -2625,6 +2695,14 @@ namespace PERSIST
                 pos.X = x;
         }
 
+
+        public override void Damage(float damage)
+        {
+            flash = true;
+        }
+
+
+
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
@@ -2660,9 +2738,7 @@ namespace PERSIST
         private float acceleration = 0.07f;
 
         private float counter = 0f;
-        private float counter_thold = 0.01f;
-
-        private bool die_wall = false;
+        private float counter_thold = 0.008f;
 
         private int[] past_xes =
         {
