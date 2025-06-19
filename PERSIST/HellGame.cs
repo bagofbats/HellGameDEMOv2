@@ -12,9 +12,18 @@ using TiledCS;
 
 namespace PERSIST
 {
+    static class CONSTANTS
+    {
+        public const float angle30 = 0.523599f;
+        public const float angle45 = 0.785398f;
+        public const float angle60 = 1.0472f;
+        public const float angle75 = 1.309f;
+        public const float angle90 = 1.5708f;
+    }
+
     public class HellGame : Game
     {
-        private bool debug = false;
+        private bool debug = true;
         public bool opaque
         { get; private set; } = false;
 

@@ -966,6 +966,7 @@ namespace PERSIST
             dialogue_loc = justification;
             dialogue_speed = speed;
             dialogue_skippable = skippable;
+            opts_highlighted = 0;
             player.EnterDialogue();
         }
 

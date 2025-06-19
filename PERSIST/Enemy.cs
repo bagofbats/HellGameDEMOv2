@@ -2144,18 +2144,6 @@ namespace PERSIST
 
     public class Mushroom_Boss : Enemy
     {
-        /*
-         * BOSS OVERVIEW:
-         *  - this boss is a GIANT MUSHROOM with one hand
-         *  - it attacks by slamming its hand into the ground, releasing a SHOCK WAVE towards the player
-         *  - after it slams the player can POGO off the hand like a TRAMPOLINE
-         *  - the player can POGO off the boss itself to deal damage
-         *  - if the player is above the boss too long, it releases a SPORE CLOUD
-         *  - the player will have to POGO on top of the boss to hurt it
-         *    and then back off when it releases SPORES
-         */
-
-
         private Player player;
         private float hp = 24;
         private int max_hp = 24;
@@ -2171,23 +2159,32 @@ namespace PERSIST
         private bool trigger_watch = false;
 
         private float atk_timer = 0f;
-        private float atk0_threshold = 2.7f;
-        private float atk1_threshold = 1.8f;
-        private float atk999_threshold = 3f;
-        private float atk0_smash_threshold = 0.6f;
-        private float atk999_spore_threshold = 1f;
+        private float atk0_threshold = 3.5f;
+        private float atk0_smash_threshold = 1f;
+        private float atk1_threshold = 3f;
+        private float atk1_stop_threshold = 1.5f;
+        private float atk1_emerge_threshold = 1f;
         private int atk = 0;
         private int dir = 1;
         private bool state_change = false;
         private int move_dist = 72;
         private bool smashed = false;
-        private bool hand_right = true;
+        private int base_y = 0;
+        private int ground_y = 0;
+        private bool projectiled = false;
 
         private int h_oset = 9;
         private int v_oset = 16;
-        private int[] spore_osets = { 10, 20, 30, 40, 50, 60 };
-        private int spore_index = 0;
-        private int spore_index_old = 0;
+
+        private Vector2[] angles =
+        {
+            new Vector2((float)Math.Cos(CONSTANTS.angle75), (float)Math.Sin(CONSTANTS.angle75) * -1),
+            new Vector2((float)Math.Cos(CONSTANTS.angle45), (float)Math.Sin(CONSTANTS.angle45) * -1),
+            new Vector2((float)Math.Cos(CONSTANTS.angle60), (float)Math.Sin(CONSTANTS.angle60) * -1),
+            new Vector2((float)Math.Cos(CONSTANTS.angle60) * -1, (float)Math.Sin(CONSTANTS.angle60) * -1),
+            new Vector2((float)Math.Cos(CONSTANTS.angle45) * -1, (float)Math.Sin(CONSTANTS.angle45) * -1),
+            new Vector2((float)Math.Cos(CONSTANTS.angle75) * -1, (float)Math.Sin(CONSTANTS.angle75) * -1),
+        };
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 72, 72); } }
@@ -2208,6 +2205,9 @@ namespace PERSIST
             body = new Mushroom_Body(new Vector2(pos.X, pos.Y), player, root);
             root.AddEnemy(right_hand);
             root.AddEnemy(body);
+
+            base_y = (int)pos.Y;
+            ground_y = (int)pos.Y + 72;
 
             rnd = new();
         }
@@ -2232,32 +2232,22 @@ namespace PERSIST
             }
 
 
-
-
-
             // *** not asleep, boss fight time!!! ***
 
             if (state_change)
             {
                 state_change = false;
                 smashed = false;
+                projectiled = false;
                 atk_timer = 0f;
 
                 CalculateDir();
 
-                if (player.GetPos().Y < HitBox.Y && PositionRectangle.Contains(new Vector2(player.GetPos().X + (player.DrawBox.Width / 2), HitBox.Y + 4)))
-                {
-                    // spore attack
-                    atk = 999;
-                }
 
+                if (atk == 1)
+                    atk = 0;
                 else
-                {
-                    if (atk == 1)
-                        atk = 0;
-                    else
-                        atk = 1;
-                }
+                    atk = 1;
 
 
                 if (atk == 1 && !root.mushroom_zone.Contains(new Rectangle(HitBox.X + (dir * move_dist),
@@ -2275,8 +2265,6 @@ namespace PERSIST
                 AtkZero(gameTime);
             if (atk == 1)
                 AtkOne(gameTime);
-            if (atk == 999)
-                Atk999(gameTime);
         }
 
         private void CalculateDir()
@@ -2315,9 +2303,11 @@ namespace PERSIST
             }
 
             if (dir == -1)
-                right_hand.SetPosX(pos.X - 32);
+                right_hand.SmoothSetPosX(pos.X - 32, gameTime, 3);
             else
-                right_hand.SetPosX(pos.X + 72);
+                right_hand.SmoothSetPosX(pos.X + 72, gameTime, 3);
+
+            pos.Y = base_y;
 
 
             if (smashed)
@@ -2333,65 +2323,65 @@ namespace PERSIST
 
         private void AtkOne(GameTime gameTime)
         {
-            // walk around
+            // reposition
 
             if (atk_timer > atk1_threshold)
             {
                 state_change = true;
             }
 
-            pos.X += ((float)move_dist / (atk1_threshold * 60)) * dir * 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            frame.X = 72;
-
-
-
-            if ((int)player.GetPos().X < (int)pos.X + 08 && hand_right)
-                hand_right = false;
-
-            if ((int)player.GetPos().X > (int)pos.X + 28 && !hand_right)
-                hand_right = true;
-
-
-            if (!hand_right)
-                right_hand.SetPosX(pos.X - 32);
-            else
-                right_hand.SetPosX(pos.X + 72);
-
-            right_hand.SetPosY(pos.Y + 10);
-        }
-
-        private void Atk999(GameTime gameTime)
-        {
-            // spore attack
-
-            if (atk_timer > atk999_threshold)
+            if (atk_timer < atk1_threshold - atk1_stop_threshold && pos.Y != ground_y)
             {
-                state_change = true;
+                // go under ground
+
+                pos.Y += Math.Abs(pos.Y - ground_y) / (5 / frame_factor);
+
+                if (Math.Abs(pos.Y - ground_y) < 2)
+                    pos.Y = ground_y;
             }
 
-            if (atk_timer > atk999_spore_threshold)
+            if (atk_timer < atk1_threshold - atk1_stop_threshold && pos.Y == ground_y)
             {
-                if ((int)(atk_timer * 60) % 10 == 0)
+                pos.X += (player.GetPos().X - 22 - pos.X) / (5 / frame_factor);
+            }
+
+            else if (atk_timer > atk1_threshold - atk1_emerge_threshold && pos.Y != base_y)
+            {
+                // pop up out of ground
+
+                pos.Y -= Math.Abs(pos.Y - base_y) / (5 / frame_factor);
+
+                if (Math.Abs(pos.Y - base_y) < 2)
+                    pos.Y = base_y;
+
+
+                if (!projectiled)
                 {
+                    foreach (Vector2 angle in angles)
+                    {
+                        float fudge_factor = (0.5f - (float)rnd.NextDouble()) / 5f;
 
-                    while(spore_index == spore_index_old)
-                        spore_index = rnd.Next(spore_osets.Length);
+                        var proj = new ArcProjectile(
+                                new Vector2(pos.X + (72 / 2), root.mushroom_zone.Bottom),
+                                new Vector2((angle.X / 1.5f) + fudge_factor, angle.Y) * 4f,
+                                root,
+                                sprite,
+                                new Rectangle(0, 0, 0, 0),
+                                0.08f
+                            );
 
-                    spore_index_old = spore_index;
+                        root.AddEnemy(proj);
+                    }
 
-                    var spore = new Mushroom_Spore(
-                        new Vector2(pos.X + spore_osets[spore_index], pos.Y + v_oset),
-                        root,
-                        sprite
-                    );
-
-                    root.AddEnemy(spore);
+                    projectiled = true;
                 }
+                
             }
 
-            right_hand.SetPosX(pos.X + 18);
-            right_hand.SetPosY(pos.Y + 18);
+            right_hand.SetPosX(pos.X + 16);
+            right_hand.SetPosY(pos.Y + 40);
         }
 
         public void Sleep(GameTime gameTime)
@@ -2405,7 +2395,7 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            //spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
         }
 
         public override void Damage(float damage)
@@ -2562,6 +2552,39 @@ namespace PERSIST
             pos.Y = y;
         }
 
+        public void SmoothSetPos(Vector2 new_pos, GameTime gameTime, float speed=5f)
+        {
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            pos += (new_pos - pos) / (speed / frame_factor);
+
+            if (Math.Abs(pos.X - new_pos.X) < 2)
+                pos.X = new_pos.X;
+
+            if (Math.Abs(pos.Y - new_pos.Y) < 2)
+                pos.Y = new_pos.Y;
+        }
+
+        public void SmoothSetPosY(float y, GameTime gameTime, float speed = 5f)
+        {
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            pos.Y += (y - pos.Y) / (speed / frame_factor);
+
+            if (Math.Abs(pos.Y - y) < 2)
+                pos.Y = y;
+        }
+
+        public void SmoothSetPosX(float x, GameTime gameTime, float speed = 5f)
+        {
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            pos.X += (x - pos.X) / (speed / frame_factor);
+
+            if (Math.Abs(pos.X - x) < 2)
+                pos.X = x;
+        }
+
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
@@ -2580,67 +2603,6 @@ namespace PERSIST
 
     }
 
-    public class Mushroom_Spore : Enemy
-    {
-
-        private Texture2D img;
-        private Rectangle bounds;
-
-        private float speed = -1.7f;
-
-        public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X - 3, (int)pos.Y - 3, 6, 6); } }
-
-        public Mushroom_Spore(Vector2 pos, StyxLevel root, Texture2D img)
-        {
-            this.pos = pos;
-            this.root = root;
-            this.img = img;
-
-            hurtful = true;
-            destroy_projectile = false;
-            pogoable = false;
-
-            bounds = root.RealGetRoom(pos).bounds;
-        }
-
-
-        public override void Update(GameTime gameTime)
-        {
-            pos.Y += speed * 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (!bounds.Contains(HitBox))
-            {
-                root.RemoveEnemy(this);
-            }
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            // nothing (for now)
-        }
-
-        public override void LoadAssets(Texture2D sprite)
-        {
-            // nothing lol
-        }
-
-
-        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
-        {
-            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
-        }
-
-        public override Rectangle GetHitBox(Rectangle input)
-        {
-            return HitBox;
-        }
-
-        public override bool CheckCollision(Rectangle input)
-        {
-            return input.Intersects(HitBox);
-        }
-    }
 
 
 
@@ -2705,6 +2667,84 @@ namespace PERSIST
 
 
 
+
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+    }
+
+    public class ArcProjectile : Enemy
+    {
+
+        private Texture2D img;
+        private Rectangle bounds;
+        private Vector2 traj;
+        private float grav;
+
+        private int width = 8;
+        private int height = 8;
+
+        private Rectangle frame;
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X - (width / 2), (int)pos.Y - (height / 2), width, height); } }
+
+        public ArcProjectile(Vector2 pos, Vector2 traj, Level root, Texture2D img, Rectangle frame, float grav = 0.09f)
+        {
+            this.pos = pos;
+            this.traj = traj;
+            this.root = root;
+            this.img = img;
+            this.frame = frame;
+            this.grav = grav;
+
+            hurtful = true;
+            destroy_projectile = false;
+            pogoable = false;
+
+            bounds = root.RealGetRoom(pos).bounds;
+        }
+
+        public void SetHitBox(int width, int height)
+        {
+            this.width = width;
+            this.height = height;
+        }
+
+
+        public override void Update(GameTime gameTime)
+        {
+            pos += traj * 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            traj.Y += grav * 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (!bounds.Contains(HitBox))
+            {
+                root.RemoveEnemy(this);
+            }
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            // nothing (for now)
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            // nothing lol
+        }
 
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)

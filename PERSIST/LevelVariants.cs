@@ -842,20 +842,20 @@ namespace PERSIST
         {
             new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 0),
             new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 135, 0),
-            new DialogueStruct(". . . I'll leave.", 'd', Color.White, 'p', false, "", 135, 180),
-            new DialogueStruct("No, it's alright.\nYou can stay.", 'd', Color.White, 'r', false, "", 270, 135),
+            new DialogueStruct("I'll leave.", 'd', Color.White, 'p', false, "", 135, 180),
+            new DialogueStruct("No, it's alright.\nYou can stay if you want to.", 'd', Color.White, 'r', false, "", 270, 135),
             new DialogueStruct("This is my hideout.\nMake yourself at home, I guess.", 'd', Color.White, 'r', true, "", 270, 0),
             new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\n\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 1|hideout0 2"), // <--- index 5
-            new DialogueStruct("Yeah, I guess I did say that, huh . . .", 'd', Color.White, 'p', false, "", 405, 0),
-            new DialogueStruct("Well, sharing my hideout isn't so bad.\nJust make sure you don't blow my cover.", 'd', Color.White, 'p', true, "", 405, 0),
+            new DialogueStruct("Well, you're not in my way right now, are you?", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("Seriously though, I'm not against helping each\nother out a bit.\nJust make sure you don't blow my cover.", 'd', Color.White, 'p', true, "", 405, 0),
             new DialogueStruct("Yep. My hideout.", 'd', Color.White, 'p', false, "", 405, 0),                                                                            // <------ index 8
             new DialogueStruct("What do you think?\nTakes a lot of energy pretending all the time.\nNice to have a space where I won't be seen.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("It's cool!\nIt sucks.\nIt's somewhere between 'cool' and 'sucks'.", 'o', Color.White, 'l', false, "hideout1 0|hideout1 1|hideout1 2"), // <--- index 10
-            new DialogueStruct("Is it? I dunno.\nI'd still rather be anywhere else, honestly.\nBut it's better than nothing.", 'd', Color.White, 'p', false, "", 405, 0),
-            new DialogueStruct("And you can swing by whenever.\nI don't mind having company.", 'd', Color.White, 'p', true, "", 405, 0),
+            new DialogueStruct("Is it? I dunno.\nI'd still rather be anywhere else, honestly.", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("But it is better than nothing.\nSo I take what I can get.", 'd', Color.White, 'p', true, "", 405, 0),
             new DialogueStruct("rude.", 'd', Color.White, 'p', false, "", 405, 0),                                                                                     // <------ index 13
             new DialogueStruct("But also pretty true, this does kinda suck.\nI'd rather be anywhere else, honestly.", 'd', Color.White, 'p', false, "", 405, 0),
-            new DialogueStruct("But a sucky hideout is still better than nothing.\nYou're welcome to swing by whenever if you want\na break.", 'd', Color.White, 'p', true, "", 405, 0),
+            new DialogueStruct("But a sucky hideout is still better than nothing.\nSo I take what I can get.", 'd', Color.White, 'p', true, "", 405, 0),
             new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 405, 90),                                                                                      // <------ index 16
             new DialogueStruct("You know, I was thinking the same thing about\nyou.", 'd', Color.White, 'p', true, "", 405, 90),
             new DialogueStruct("\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 1|hideout0 2"),                                          // <------- index 18
