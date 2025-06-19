@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Gui.Controls;
+using MonoGame.Extended.Sprites;
 using MonoGame.Extended.Timers;
 
 namespace PERSIST
@@ -1203,6 +1204,8 @@ namespace PERSIST
             pos.Y += vsp + vsp_shift_down;
             pos.X += hsp;
 
+
+            // think this isn't needed????
             for (int i = projectiles.Count - 1; i >= 0; i--)
                 projectiles[i].Update(gameTime);
         }
@@ -2145,12 +2148,12 @@ namespace PERSIST
     public class Mushroom_Boss : Enemy
     {
         private Player player;
-        private float hp = 24;
-        private int max_hp = 24;
+        private float hp = 14;
+        private int max_hp = 14;
         new private StyxLevel root;
         private Texture2D sprite;
         private Random rnd;
-        private Rectangle frame = new Rectangle(72, 128, 72, 72);
+        private Rectangle frame = new Rectangle(0, 128, 72, 72);
 
         private Mushroom_Hand right_hand;
         private Mushroom_Body body;
@@ -2172,9 +2175,13 @@ namespace PERSIST
         private int base_y = 0;
         private int ground_y = 0;
         private bool projectiled = false;
+        private bool burrowed = false;
 
-        private int h_oset = 9;
-        private int v_oset = 16;
+        private int h_oset = 8;
+        private int v_oset = 17;
+
+        private int h_oset_top = 16;
+        private int v_oset_top = 14;
 
         private Vector2[] angles =
         {
@@ -2190,7 +2197,10 @@ namespace PERSIST
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 72, 72); } }
 
         public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 72 - (h_oset * 2), 16); } }
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 72 - (h_oset * 2), 7); } }
+
+        public Rectangle HitBoxTop
+        { get { return new Rectangle((int)pos.X + h_oset_top, (int)pos.Y + v_oset_top, 72 - (h_oset_top * 2), 3); } }
 
         public Mushroom_Boss(Vector2 pos, Player player, StyxLevel root)
         {
@@ -2207,7 +2217,7 @@ namespace PERSIST
             root.AddEnemy(body);
 
             base_y = (int)pos.Y;
-            ground_y = (int)pos.Y + 72;
+            ground_y = (int)pos.Y + 58;
 
             rnd = new();
         }
@@ -2296,6 +2306,7 @@ namespace PERSIST
                     new Vector2(right_hand.HitBox.X + (right_hand.HitBox.Width / 2), right_hand.HitBox.Y + right_hand.HitBox.Height - 10),
                     root,
                     sprite,
+                    new Rectangle(128, 112, 6, 16),
                     dir == 1
                     );
 
@@ -2314,11 +2325,6 @@ namespace PERSIST
                 right_hand.SetPosY(pos.Y + 40);
             else
                 right_hand.SetPosY(pos.Y);
-
-            if (smashed)
-                frame.X = 72 * 2;
-            else
-                frame.X = 0;
         }
 
         private void AtkOne(GameTime gameTime)
@@ -2331,6 +2337,23 @@ namespace PERSIST
             }
 
             float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+
+            // change boss properties
+            if (atk_timer < atk1_threshold - atk1_emerge_threshold)
+            {
+                burrowed = true;
+                pogoable = false;
+                hurtful = false;
+            }
+            else
+            {
+                burrowed = false;
+                pogoable = true;
+                hurtful = true;
+            }
+
+
 
             if (atk_timer < atk1_threshold - atk1_stop_threshold && pos.Y != ground_y)
             {
@@ -2361,14 +2384,17 @@ namespace PERSIST
                 {
                     foreach (Vector2 angle in angles)
                     {
-                        float fudge_factor = (0.5f - (float)rnd.NextDouble()) / 5f;
+                        float fudge_factor = (0.5f - (float)rnd.NextDouble()) / 6f;
+
+                        int rock_index = rnd.Next(0, 4);
 
                         var proj = new ArcProjectile(
                                 new Vector2(pos.X + (72 / 2), root.mushroom_zone.Bottom),
                                 new Vector2((angle.X / 1.5f) + fudge_factor, angle.Y) * 4f,
                                 root,
                                 sprite,
-                                new Rectangle(0, 0, 0, 0),
+                                new Rectangle(-1, -1, 10, 10),
+                                new Rectangle(128 + (16 * rock_index), 96, 10, 10),
                                 0.08f
                             );
 
@@ -2395,34 +2421,48 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            //spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
         }
 
         public override void Damage(float damage)
         {
+            if (burrowed)
+                return;
+
             hp -= damage;
+
+            if (hp <= 0)
+                Die();
         }
 
-
+        private void Die()
+        {
+            root.RemoveEnemy(body);
+            root.RemoveEnemy(right_hand);
+            root.RemoveEnemy(this);
+            root.ResetBossHP();
+        }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+            spriteBatch.Draw(blue, HitBoxTop, Color.Blue * 0.3f);
             //spriteBatch.Draw(blue, PositionRectangle, Color.Blue * 0.3f);
         }
 
 
         public override bool CheckCollision(Rectangle input)
         {
-            return input.Intersects(HitBox);
+            return input.Intersects(HitBox) || input.Intersects(HitBoxTop);
         }
 
         public override Rectangle GetHitBox(Rectangle input)
         {
+            if (input.Intersects(HitBoxTop))
+                return HitBoxTop;
+
             return HitBox;
         }
-
-        
     }
 
     public class Mushroom_Body : Enemy
@@ -2432,7 +2472,7 @@ namespace PERSIST
         private Texture2D sprite;
 
         private int h_oset = 11;
-        private int v_oset = 32;
+        private int v_oset = 16;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 72, 72); } }
@@ -2612,17 +2652,40 @@ namespace PERSIST
         private Texture2D img;
         private Rectangle bounds;
         private bool right;
-        private float hspeed = 6f / 2;
+        private bool accelerate;
+        private Rectangle frame;
+
+        private float hspeed = 6f / 3;
+        private float hspeed_max = 6f;
+        private float acceleration = 0.07f;
+
+        private float counter = 0f;
+        private float counter_thold = 0.01f;
+
+        private bool die_wall = false;
+
+        private int[] past_xes =
+        {
+            -9999,
+            -9999,
+            -9999,
+            -9999,
+            -9999,
+            -9999,
+            -9999
+        };
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 10); } }
 
-        public Shockwave(Vector2 pos, StyxLevel root, Texture2D img, bool right)
+        public Shockwave(Vector2 pos, StyxLevel root, Texture2D img, Rectangle frame, bool right, bool accelerate=true)
         {
             this.pos = pos;
             this.root = root;
             this.img = img;
             this.right = right;
+            this.accelerate = accelerate;
+            this.frame = frame;
 
             hurtful = true;
             destroy_projectile = false;
@@ -2633,12 +2696,26 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            // nothing (yet)
+            int mid = past_xes.Length / 2;
+
+            for (int i = 0; i < past_xes.Length; i++)
+            {
+                if (past_xes[i] != -9999)
+                {
+                    int y_oset = Math.Abs(i - mid);
+
+                    Rectangle one = new Rectangle(past_xes[i], HitBox.Y + (y_oset * 2), 6, 16);
+
+                    spriteBatch.Draw(img, one, frame, Color.White);
+                }
+            }
         }
 
         public override void Update(GameTime gameTime)
         {
             float frame_factor = (float)gameTime.ElapsedGameTime.TotalSeconds * 60;
+
+            counter += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (right)
                 pos.X += hspeed * frame_factor;
@@ -2646,12 +2723,29 @@ namespace PERSIST
             else
                 pos.X += hspeed * -1 * frame_factor;
 
+            if (counter > counter_thold)
+            {
+                for (int i = past_xes.Length - 1; i >= 1; i--)
+                    past_xes[i] = past_xes[i - 1];
+
+                if (right)
+                    past_xes[0] = (int)pos.X + HitBox.Width - 2;
+                else
+                    past_xes[0] = (int)pos.X - 6;
+
+                counter = 0;
+            }
+
+            if (accelerate)
+                if (hspeed < hspeed_max)
+                    hspeed = Math.Min(hspeed_max, hspeed + (acceleration * frame_factor));
+
+
             Wall check = root.SimpleCheckCollision(HitBox);
 
             if (check != null)
-            {
-                root.RemoveEnemy(this);
-            }
+                if (check.bounds.Contains(HitBox))
+                    root.RemoveEnemy(this);
 
             if (!bounds.Contains(HitBox))
             {
@@ -2697,17 +2791,19 @@ namespace PERSIST
         private int height = 8;
 
         private Rectangle frame;
+        private Rectangle draw_oset;
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X - (width / 2), (int)pos.Y - (height / 2), width, height); } }
 
-        public ArcProjectile(Vector2 pos, Vector2 traj, Level root, Texture2D img, Rectangle frame, float grav = 0.09f)
+        public ArcProjectile(Vector2 pos, Vector2 traj, Level root, Texture2D img, Rectangle draw_oset, Rectangle frame, float grav = 0.09f)
         {
             this.pos = pos;
             this.traj = traj;
             this.root = root;
             this.img = img;
             this.frame = frame;
+            this.draw_oset = draw_oset;
             this.grav = grav;
 
             hurtful = true;
@@ -2738,7 +2834,9 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            // nothing (for now)
+            Rectangle draw_rect = new Rectangle(HitBox.X + draw_oset.X, HitBox.Y + draw_oset.Y, draw_oset.Width, draw_oset.Height);
+
+            spriteBatch.Draw(img, draw_rect, frame, Color.White);
         }
 
         public override void LoadAssets(Texture2D sprite)

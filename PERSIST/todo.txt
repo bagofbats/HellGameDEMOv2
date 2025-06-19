@@ -10,6 +10,7 @@
    so all the sounds aren't always loaded into memory all the time
  - have room not be named "hideout" until after cutscene starts
  - dialogue options being first dialogue causes down to interact to register as moving down options
+ - check whether Lukas has to update the projectiles himself
 
 art:
  - more advanced dust animation when blocks switch?

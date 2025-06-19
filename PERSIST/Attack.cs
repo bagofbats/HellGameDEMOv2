@@ -118,7 +118,7 @@ namespace PERSIST
                                 {
                                     pogoed = true;
                                     player.SetPogoed(temp[0].GetHitBox(HitBox).Y, true);
-                                    break;
+                                    //break;
                                 }
                             }
                         
