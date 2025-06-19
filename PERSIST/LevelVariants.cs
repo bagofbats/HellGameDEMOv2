@@ -2280,6 +2280,17 @@ namespace PERSIST
             }
         }
 
+        public void FightMushroom(GameTime gameTime)
+        {
+            for (int i = mushroom_trigger.X; i < mushroom_trigger.X + 32; i += 16)
+                for (int j = mushroom_trigger.Y; j < mushroom_trigger.Y + 48; j += 16)
+                {
+                    BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this, new Rectangle(32, 144, 16, 16));
+                    temp1.Load(tst_styx);
+                    AddSpecialWall(temp1);
+                }
+        }
+
         // end boss functions
 
 

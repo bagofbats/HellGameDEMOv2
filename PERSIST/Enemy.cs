@@ -2449,7 +2449,11 @@ namespace PERSIST
                 trigger_watch = true;
 
             else if (player.HitBox.X < root.mushroom_trigger.X && trigger_watch)
+            {
                 sleep = false;
+                root.FightMushroom(gameTime);
+            }
+                
         }
 
         public override void Draw(SpriteBatch spriteBatch)
