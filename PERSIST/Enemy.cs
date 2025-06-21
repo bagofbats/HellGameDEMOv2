@@ -2148,8 +2148,8 @@ namespace PERSIST
     public class Mushroom_Boss : Enemy
     {
         private Player player;
-        private float hp = 13;
-        private int max_hp = 13;
+        private float hp = 11;
+        private int max_hp = 11;
         new private StyxLevel root;
         private Texture2D sprite;
         private Random rnd;
@@ -2406,7 +2406,6 @@ namespace PERSIST
 
                 if (Math.Abs(pos.Y - base_y) < 2)
                     pos.Y = base_y;
-
 
                 if (!projectiled)
                 {

@@ -331,9 +331,9 @@ namespace PERSIST
             mask = true;
             journal_secret = false;
             charons_blessing = false;
-            dash = false;
-            locks = false;
-            jump_blocks = false;
+            dash = true;
+            locks = true;
+            jump_blocks = true;
             kanna_started = false;
             kanna_defeated = false;
             mushroom_defeated = false;
