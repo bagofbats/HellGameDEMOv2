@@ -2531,6 +2531,8 @@ namespace PERSIST
             root.RemoveEnemy(right_hand);
             root.RemoveEnemy(this);
             root.ResetBossHP();
+
+            root.DefeatMushroom();
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)

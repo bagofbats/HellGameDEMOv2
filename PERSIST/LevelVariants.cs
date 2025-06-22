@@ -863,6 +863,11 @@ namespace PERSIST
             new DialogueStruct("Nevermind.", 'o', Color.White, 'l', false, "hideout0 2"),       // <--- index 20
         };
 
+        DialogueStruct[] dialogue_defeat =
+        {
+            new DialogueStruct("-- Defeated King Mush! --", 'd', Color.White, 'c', true, "", 0, 0, 10f),
+        };
+
         // dialogue_key is inside the key object -- i know, confusing...
 
         private Dictionary<Room, int> keys_in_room = new Dictionary<Room, int>();
@@ -2377,6 +2382,26 @@ namespace PERSIST
                         AddSpecialWall(temp1);
                     }
             }
+        }
+
+        public void DefeatMushroom()
+        {
+            KeyPickup kpickup = new KeyPickup(
+                new Vector2(mushroom_zone.X + (mushroom_zone.Width / 2) - 16, mushroom_zone.Y + mushroom_zone.Height - 16),
+                this,
+                prog_manager,
+                dialogue_pickup,
+                0
+                );
+
+            kpickup.LoadAssets(tst_styx);
+            AddInteractable(kpickup);
+
+            StartDialogue(dialogue_defeat, 0, 'c', 10f, false, false);
+
+            prog_manager.DefeatMushroom();
+
+            player.SetPogoed(0, false);
         }
 
         // end boss functions
