@@ -349,6 +349,9 @@ namespace PERSIST
             ranged_ready = false;
             ranged_timer = 0;
             SetPogoed(0, false);
+
+            dashing = false;
+            dash_timer = 0f;
         }
 
         private void HandleMovementAndCollisions(GameTime gameTime)

@@ -51,7 +51,7 @@ namespace PERSIST
         }
 
         protected Level root;
-        public Room room { get; set; }
+        public Room room { get; set; } = null;
         protected Vector2 pos;
         public Vector2 Pos { get => pos; }
         public bool hurtful { get; protected set; } = true;
@@ -234,11 +234,17 @@ namespace PERSIST
         public override void Damage(float damage)
         {
             hp -= damage;
+
+            float pitch = (0.5f - (float)rnd.NextDouble()) / 1.2f;
+
+
             if (hp <= 0)
             {
                 root.RemoveEnemy(this);
                 SlimeFX particle = new SlimeFX(new Vector2(PositionRectangle.X, PositionRectangle.Y), root.particle_img, root);
                 root.AddFX(particle);
+
+                pitch = -0.7f;
             }
 
             bounce_counter = 1;
@@ -250,7 +256,8 @@ namespace PERSIST
             damaged = true;
             damaged_timer = 0;
 
-            root.audio_manager.PlaySound("hit");
+            
+            root.audio_manager.PlaySound("tick", pitch);
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -295,6 +302,7 @@ namespace PERSIST
         private Color pupilColor = Color.DarkRed;
         private bool damaged = false;
         private float dmg_timer = 0f;
+        private Random rnd = new Random();
 
         public bool disabled
         { get; private set; }
@@ -371,6 +379,9 @@ namespace PERSIST
 
             root.Switch(room, two);
             damaged = true;
+
+            //float pitch = (0.5f - (float)rnd.NextDouble()) / 1.2f;
+            //root.audio_manager.PlaySound("tock", pitch);
         }
 
         public override Rectangle GetHitBox(Rectangle input)
@@ -2167,7 +2178,7 @@ namespace PERSIST
         private float atk1_threshold = 3f;
         private float atk1_stop_threshold = 1.5f;
         private float atk1_emerge_threshold = 1f;
-        private int atk = 0;
+        private int atk = 1;
         private int dir = 1;
         private bool state_change = false;
         private int move_dist = 72;
@@ -2179,6 +2190,7 @@ namespace PERSIST
         private bool flash = false;
         private float flash_timer = 0.0f;
         private bool damaged;
+        private bool shake = false;
 
         private int h_oset = 8;
         private int v_oset = 17;
@@ -2223,19 +2235,32 @@ namespace PERSIST
             ground_y = (int)pos.Y + 58;
 
             rnd = new();
+
+
+            // set up for first attack
+            atk_timer = atk1_threshold - atk1_stop_threshold;
+            this.pos.Y = ground_y;
+
+            right_hand.SetPosX(this.pos.X + 20);
+            right_hand.SetPosY(this.pos.Y + 40);
         }
 
 
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
+
+            room = root.RealGetRoom(pos);
         }
 
         public override void Update(GameTime gameTime)
         {
-
             body.SetPosX(pos.X + 0);
             body.SetPosY(pos.Y + 8);
+
+            if (room != null)
+                if (!player.HitBox.Intersects(room.bounds))
+                    return;
 
             if (flash)
             {
@@ -2438,6 +2463,9 @@ namespace PERSIST
             if (atk_timer > atk1_threshold - atk1_emerge_threshold)
                 frame.X = 72 * 2;
 
+            shake = atk_timer > atk1_threshold - atk1_stop_threshold && atk_timer < atk1_threshold - atk1_emerge_threshold;
+
+
             right_hand.SetPosX(pos.X + 20);
             right_hand.SetPosY(pos.Y + 40);
         }
@@ -2459,12 +2487,20 @@ namespace PERSIST
         {
             right_hand.Draw(spriteBatch);
 
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            Rectangle draw_rectangle = PositionRectangle;
+
+            if (shake)
+                draw_rectangle.X = PositionRectangle.X + (int)((rnd.Next(0, 2) - 0.5f) * 2);
+            else
+                draw_rectangle.X = PositionRectangle.X;
+
+
+            spriteBatch.Draw(sprite, draw_rectangle, frame, Color.White);
 
             if (flash)
             {
                 Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 72, 72, 72);
-                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+                spriteBatch.Draw(sprite, draw_rectangle, flash_frame, Color.White * 0.4f);
             }
         }
 
@@ -2472,6 +2508,10 @@ namespace PERSIST
         {
             if (burrowed)
                 return;
+
+
+            //float fudge_factor = (0.5f - (float)rnd.NextDouble());
+            //root.audio_manager.PlaySound("tick", fudge_factor);
 
             hp -= damage;
 
@@ -2521,7 +2561,7 @@ namespace PERSIST
         new private StyxLevel root;
         private Texture2D sprite;
 
-        private int h_oset = 11;
+        private int h_oset = 20;
         private int v_oset = 16;
 
         public Rectangle PositionRectangle
@@ -3031,7 +3071,7 @@ namespace PERSIST
     {
         Rectangle loc;
         Texture2D sprite;
-        Rectangle frame = new Rectangle(240, 80, 32, 32);
+        Rectangle frame = new Rectangle(288, 144, 32, 32);
         Rectangle hitbox;
         ProgressionManager progMan;
 

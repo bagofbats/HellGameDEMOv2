@@ -1030,7 +1030,7 @@ namespace PERSIST
                                 int key_init = 0;
 
                                 if (l.objects[i].properties.Count() != 0)
-                                    key_init = Int32.Parse(l.objects[i].properties[0].value);
+                                    key_init = int.Parse(l.objects[i].properties[0].value);
 
                                 for (int j = 0; j < temp.Width; j += 16)
                                     for (int k = 0; k < temp.Height; k += 16)
@@ -2016,6 +2016,87 @@ namespace PERSIST
                 }
                     
             }
+
+            if (cutscene_code[0] == "fightmushroom")
+            {
+                if (cutscene_timer > 0f)
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+
+
+                    if (cutscene_code[1] == "empty")
+                    {
+                        saved_camera_x = cam.GetPos().X;
+                        saved_camera_y = cam.GetPos().Y;
+                        cutscene_code[1] = "-";
+                    }
+                }
+
+                if (cutscene_timer > 0.9f)
+                {
+                    cutscene_cam = true;
+                    cutscene_cam_speed = 10f;
+                    cutscene_cam_pos = new Vector2(saved_camera_x - 128, saved_camera_y);
+                }
+
+                if (cutscene_timer > 2f && cutscene_timer < 3f)
+                {
+                    for (int i = enemies.Count - 1; i >= 0; i--)
+                        enemies[i].Update(gameTime);
+                }
+
+                if (cutscene_timer > 3f)
+                {
+                    for (int i = enemies.Count - 1; i >= 0; i--)
+                        if (enemies[i].GetType() == typeof(ArcProjectile))
+                            enemies[i].Update(gameTime);
+                }
+
+                if (cutscene_timer > 4f && cutscene_timer < 4.8f)
+                {
+                    for (int i = enemies.Count - 1; i >= 0; i--)
+                        if (enemies[i].GetType() == typeof(Mushroom_Boss))
+                            enemies[i].Update(gameTime);
+                }
+
+                if (cutscene_timer > 5.4f)
+                {
+                    cutscene_cam_pos = new Vector2(saved_camera_x, saved_camera_y);
+                }
+
+                if (cutscene_timer > 6.7f)
+                {
+                    if (cutscene_code[2] == "empty")
+                    {
+                        for (int i = mushroom_trigger.X; i < mushroom_trigger.X + 32; i += 16)
+                            for (int j = mushroom_trigger.Y; j < mushroom_trigger.Y + 48; j += 16)
+                            {
+                                BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this, new Rectangle(32, 144, 16, 16));
+                                temp1.Load(tst_styx);
+                                AddSpecialWall(temp1);
+                            }
+
+                        cutscene_code[2] = "-";
+                    }
+
+                    else
+                    {
+                        for (int i = special_walls.Count - 1; i >= 0; i--)
+                            special_walls[i].Update(gameTime);
+                    }
+                }
+
+                if (cutscene_timer > 7.5f)
+                {
+                    cutscene_cam = false;
+                    player.ExitCutscene();
+                    cutscene = false;
+
+                    prog_manager.EncounterMushroom();
+                }
+            }
         }
 
 
@@ -2282,13 +2363,20 @@ namespace PERSIST
 
         public void FightMushroom(GameTime gameTime)
         {
-            for (int i = mushroom_trigger.X; i < mushroom_trigger.X + 32; i += 16)
-                for (int j = mushroom_trigger.Y; j < mushroom_trigger.Y + 48; j += 16)
-                {
-                    BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this, new Rectangle(32, 144, 16, 16));
-                    temp1.Load(tst_styx);
-                    AddSpecialWall(temp1);
-                }
+            if (!prog_manager.mushroom_started)
+            {
+                HandleCutscene("fightmushroom|empty|empty", gameTime, true);
+            }
+            else
+            {
+                for (int i = mushroom_trigger.X; i < mushroom_trigger.X + 32; i += 16)
+                    for (int j = mushroom_trigger.Y; j < mushroom_trigger.Y + 48; j += 16)
+                    {
+                        BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this, new Rectangle(32, 144, 16, 16));
+                        temp1.Load(tst_styx);
+                        AddSpecialWall(temp1);
+                    }
+            }
         }
 
         // end boss functions

@@ -24,7 +24,7 @@ namespace PERSIST
 
     public class HellGame : Game
     {
-        private bool debug = true;
+        private bool debug = false;
         public bool opaque
         { get; private set; } = false;
 
@@ -34,7 +34,7 @@ namespace PERSIST
         private bool options = false;
         private bool keyboard = true;
         private int pause_selection = 0;
-        private string[] pause_options =
+        private readonly string[] pause_options =
         {
             "Resume",
             "Options",
@@ -46,8 +46,8 @@ namespace PERSIST
         {
             "", "", "", "", "", "", "", "", "Done"
         };
-        private string controller_menu_string = "< Switch to Controller View >";
-        private string keyboard_menu_string = "< Switch to Keyboard View >";
+        private readonly string controller_menu_string = "< Switch to Controller View >";
+        private readonly string keyboard_menu_string = "< Switch to Keyboard View >";
 
         private bool rebind = false;
         private float rebind_timer = 1f;
@@ -102,7 +102,7 @@ namespace PERSIST
             styx_one.map[1] = "\\rm_styx2.tmx";
             styx_one.anchors[1] = new Vector2(2096, 432 + (8 * 70));
             styx_one.map[2] = "\\rm_styx_secret.tmx";
-            styx_one.anchors[2] = new Vector2(304 - 320, 880 - 32);
+            styx_one.anchors[2] = new Vector2(304 - (480 + 1280 + 8), 880 - 64 - 240);
             styx_one.num_files = 3;
 
             audioManager = new AudioManager(this);
@@ -141,7 +141,7 @@ namespace PERSIST
             {
                 new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight),
                 new Rectangle(2096, 432 + (8 * 70), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight),
-                new Rectangle(304 - 320, 880 - 32, thr_map.Width * thr_map.TileWidth, thr_map.Height * thr_map.TileHeight)
+                new Rectangle(304 - (thr_map.Width * thr_map.TileWidth), 880 - 64 - 240, thr_map.Width * thr_map.TileWidth, thr_map.Height * thr_map.TileHeight)
             };
 
             TiledData one = new TiledData(bounds[0], one_map, one_tst);
@@ -653,7 +653,7 @@ namespace PERSIST
             }
         }
 
-        private Rectangle SmallestRectangle(List<Rectangle> bounds)
+        private static Rectangle SmallestRectangle(List<Rectangle> bounds)
         {
             int smallest_X = int.MaxValue;
             int smallest_Y = int.MaxValue;

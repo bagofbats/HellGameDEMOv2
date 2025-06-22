@@ -10,6 +10,8 @@
    so all the sounds aren't always loaded into memory all the time
  - check whether Lukas has to update the projectiles himself
  - give shockwave better hit box
+ - doors out of secret areas should give dialogue box
+ - clamp mushroom boss's X pos to be inside the zone at all times
 
 art:
  - more advanced dust animation when blocks switch?
@@ -19,13 +21,12 @@ art:
  - adjust in-air sprites to be less misleading abt hitbox
  - death animation for mushroom ppl
  - adjust trigo's in-air sprites to better align with hitbox??
- - fix the stone bg tiles in the tileset
+ - sideways checkpoints need glow vfx
 
  bugs:
  - ranged attacks get stopped by one-way platforms
  - ranged attack particle vfx fuckin sugks
     - if the particle breaks on the corner of a wall the poof vfx is misplaced
- - make key non-interactable during boss fight
  - have it so when kanna jumps away from you she still fires the arrow in your direction
  - try chaning frame rate to see if anything breaks
 

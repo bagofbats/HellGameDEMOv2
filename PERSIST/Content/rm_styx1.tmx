@@ -972,7 +972,7 @@
   <object id="711" x="1752" y="720" width="32" height="16"/>
   <object id="737" x="1328" y="704" width="152" height="32"/>
   <object id="742" x="1264" y="616" width="80" height="16"/>
-  <object id="743" x="1344" y="584" width="16" height="56"/>
+  <object id="743" x="1344" y="584" width="16" height="48"/>
   <object id="762" name="river" x="984" y="760" width="152" height="16"/>
   <object id="805" x="1872" y="992" width="48" height="128"/>
   <object id="834" name="river" x="752" y="512" width="352" height="16"/>
@@ -1076,7 +1076,7 @@
   <object id="734" x="2640" y="592" width="16" height="8"/>
   <object id="739" x="1224" y="680" width="104" height="56"/>
   <object id="740" x="1208" y="456" width="56" height="176"/>
-  <object id="741" x="1208" y="632" width="136" height="8"/>
+  <object id="741" x="1208" y="632" width="152" height="8"/>
   <object id="746" x="1504" y="496" width="40" height="120"/>
   <object id="748" x="1264" y="496" width="240" height="24"/>
   <object id="749" x="1432" y="520" width="32" height="24"/>

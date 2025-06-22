@@ -54,9 +54,9 @@ namespace PERSIST
         protected List<ParticleFX> particles = new List<ParticleFX>();
         protected List<Wall> special_walls = new List<Wall>();
         protected List<Rectangle> special_walls_bounds = new List<Rectangle>();
-        protected List<String> special_walls_types = new List<String>();
+        protected List<string> special_walls_types = new List<string>();
         protected List<Vector2> enemy_locations = new List<Vector2>();
-        protected List<String> enemy_types = new List<String>();
+        protected List<string> enemy_types = new List<string>();
         protected List<Interactable> interactables = new List<Interactable>();
         protected List<Key> keys = new List<Key>();
         protected List<Vector2> key_locations = new List<Vector2>();
@@ -115,8 +115,8 @@ namespace PERSIST
             this.audio_manager = audio_manager;
             this.name = name;
 
-            for (int i = 0; i < bounds.Width; i += 320)
-                for (int j = 0; j < bounds.Height; j += 240)
+            for (int i = bounds.X; i < bounds.Width; i += 320)
+                for (int j = bounds.Y; j < bounds.Height; j += 240)
                     chunks.Add(new Chunk(new Rectangle(i - 32, j - 32, 320 + 64, 240 + 64)));
             this.name = name;
         }
@@ -1377,7 +1377,8 @@ namespace PERSIST
         public override void Damage()
         {
             damaged = true;
-            root.audio_manager.PlaySound("hit");
+            float pitch = (0.5f - (float)rnd.NextDouble()) / 0.7f;
+            root.audio_manager.PlaySound("hit", pitch);
         }
     }
 
@@ -1929,8 +1930,8 @@ namespace PERSIST
             Wall left = root.SimpleCheckCollision(left_check);
             Wall right = root.SimpleCheckCollision(right_check);
 
-            wall_left = left != null;
-            wall_right = right != null;
+            wall_left = left != null && left.GetType() != typeof(Lock);
+            wall_right = right != null && right.GetType() != typeof(Lock);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

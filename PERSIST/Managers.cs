@@ -308,6 +308,8 @@ namespace PERSIST
         { get; private set; }
         public bool kanna_defeated
         { get; private set; }
+        public bool mushroom_started
+        { get; private set; }
         public bool mushroom_defeated
         { get; private set; }
 
@@ -336,6 +338,7 @@ namespace PERSIST
             jump_blocks = true;
             kanna_started = false;
             kanna_defeated = false;
+            mushroom_started = false;
             mushroom_defeated = false;
             hideout_entered = false;
         }
@@ -404,6 +407,12 @@ namespace PERSIST
         {
             hideout_entered = true;
         }
+
+        public void EncounterMushroom()
+        { mushroom_started = true; }
+
+        public void DefeatMushroom()
+        { mushroom_defeated = true; }
     }
 
     public class AudioManager
@@ -425,9 +434,13 @@ namespace PERSIST
             sfx.Add("tock", root.Content.Load<SoundEffect>("audio/snd_tock"));
         }
 
-        public void PlaySound(string snd)
+        public void PlaySound(string snd, float pitch=1f, float volume=1f)
         {
-            sfx[snd].Play();
+            SoundEffectInstance snd_tmp = sfx[snd].CreateInstance();
+            snd_tmp.Pitch = pitch;
+            snd_tmp.Volume = volume;
+
+            snd_tmp.Play();
         }
     }
 
