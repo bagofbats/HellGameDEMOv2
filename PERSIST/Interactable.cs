@@ -343,4 +343,58 @@ namespace PERSIST
                 counter++;
         }
     }
+
+    public class InteractableGuy : Furniture
+    {
+        private Rectangle frame = new();
+        private Rectangle hitbox = new();
+        private bool animate = false;
+        private float animate_speed = new();
+        private int num_frames = 1;
+
+        private float animate_timer = 0f;
+        private Rectangle draw_frame = new();
+
+
+        public InteractableGuy(Rectangle pos, Level root) : base(pos, root)
+        {
+
+        }
+
+        public void SetGuyInfo(Rectangle hitbox, Rectangle frame, bool animate=false, float animate_speed=0f, int num_frames=1)
+        {
+            this.frame = frame;
+            this.hitbox = hitbox;
+            this.animate = animate;
+            this.animate_speed = animate_speed;
+            this.num_frames = num_frames;
+
+            draw_frame = frame;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (animate)
+            {
+                draw_frame.X = frame.X + (frame.Width * ((int)(animate_timer * animate_speed) % num_frames));
+                animate_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, pos, draw_frame, Color.White);
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(hitbox);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, pos, Color.Blue * 0.3f);
+            spriteBatch.Draw(blue, hitbox, Color.Red * 0.3f);
+        }
+    }
 }

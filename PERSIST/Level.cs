@@ -61,6 +61,8 @@ namespace PERSIST
         protected List<Key> keys = new List<Key>();
         protected List<Vector2> key_locations = new List<Vector2>();
 
+        protected Dictionary<Type, Texture2D> asset_map = new Dictionary<Type, Texture2D>();
+
         public bool player_dead
         { get; protected set; } = false;
         protected bool finish_player_dead = false;

@@ -21,7 +21,6 @@ art:
  - adjust in-air sprites to be less misleading abt hitbox
  - death animation for mushroom ppl
  - adjust trigo's in-air sprites to better align with hitbox??
- - sideways checkpoints need glow vfx
 
  bugs:
  - ranged attacks get stopped by one-way platforms

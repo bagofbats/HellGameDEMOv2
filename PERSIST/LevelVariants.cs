@@ -27,8 +27,6 @@ namespace PERSIST
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
         private List<Rectangle> switch_blocks_two = new List<Rectangle>();
 
-        private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
-
         private DeadGuy dead_guy;
 
         
@@ -310,14 +308,14 @@ namespace PERSIST
             bg_brick = root.Content.Load<Texture2D>("bgs/bg_brick2");
             // Texture2D spr_breakable = root.Content.Load<Texture2D>("spr_breakable");
 
-            enemy_assets.Add(typeof(Slime), spr_slime);
-            enemy_assets.Add(typeof(EyeSwitch), black);
-            enemy_assets.Add(typeof(BigSlime), spr_slime);
-            enemy_assets.Add(typeof(DeadGuy), spr_slime);
-            enemy_assets.Add(typeof(Lukas_Tutorial), spr_lukas);
+            asset_map.Add(typeof(Slime), spr_slime);
+            asset_map.Add(typeof(EyeSwitch), black);
+            asset_map.Add(typeof(BigSlime), spr_slime);
+            asset_map.Add(typeof(DeadGuy), spr_slime);
+            asset_map.Add(typeof(Lukas_Tutorial), spr_lukas);
 
             foreach (Enemy enemy in enemies)
-                enemy.LoadAssets(enemy_assets[enemy.GetType()]);
+                enemy.LoadAssets(asset_map[enemy.GetType()]);
 
             foreach (Interactable i in interactables)
                 i.LoadAssets(spr_slime);
@@ -425,7 +423,7 @@ namespace PERSIST
                 
 
             foreach (Enemy enemy in enemies)
-                enemy.LoadAssets(enemy_assets[enemy.GetType()]);
+                enemy.LoadAssets(asset_map[enemy.GetType()]);
                 
         }
 
@@ -701,14 +699,13 @@ namespace PERSIST
         private Texture2D spr_mushroom;
         private Texture2D spr_kanna;
         private Texture2D spr_lukas;
+        private Texture2D spr_guys;
 
         private List<JumpSwitch> switches = new List<JumpSwitch>();
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
         private List<Rectangle> switch_blocks_two = new List<Rectangle>();
         private List<bool> switch_blocks_one_danger = new List<bool>();
         private List<bool> switch_blocks_two_danger = new List<bool>();
-
-        private Dictionary<Type, Texture2D> enemy_assets = new Dictionary<Type, Texture2D>();
 
         private List<Rectangle> rivers = new List<Rectangle>();
         private Rectangle river_frame_top = new Rectangle(160 + 64, 192, 64, 16);
@@ -868,6 +865,12 @@ namespace PERSIST
             new DialogueStruct("-- Defeated King Mush! --", 'd', Color.White, 'c', true, "", 0, 0, 10f),
         };
 
+        DialogueStruct[] dialogue_fisher =
+        {
+            new DialogueStruct(". . .", 'd', Color.White, 'p', true, "", 0, 45),
+        };
+        readonly int[] fisher_bps = { 0 };
+
         // dialogue_key is inside the key object -- i know, confusing...
 
         private Dictionary<Room, int> keys_in_room = new Dictionary<Room, int>();
@@ -908,7 +911,7 @@ namespace PERSIST
                             if (l.objects[i].name == "river")
                                 rivers.Add(temp);
                         }
-                            
+
 
                     if (l.name == "entities")
                         for (int i = 0; i < l.objects.Count(); i++)
@@ -1004,7 +1007,7 @@ namespace PERSIST
                                             special_walls_types.Add("badswitch");
                                         }
                                 }
-                                
+
                             }
 
                             if (l.objects[i].name == "switch_two")
@@ -1015,7 +1018,7 @@ namespace PERSIST
 
                                 switch_blocks_two_danger.Add(danger);
                             }
-                                
+
 
                             if (l.objects[i].name == "switch")
                                 switches.Add(new JumpSwitch(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y)));
@@ -1054,7 +1057,7 @@ namespace PERSIST
                                         }
                                         else
                                             key_inits.Add(0);
-                                            
+
                                     }
                             }
 
@@ -1068,7 +1071,7 @@ namespace PERSIST
                             if (l.objects[i].name == "kanna" && !prog_manager.kanna_defeated)
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
-                                AddEnemy(new Kanna_Boss(temp, player ,this));
+                                AddEnemy(new Kanna_Boss(temp, player, this));
                                 enemy_locations.Add(temp);
                                 enemy_types.Add("kanna");
                             }
@@ -1082,9 +1085,9 @@ namespace PERSIST
                             }
 
                             if (l.objects[i].name == "kanna_trigger")
-                                kanna_trigger = new Rectangle((int)l.objects[i].x + t.location.X, 
-                                                                (int)l.objects[i].y + t.location.Y, 
-                                                                (int)l.objects[i].width, 
+                                kanna_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                                (int)l.objects[i].y + t.location.Y,
+                                                                (int)l.objects[i].width,
                                                                 (int)l.objects[i].height);
 
                             if (l.objects[i].name == "mushroom_trigger")
@@ -1166,6 +1169,29 @@ namespace PERSIST
                                 enemy_locations.Add(temp);
                                 enemy_types.Add("kanna_cutscene_hideout");
                             }
+
+                            if (l.objects[i].name == "guy")
+                            {
+                                var temp_loc = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
+                                var temp = new InteractableGuy(temp_loc, this);
+                                string value = l.objects[i].properties[0].value;
+
+                                if (value == "fisher")
+                                {
+                                    temp.SetType(dialogue_fisher, fisher_bps);
+
+                                    temp.SetGuyInfo(
+                                        temp_loc,
+                                        new Rectangle(0, 0, 32, 96),
+                                        true,
+                                        6,
+                                        4
+                                        );
+                                }
+                                    
+
+                                AddInteractable(temp);
+                            }
                         }
 
                 }
@@ -1199,20 +1225,25 @@ namespace PERSIST
             spr_mushroom = root.Content.Load<Texture2D>("sprites/spr_mushroom");
             spr_kanna = root.Content.Load<Texture2D>("sprites/spr_kanna");
             spr_lukas = root.Content.Load<Texture2D>("sprites/spr_lukas");
+            spr_guys = root.Content.Load<Texture2D>("sprites/spr_guys");
 
-            enemy_assets.Add(typeof(Walker), spr_mushroom);
-            enemy_assets.Add(typeof(Trampoline), spr_mushroom);
-            enemy_assets.Add(typeof(GhostBlock), tst_styx);
-            enemy_assets.Add(typeof(Kanna_Boss), spr_kanna);
-            enemy_assets.Add(typeof(DeadGuyTwo), tst_styx);
-            enemy_assets.Add(typeof(Mushroom_Boss), spr_mushroom);
-            enemy_assets.Add(typeof(Mushroom_Body), spr_mushroom);
-            enemy_assets.Add(typeof(Mushroom_Hand), spr_mushroom);
-            enemy_assets.Add(typeof(Lukas_Cutscene), spr_lukas);
-            enemy_assets.Add(typeof(Kanna_Cutscene), spr_kanna);
+            asset_map.Add(typeof(Walker), spr_mushroom);
+            asset_map.Add(typeof(Trampoline), spr_mushroom);
+            asset_map.Add(typeof(GhostBlock), tst_styx);
+            asset_map.Add(typeof(Kanna_Boss), spr_kanna);
+            asset_map.Add(typeof(DeadGuyTwo), tst_styx);
+            asset_map.Add(typeof(Mushroom_Boss), spr_mushroom);
+            asset_map.Add(typeof(Mushroom_Body), spr_mushroom);
+            asset_map.Add(typeof(Mushroom_Hand), spr_mushroom);
+            asset_map.Add(typeof(Lukas_Cutscene), spr_lukas);
+            asset_map.Add(typeof(Kanna_Cutscene), spr_kanna);
+
+            asset_map.Add(typeof(ShadePickup), tst_styx);
+            asset_map.Add(typeof(KeyPickup), tst_styx);
+            asset_map.Add(typeof(InteractableGuy), spr_guys);
 
             foreach (Enemy enemy in enemies)
-                enemy.LoadAssets(enemy_assets[enemy.GetType()]);
+                enemy.LoadAssets(asset_map[enemy.GetType()]);
 
             foreach (Wall wall in special_walls)
             {
@@ -1237,14 +1268,14 @@ namespace PERSIST
                     keys_in_room.Add(r, 1);
             }
 
-            for (int i = 0; i < interactables.Count(); i++)
-                interactables[i].LoadAssets(tst_styx);
+            for (int i = 0; i < interactables.Count; i++)
+                interactables[i].LoadAssets(asset_map[interactables[i].GetType()]);
                 
 
-            for (int i = 0; i < chunks.Count(); i++)
+            for (int i = 0; i < chunks.Count; i++)
                 chunks[i].Load(black);
 
-            for (int i = 0; i < checkpoints.Count(); i++)
+            for (int i = 0; i < checkpoints.Count; i++)
                 checkpoints[i].Load(checkpoint);
 
             foreach (Checkpoint c in checkpoints)
@@ -1446,7 +1477,7 @@ namespace PERSIST
 
 
             foreach (Enemy enemy in enemies)
-                enemy.LoadAssets(enemy_assets[enemy.GetType()]);
+                enemy.LoadAssets(asset_map[enemy.GetType()]);
 
             foreach (JumpSwitch s in switches)
                 s.two = true;
@@ -2205,6 +2236,9 @@ namespace PERSIST
 
                     for (int i = 0; i < doors.Count; i++)
                         _spriteBatch.Draw(black, doors[i].location, Color.Blue * 0.2f);
+
+                    for (int i = 0; i < interactables.Count; i++)
+                        interactables[i].DebugDraw(_spriteBatch, black);
                 }
 
             }

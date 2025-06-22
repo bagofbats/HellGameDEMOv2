@@ -82,7 +82,7 @@ namespace PERSIST
         {
             if (visible)
             {
-                if (Active && !sideways)
+                if (Active)
                     _spriteBatch.Draw(sprite, GlowBox, glow_frame, Color.White * 0.05f);
 
                 _spriteBatch.Draw(sprite, DrawBox, frame, Color.White);
