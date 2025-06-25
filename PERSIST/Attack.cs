@@ -50,6 +50,12 @@ namespace PERSIST
                 frame.Y = 96;
             if (!slash_dir)
                 frame.Y += 128;
+
+            float pitch = 0.23f;
+            if (slash_dir)
+                pitch = 0.7f;
+
+            level.audio_manager.PlaySound("woosh2", pitch, 0.2f);
         }
 
         public Rectangle HitBox

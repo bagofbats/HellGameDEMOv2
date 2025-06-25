@@ -38,6 +38,12 @@
 /processorParam:Quality=Best
 /build:audio/snd_tock.wav
 
+#begin audio/snd_woosh2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/snd_woosh2.wav
+
 #begin bgs/bg_brick2.png
 /importer:TextureImporter
 /processor:TextureProcessor

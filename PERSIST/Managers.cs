@@ -432,6 +432,7 @@ namespace PERSIST
             sfx.Add("hit", root.Content.Load<SoundEffect>("audio/snd_hit"));
             sfx.Add("tick", root.Content.Load<SoundEffect>("audio/snd_tick"));
             sfx.Add("tock", root.Content.Load<SoundEffect>("audio/snd_tock"));
+            sfx.Add("woosh2", root.Content.Load<SoundEffect>("audio/snd_woosh2"));
         }
 
         public void PlaySound(string snd, float pitch=1f, float volume=1f)
