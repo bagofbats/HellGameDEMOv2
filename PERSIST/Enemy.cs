@@ -3241,6 +3241,7 @@ namespace PERSIST
 
         public bool stay_out_of_way = false;
         public bool ask_hideout = false;
+        public bool ask_leaving = false;
 
         private Rectangle frame = new Rectangle(256, 64, 32, 32);
 
@@ -3275,8 +3276,12 @@ namespace PERSIST
                 if (player.HitBox.Intersects(root.hideout_trigger))
                     trigger_watch = true;
 
-                else if (player.HitBox.Y < root.hideout_trigger.Y && trigger_watch)
+                else if (player.HitBox.Y < root.hideout_trigger.Y && trigger_watch && !triggered)
+                {
                     root.EnterHideout(gameTime);
+                    triggered = true;
+                }
+                    
 
                 else
                     trigger_watch = false;
@@ -3306,8 +3311,10 @@ namespace PERSIST
                 index = 18;
             else if (!stay_out_of_way && ask_hideout)
                 index = 19;
-            else if (stay_out_of_way && ask_hideout)
+            else if (stay_out_of_way && ask_hideout && !ask_leaving)
                 index = 20;
+            else if (ask_leaving)
+                index = 36;
 
             root.StartDialogue(diastruct, index, 'c', 25f, true);
         }

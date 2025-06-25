@@ -840,13 +840,17 @@ namespace PERSIST
             new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 0),
             new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 135, 0),
             new DialogueStruct("I'll leave.", 'd', Color.White, 'p', false, "", 135, 180),
-            new DialogueStruct("No, it's alright.\nYou can stay if you want to.", 'd', Color.White, 'r', false, "", 270, 135),
+            new DialogueStruct(". . . No, it's alright.\nYou can stay if you want to.", 'd', Color.White, 'r', false, "", 270, 135),
             new DialogueStruct("This is my hideout.\nMake yourself at home, I guess.", 'd', Color.White, 'r', true, "", 270, 0),
+
             new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\n\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 1|hideout0 2"), // <--- index 5
-            new DialogueStruct("Well, you're not in my way right now, are you?", 'd', Color.White, 'p', false, "", 405, 0),
-            new DialogueStruct("Seriously though, I'm not against helping each\nother out a bit.\nJust make sure you don't blow my cover.", 'd', Color.White, 'p', true, "", 405, 0),
+
+            new DialogueStruct("Yeah. Don't push your luck.", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("I'm not against helping each other out.\nBut I'm not taking back what I said.", 'd', Color.White, 'p', true, "", 405, 0),
+
             new DialogueStruct("Yep. My hideout.", 'd', Color.White, 'p', false, "", 405, 0),                                                                            // <------ index 8
             new DialogueStruct("What do you think?\nTakes a lot of energy pretending all the time.\nNice to have a space where I won't be seen.", 'd', Color.White, 'p', false, "", 405, 0),
+
             new DialogueStruct("It's cool!\nIt sucks.\nIt's somewhere between 'cool' and 'sucks'.", 'o', Color.White, 'l', false, "hideout1 0|hideout1 1|hideout1 2"), // <--- index 10
             new DialogueStruct("Is it? I dunno.\nI'd still rather be anywhere else, honestly.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("But it is better than nothing.\nSo I take what I can get.", 'd', Color.White, 'p', true, "", 405, 0),
@@ -855,9 +859,29 @@ namespace PERSIST
             new DialogueStruct("But a sucky hideout is still better than nothing.\nSo I take what I can get.", 'd', Color.White, 'p', true, "", 405, 0),
             new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 405, 90),                                                                                      // <------ index 16
             new DialogueStruct("You know, I was thinking the same thing about\nyou.", 'd', Color.White, 'p', true, "", 405, 90),
+
             new DialogueStruct("\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 1|hideout0 2"),                                          // <------- index 18
             new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 2"),       // <--- index 19
-            new DialogueStruct("Nevermind.", 'o', Color.White, 'l', false, "hideout0 2"),       // <--- index 20
+
+            new DialogueStruct("I'm getting out of here. Are you?\nNevermind.", 'o', Color.White, 'l', false, "hideout2 0|hideout0 2"),       // <--- index 20
+
+            new DialogueStruct("You're . . . what?", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Yeah, sure man. Whatever you say.", 'd', Color.White, 'r', false, "", 270, 180),
+            new DialogueStruct("You don't think I can do it?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("I don't \"think\" you can't, I know you can't.", 'd', Color.White, 'r', false, "", 270, 90),
+            new DialogueStruct("There's a way out.\nIn the Heart of the Underworld.", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Charon told me so.\nWe can leave!", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Charon told you, huh?\nDid he tell you where it was?", 'd', Color.White, 'r', false, "", 270, 90),
+            new DialogueStruct("Huh?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("It's, uh . . .", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct("I don't know.\nI haven't gotten that far yet.\nIt's a work in progress, okay??", 'o', Color.White, 'l', false, "hideout3 0|hideout3 0|hideout3 0"),
+            new DialogueStruct("That's what I thought.", 'd', Color.White, 'r', false, "", 270, 90),
+            new DialogueStruct("Charon told me the same thing.\nAbout that heart, I mean.", 'd', Color.White, 'r', false, "", 270, 180),
+            new DialogueStruct("And you don't even want to try to look for it?", 'd', Color.White, 'p', false, "", 135, 45),
+            new DialogueStruct("This place is dangerous, Trigo.\nOne wrong turn and we're demon food.", 'd', Color.White, 'r', false, "", 270, 135),
+            new DialogueStruct("No thanks. I'm good.", 'd', Color.White, 'r', true, "", 270, 45),
+
+            new DialogueStruct("Nevermind.", 'o', Color.White, 'l', false, "hideout0 2"),                   // <---- index 36
         };
 
         DialogueStruct[] dialogue_defeat =
@@ -867,9 +891,30 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_fisher =
         {
-            new DialogueStruct(". . .", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("You see that torch up there?\nMost of them are upright, but that one's sideways.", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("They say that sideways torches are bad omens.\nA sign that the area ahead will be especially\ndangerous.", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("So I wouldn't go any farther than here.\nUnless you fancy yourself a challenge, of course.", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("Hmm?\nYou want to know what I'm doing?", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("I'm fishing!", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("They say there aren't any fish in the Styx.\nBut you never know, right?", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("Maybe some day, one will bite.\nSo I'll keep fishing, just in case.", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("Maybe some day, one will bite.", 'd', Color.White, 'p', true, "", 0, 45),
         };
-        readonly int[] fisher_bps = { 0 };
+        readonly int[] fisher_bps = { 0, 3, 7 };
+
+        DialogueStruct[] dialogue_charon_gossip =
+        {
+            new DialogueStruct("*Crrrkkk* (One of Charon's, eh?)", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("*Crrroouuukk* (Heard Charon's pretty chill.)", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("*Craaauukkkk* (Unlike The General.)\n*Creerk* (We're lucky to not be working for that guy.)", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("*Coke* (Take it easy, new guy.)", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("Oh, that's Charon's mask, isn't it?\nYou work for him?", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("Wonder what Charon wanted you for.\nGuy doesn't usually ask for help.", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("Now Reaper, she loves getting involved in people's business.\nBut not Charon.\nSeems happy just keeping to himself honestly.", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("Charon's not that bad once you get to know him.\nYou'll do fine.", 'd', Color.White, 'p', true, "", 0, 45),
+        };
+        readonly int[] frog_bps = { 0, 3 };
+        readonly int[] gossiper_bps = { 4, 7 };
 
         // dialogue_key is inside the key object -- i know, confusing...
 
@@ -1690,6 +1735,18 @@ namespace PERSIST
                     dialogue_letter = 0f;
                     return;
                 }
+            }
+
+            if (code[0] == "hideout2" || code[0] == "hideout3")
+            {
+                dialogue_num++;
+                dialogue_letter = 0f;
+
+                if (code[0] == "hideout2")
+                    kanna_cutscene.ask_leaving = true;
+
+
+                return;
             }
         }
 
