@@ -905,9 +905,17 @@ namespace PERSIST
             new DialogueStruct("I'm fishing!", 'd', Color.White, 'p', false, "", 0, 45),
             new DialogueStruct("They say there aren't any fish in the Styx.\nBut you never know, right?", 'd', Color.White, 'p', false, "", 0, 45),
             new DialogueStruct("Maybe some day, one will bite.\nSo I'll keep fishing, just in case.", 'd', Color.White, 'p', true, "", 0, 45),
-            new DialogueStruct("Maybe some day, one will bite.", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("Beware the sideways torch, friend.", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("You see that torch up there?\nMost of them are upright, but that one's sideways.", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("They say that sideways torches are bad omens.\nA sign that the area ahead will be especially\ndangerous.", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("But you knew that already, didn't you?\nYou've seen these torches before.", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("He-heh . . .\nYou're a real go-getter, aren't you?", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("Challenging yourself is good, but it'll wear you\ndown if you aren't careful.", 'd', Color.White, 'p', false, "", 0, 45),
+            new DialogueStruct("When that happens, don't forget to rest.\nMaybe do some fishing!\nThat's what I always do, anyway.", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("Good luck, friend.", 'd', Color.White, 'p', true, "", 0, 45),
         };
         readonly int[] fisher_bps = { 0, 3, 7 };
+        readonly int[] fisher_bps_secret = { 8, 12, 14 };
 
         DialogueStruct[] dialogue_charon_gossip =
         {
@@ -1236,7 +1244,10 @@ namespace PERSIST
 
                                 if (value == "fisher")
                                 {
-                                    temp.SetType(dialogue_fisher, fisher_bps);
+                                    if (!prog_manager.charons_blessing)
+                                        temp.SetType(dialogue_fisher, fisher_bps);
+                                    else
+                                        temp.SetType(dialogue_fisher, fisher_bps_secret);
 
                                     temp.SetGuyInfo(
                                         temp_loc,
@@ -2231,17 +2242,25 @@ namespace PERSIST
                         var temp = charon_frame;
                         temp.X += 16;
                         charondoor.SetFrame(temp);
+
+                        MaskFX fx = new MaskFX(new Vector2(charondoor.bounds.X, charondoor.bounds.Y + 11), 
+                            tst_styx, 
+                            this, 
+                            new Rectangle(320, 168, 16, 16)
+                            );
+
+                        AddFX(fx);
                     }
 
                     cutscene_code[1] = "-";
                 }
 
-                if (cutscene_timer > 3f && charondoor != null)
+                if (cutscene_timer > 4f && charondoor != null)
                 {
                     charondoor.MoveUp(gameTime, 0.11f);
                 }
 
-                if (cutscene_timer > 10.2f)
+                if (cutscene_timer > 11.2f)
                 {
                     player.ExitCutscene();
                     cutscene = false;

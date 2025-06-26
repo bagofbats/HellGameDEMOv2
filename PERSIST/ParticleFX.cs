@@ -280,12 +280,15 @@ namespace PERSIST
 
     public class KeyFX : ParticleFX
     {
-        private Rectangle frame = new Rectangle(304, 120, 16, 8);
-        private Texture2D img;
+        protected Rectangle frame = new Rectangle(304, 120, 16, 8);
+        protected Texture2D img;
 
-        private float timer = 0f;
+        protected float timer = 0f;
 
-        private float timer_max = 0.14f;
+        protected float timer_max = 0.14f;
+        protected float multiplier = 180;
+
+        protected float y_ratio = 2;
 
         public KeyFX(Vector2 pos, Texture2D img, Level root)
         {
@@ -304,13 +307,25 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            float oset = timer * 180;
+            float oset = timer * multiplier;
 
-            Rectangle draw_pos = new Rectangle(pos.X - (int)(oset / 2), pos.Y - (int)(oset / 2), pos.Width + (int)oset, pos.Height + (int)(oset / 2));
+            Rectangle draw_pos = new Rectangle(pos.X - (int)(oset / 2), pos.Y - (int)(oset / 2), pos.Width + (int)oset, pos.Height + (int)(oset / y_ratio));
 
             float opacity = 1 - ((timer + 0.01f) / timer_max);
 
             spriteBatch.Draw(img, draw_pos, frame, Color.White * opacity);
+        }
+    }
+
+    public class MaskFX : KeyFX
+    {
+        public MaskFX(Vector2 pos, Texture2D img, Level root, Rectangle frame) : base(pos, img, root)
+        {
+            this.pos = new Rectangle((int)pos.X, (int)pos.Y, 16, 16);
+            this.frame = frame;
+            y_ratio = 1;
+            timer_max = 0.4f;
+            multiplier = 70;
         }
     }
 }
