@@ -51,6 +51,20 @@ art:
      - mechanics: all
      - enemies: ?????
 
+secret content plan:
+ - tutorial: one bonus level that gives you charon's blessing
+ - styx: two bonus levels plus boss fight versus Alice that frees her from prison
+ - laboratory: one bonus level that gives you good luck charm
+ - tower: zero bonus levels
+    - if you didn't do any bonus content, Kanna dies and becomes a shade at the end
+    - if you got the good luck charm, Kanna lives and you both escape together
+    - if you freed Alice and got the charm, Trigo dies and becomes a shade at the end
+ - depths:
+    - no Alice: Lukas wakes you up
+    - freed Alice: Alice wakes you up
+ - tundra (BONUS):
+    - only playable during the shade route
+
 
 epic room names
  - polyglot             |  someone who knows a lot of languages

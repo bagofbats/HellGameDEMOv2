@@ -20,6 +20,7 @@ namespace PERSIST
         public const float angle75 = 1.309f;
         public const float angle90 = 1.5708f;
         public const float flash_limit = 0.1f;
+        public const int frame_rate = 60;
     }
 
     public class HellGame : Game

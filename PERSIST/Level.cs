@@ -105,6 +105,8 @@ namespace PERSIST
         public int dialogue_second_index
         { get; protected set; } = 0;
 
+        public Color charon_atk_color = new(224, 168, 130);
+
         public Level(HellGame root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name)
         {
             this.root = root;
@@ -1205,7 +1207,7 @@ namespace PERSIST
     public class Wall
     {
         public Rectangle bounds
-        { get; private set; }
+        { get; protected set; }
         public bool special
         { get; protected set; } = false;
         public bool one_way
@@ -1565,14 +1567,14 @@ namespace PERSIST
 
     public class BossBlock : Wall
     {
-        private Level root;
-        private Rectangle draw_rectangle;
-        private Rectangle frame; // = new Rectangle(48, 112, 16, 16);
-        private Texture2D img;
-        private Texture2D black;
-        private float spawn_timer = 0;
-        private bool white = true;
-        private bool destroy = false;
+        protected Level root;
+        protected Rectangle draw_rectangle;
+        protected Rectangle frame; // = new Rectangle(48, 112, 16, 16);
+        protected Texture2D img;
+        protected Texture2D black;
+        protected float spawn_timer = 0;
+        protected bool white = true;
+        protected bool destroy = false;
 
         public BossBlock(Rectangle bounds, Level root, Rectangle frame) : base(bounds)
         {

@@ -716,6 +716,7 @@ namespace PERSIST
         private Rectangle ghost_block_frame = new Rectangle(112 + 32, 128, 16, 16);
         private Rectangle lock_block_frame = new Rectangle(224, 112, 16, 16);
         private Rectangle key_frame = new Rectangle(256, 120, 16, 8);
+        private Rectangle charon_frame = new Rectangle(288, 184, 16, 40);
         private String dialogue_exit_code = "";
 
         private List<int> mouth_locs = new List<int>();
@@ -737,6 +738,12 @@ namespace PERSIST
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
         private Rectangle kanna_boss_blocks = new Rectangle(0, 0, 0, 0);
+
+        public Rectangle charon_door_trigger
+        { get; private set; } = new();
+
+        public CharonBlock charondoor
+        { get; set; } = null;
 
         private Kanna_Boss kanna_boss;
         private Lukas_Cutscene lukas_cutscene = null;
@@ -1165,6 +1172,12 @@ namespace PERSIST
                                                                   (int)l.objects[i].width,
                                                                   (int)l.objects[i].height);
 
+                            if (l.objects[i].name == "charon_door_trigger")
+                                charon_door_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                                  (int)l.objects[i].y + t.location.Y,
+                                                                  (int)l.objects[i].width,
+                                                                  (int)l.objects[i].height);
+
                             if (l.objects[i].name == "key_pickup" && !prog_manager.locks)
                             {
                                 var temp = new KeyPickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
@@ -1237,6 +1250,15 @@ namespace PERSIST
 
                                 AddInteractable(temp);
                             }
+
+                            if (l.objects[i].name == "charonblock" && !prog_manager.charon_door)
+                            {
+                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
+                                AddSpecialWall(new CharonBlock(temp, this, charon_frame));
+
+                                special_walls_bounds.Add(temp);
+                                special_walls_types.Add("charonblock");
+                            }
                         }
 
                 }
@@ -1294,11 +1316,11 @@ namespace PERSIST
             {
                 var temp = wall.GetType();
 
-                if (temp == typeof(Crumble) || temp == typeof(SwitchBlock) || temp == typeof(OneWay) || temp == typeof(Lock))
-                    wall.Load(tst_styx);
-
                 if (temp == typeof(Stem))
                     wall.Load(spr_mushroom);
+
+                else
+                    wall.Load(tst_styx);
             }
 
             foreach (Key key in keys)
@@ -1448,17 +1470,22 @@ namespace PERSIST
 
                 if (special_walls_types[i] == "oneway")
                     AddSpecialWall(new OneWay(special_walls_bounds[i], new Rectangle(8, 184, 8, 8), this));
+
+                if (special_walls_types[i] == "charonblock" && !prog_manager.charon_door)
+                    AddSpecialWall(new CharonBlock(special_walls_bounds[i], this, charon_frame));
             }
 
 
             foreach (Wall wall in special_walls)
             {
                 var temp = wall.GetType();
-                if (temp == typeof(Crumble) || temp == typeof(SwitchBlock) || temp == typeof(OneWay) || temp == typeof(Lock))
-                    wall.Load(tst_styx);
+                
 
                 if (temp == typeof(Stem))
                     wall.Load(spr_mushroom);
+
+                else
+                    wall.Load(tst_styx);
             }
 
 
@@ -2190,6 +2217,44 @@ namespace PERSIST
                     prog_manager.EncounterMushroom();
                 }
             }
+
+            if (cutscene_code[0] == "charondoor")
+            {
+
+                // nearly 10 second cutscene of a door opening
+                // sorry speedrunners!!!
+
+                if (cutscene_timer > 1.6f && cutscene_code[1] == "empty")
+                {
+                    if (charondoor != null)
+                    {
+                        var temp = charon_frame;
+                        temp.X += 16;
+                        charondoor.SetFrame(temp);
+                    }
+
+                    cutscene_code[1] = "-";
+                }
+
+                if (cutscene_timer > 3f && charondoor != null)
+                {
+                    charondoor.MoveUp(gameTime, 0.11f);
+                }
+
+                if (cutscene_timer > 10.2f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+
+                    if (charondoor != null)
+                    {
+                        RemoveSpecialWall(charondoor);
+                        charondoor = null;
+                    }
+
+                    prog_manager.OpenCharonDoor();
+                }
+            }
         }
 
 
@@ -2236,7 +2301,7 @@ namespace PERSIST
                 keys[i].Draw(_spriteBatch);
 
             for (int i = special_walls.Count - 1; i >= 0; i--)
-                if (special_walls[i].GetType() == typeof(Stem))
+                if (special_walls[i].GetType() == typeof(Stem) || special_walls[i].GetType() == typeof(CharonBlock))
                     special_walls[i].Draw(_spriteBatch);
 
             for (int i = 0; i < rivers.Count(); i++)
@@ -2258,7 +2323,7 @@ namespace PERSIST
                         DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
 
             for (int i = special_walls.Count - 1; i >= 0; i--)
-                if (special_walls[i].GetType() != typeof(Stem))
+                if (special_walls[i].GetType() != typeof(Stem) && special_walls[i].GetType() != typeof(CharonBlock))
                     special_walls[i].Draw(_spriteBatch);
 
             for (int i = particles.Count - 1; i >= 0; i--)
@@ -2537,6 +2602,55 @@ namespace PERSIST
                     RemoveEnemy(e);
                     break;
                 }
+        }
+    }
+
+
+
+    public class CharonBlock : BossBlock
+    {
+        new readonly private StyxLevel root;
+        private bool triggered = false;
+
+        private float saved_y;
+
+        public CharonBlock(Rectangle bounds, StyxLevel root, Rectangle frame) : base(bounds, root, frame)
+        {
+            this.root = root;
+            white = false;
+
+            saved_y = bounds.Y;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            Vector2 ppos = root.player.GetPos() + new Vector2(16, 16);
+
+            if (!triggered && root.prog_manager.charons_blessing && root.charon_door_trigger.Contains(ppos))
+            {
+                triggered = true;
+                root.HandleCutscene("charondoor|empty|empty|empty|empty", gameTime, true);
+                root.charondoor = this;
+            }
+        }
+
+        public void SetFrame(Rectangle frame)
+        {
+            this.frame = frame;
+        }
+
+        public void SetBounds(Rectangle bounds)
+        {
+            this.bounds = bounds;
+            draw_rectangle = bounds;
+        }
+
+        public void MoveUp(GameTime gameTime, float diff)
+        {
+            saved_y -= diff * CONSTANTS.frame_rate * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            bounds = new Rectangle(bounds.X, (int)saved_y, bounds.Width, bounds.Height);
+            draw_rectangle.Y = (int)saved_y;
         }
     }
 }

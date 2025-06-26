@@ -172,7 +172,12 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch _spriteBatch)
         {
-            _spriteBatch.Draw(img, pos, frame, Color.White);
+            Color c = Color.White;
+
+            if (level.prog_manager.charons_blessing)
+                c = level.charon_atk_color;
+
+            _spriteBatch.Draw(img, pos, frame, c);
         }
 
         public override void DebugDraw(SpriteBatch _spriteBatch, Texture2D blue)
@@ -349,7 +354,12 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch _spriteBatch)
         {
-            _spriteBatch.Draw(img, pos, frame, Color.White);
+            Color c = Color.White;
+
+            if (level.prog_manager.charons_blessing)
+                c = level.charon_atk_color;
+
+            _spriteBatch.Draw(img, pos, frame, c);
         }
 
         public override void DebugDraw(SpriteBatch _spriteBatch, Texture2D blue)

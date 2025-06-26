@@ -324,6 +324,9 @@ namespace PERSIST
         public bool charons_blessing
         { get; private set; }
 
+        public bool charon_door
+        { get; private set; }
+
         public ProgressionManager()
         {
             knife = true;
@@ -332,8 +335,8 @@ namespace PERSIST
             slime_started = false;
             mask = true;
             journal_secret = false;
-            charons_blessing = false;
-            dash = false;
+            charons_blessing = true;
+            dash = true;
             locks = false;
             jump_blocks = true;
             kanna_started = false;
@@ -341,6 +344,7 @@ namespace PERSIST
             mushroom_started = false;
             mushroom_defeated = false;
             hideout_entered = false;
+            charon_door = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
@@ -413,11 +417,14 @@ namespace PERSIST
 
         public void DefeatMushroom()
         { mushroom_defeated = true; }
+
+        public void OpenCharonDoor()
+        { charon_door = true; }
     }
 
     public class AudioManager
     {
-        private HellGame root;
+        private readonly HellGame root;
 
         private Dictionary<string, SoundEffect> sfx = new Dictionary<string, SoundEffect>();
 

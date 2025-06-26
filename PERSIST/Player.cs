@@ -210,6 +210,10 @@ namespace PERSIST
             else
                 frame.Y = 1120;
 
+            Color c = Color.White;
+            if (root.the_level.prog_manager.charons_blessing)
+                c = root.the_level.charon_atk_color;
+
             if (timer < 0.2)
             {
                 if (progManager.mask)
@@ -217,7 +221,7 @@ namespace PERSIST
 
                 _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
                 frame.X = 32;
-                _spriteBatch.Draw(sheet, DrawBox, frame, Color.White * (30 * timer * timer));
+                _spriteBatch.Draw(sheet, DrawBox, frame, c * (30 * timer * timer));
             }
             else
             {
@@ -228,7 +232,7 @@ namespace PERSIST
                 frame.X = 32 + (32 * (int)((timer - 0.1) * 16)) + frame_xoset;
                 if (frame.X > 224 + frame_xoset)
                     frame.X = 224 + frame_xoset;
-                _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
+                _spriteBatch.Draw(sheet, DrawBox, frame, c);
             }
 
         }
