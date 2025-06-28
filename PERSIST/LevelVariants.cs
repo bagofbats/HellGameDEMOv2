@@ -931,9 +931,19 @@ namespace PERSIST
         readonly int[] frog_bps = { 0, 3 };
         readonly int[] gossiper_bps = { 4, 7 };
 
+        DialogueStruct[] dialogue_look_down =
+        {
+            new DialogueStruct("Reaper can be really cryptic sometimes, you know?", 'd', Color.White, 'p', false, "", 0, 180),
+            new DialogueStruct("Like the other day she was talking about how\nusing the controller's analog stick to move and\nlook down at the same time is really difficult.", 'd', Color.White, 'p', false, "", 0, 180),
+            new DialogueStruct("And about how there's an option in the menu to\nbind looking down to a button instead of using\nthe stick for that.", 'd', Color.White, 'p', false, "", 0, 180),
+            new DialogueStruct("Oh well.\nMaybe I'm not supposed to get it.\nMaybe she was talking to someone else . . .", 'd', Color.White, 'p', true, "", 0, 180),
+            new DialogueStruct("Between this and the Evil Fungus Pit I'm getting\nreally tired of Reaper just saying stuff without\nelaborating.", 'd', Color.White, 'p', true, "", 0, 180),
+        };
+        readonly int[] look_down_bps = { 0, 4 };
+
         // dialogue_key is inside the key object -- i know, confusing...
 
-        private Dictionary<Room, int> keys_in_room = new Dictionary<Room, int>();
+        private readonly Dictionary<Room, int> keys_in_room = new Dictionary<Room, int>();
 
         public StyxLevel(HellGame root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name)
         {
@@ -1284,6 +1294,19 @@ namespace PERSIST
                                         temp_loc,
                                         new Rectangle(128, 32, 16, 32),
                                         false
+                                        );
+                                }
+
+                                if (value == "downer")
+                                {
+                                    guy.SetType(dialogue_look_down, look_down_bps);
+
+                                    guy.SetGuyInfo(
+                                        temp_loc,
+                                        new Rectangle(0, 96, 16, 32),
+                                        true,
+                                        6,
+                                        4
                                         );
                                 }
 
