@@ -1014,10 +1014,18 @@ namespace PERSIST
                             if (l.objects[i].name == "crumble")
                             {
                                 var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
-                                AddSpecialWall(new Crumble(temp, this));
+                                var crumb = new Crumble(temp, this);
+                                string s = "crumble";
 
+                                if (l.objects[i].properties.Length != 0)
+                                {
+                                    crumb.behind_styx = true;
+                                    s = "crumble_b";
+                                }
+
+                                AddSpecialWall(crumb);
                                 special_walls_bounds.Add(temp);
-                                special_walls_types.Add("crumble");
+                                special_walls_types.Add(s);
                             }
 
                             if (l.objects[i].name == "walker")
@@ -1499,6 +1507,14 @@ namespace PERSIST
             {
                 if (special_walls_types[i] == "crumble")
                     AddSpecialWall(new Crumble(special_walls_bounds[i], this));
+
+                if (special_walls_types[i] == "crumble_b")
+                {
+                    var crumb = new Crumble(special_walls_bounds[i], this);
+                    crumb.behind_styx = true;
+                    AddSpecialWall(crumb);
+                }
+                    
 
                 if (special_walls_types[i] == "stem")
                 {
@@ -2372,7 +2388,7 @@ namespace PERSIST
                 keys[i].Draw(_spriteBatch);
 
             for (int i = special_walls.Count - 1; i >= 0; i--)
-                if (special_walls[i].GetType() == typeof(Stem) || special_walls[i].GetType() == typeof(CharonBlock))
+                if (special_walls[i].behind_styx)
                     special_walls[i].Draw(_spriteBatch);
 
             for (int i = 0; i < rivers.Count(); i++)
@@ -2394,7 +2410,7 @@ namespace PERSIST
                         DrawLayerOnScreen(_spriteBatch, l, t, tileset, cam);
 
             for (int i = special_walls.Count - 1; i >= 0; i--)
-                if (special_walls[i].GetType() != typeof(Stem) && special_walls[i].GetType() != typeof(CharonBlock))
+                if (!special_walls[i].behind_styx)
                     special_walls[i].Draw(_spriteBatch);
 
             for (int i = particles.Count - 1; i >= 0; i--)
@@ -2691,6 +2707,8 @@ namespace PERSIST
             white = false;
 
             saved_y = bounds.Y;
+
+            behind_styx = true;
         }
 
         public override void Update(GameTime gameTime)

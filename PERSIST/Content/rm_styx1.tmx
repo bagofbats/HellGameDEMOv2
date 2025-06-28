@@ -186,7 +186,11 @@
   <object id="798" name="checkpoint" x="1632" y="1048">
    <point/>
   </object>
-  <object id="804" name="crumble" x="1696" y="1056" width="96" height="64"/>
+  <object id="804" name="crumble" x="1696" y="1056" width="96" height="64">
+   <properties>
+    <property name="behind_styx" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="806" name="trampoline" x="1824" y="1048" width="16" height="72">
    <properties>
     <property name="mouth" type="int" value="0"/>
@@ -201,7 +205,11 @@
   <object id="825" name="lock" x="1040" y="408" width="16" height="32"/>
   <object id="826" name="crumble" x="1016" y="408" width="16" height="32"/>
   <object id="831" name="lock" x="904" y="392" width="48" height="16"/>
-  <object id="833" name="crumble" x="904" y="440" width="48" height="72"/>
+  <object id="833" name="crumble" x="904" y="440" width="48" height="72">
+   <properties>
+    <property name="behind_styx" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="835" name="lock" x="800" y="392" width="16" height="32"/>
   <object id="836" name="crumble" x="824" y="392" width="16" height="32"/>
   <object id="840" name="key" x="712" y="416">
@@ -224,7 +232,11 @@
     <property name="key_init" type="int" value="1"/>
    </properties>
   </object>
-  <object id="856" name="crumble" x="1360" y="464" width="48" height="32"/>
+  <object id="856" name="crumble" x="1360" y="464" width="48" height="32">
+   <properties>
+    <property name="behind_styx" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="857" name="key" x="1376" y="376">
    <point/>
   </object>
@@ -272,7 +284,11 @@
   <object id="932" name="switch_one" x="1000" y="552" width="16" height="16"/>
   <object id="933" name="switch_two" x="1000" y="576" width="16" height="16"/>
   <object id="934" name="switch_one" x="1000" y="600" width="16" height="16"/>
-  <object id="938" name="crumble" x="1088" y="744" width="32" height="32"/>
+  <object id="938" name="crumble" x="1088" y="744" width="32" height="32">
+   <properties>
+    <property name="behind_styx" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="948" name="oneway" x="2112" y="256" width="48" height="8"/>
   <object id="963" name="oneway" x="1904" y="648" width="32" height="8"/>
   <object id="964" name="oneway" x="1904" y="608" width="32" height="8"/>

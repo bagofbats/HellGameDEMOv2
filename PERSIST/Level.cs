@@ -1214,6 +1214,8 @@ namespace PERSIST
         { get; protected set; } = false;
         public bool keys_set
         { get; set; } = false;
+        public bool behind_styx
+        { get; set; } = false;
 
         public Wall(Rectangle bounds)
         {
@@ -1849,6 +1851,8 @@ namespace PERSIST
             this.root = root;
             this.head = head;
             this.mouth = mouth;
+
+            behind_styx = true;
 
             special = true;
         }
