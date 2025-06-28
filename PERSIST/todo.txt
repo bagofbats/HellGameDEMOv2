@@ -12,6 +12,7 @@
  - give shockwave better hit box
  - doors out of secret areas should give dialogue box
  - clamp mushroom boss's X pos to be inside the zone at all times
+ - ranged atks shouldn't make sound when thrown into styx
 
 art:
  - more advanced dust animation when blocks switch?

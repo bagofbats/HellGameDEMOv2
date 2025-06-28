@@ -246,8 +246,15 @@ namespace PERSIST
             {
                 level.AddFX(particle);
                 fx_created = true;
+
+                float pitch = -0.3f;
+
+                if (up)
+                    pitch = -0.7f;
+
+                level.audio_manager.PlaySound("hit", pitch);
             }
-            
+
             player.FinishAttack(this);
         }
 

@@ -919,14 +919,14 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_charon_gossip =
         {
-            new DialogueStruct("*Crrrkkk* (One of Charon's, eh?)", 'd', Color.White, 'p', false, "", 0, 45),
-            new DialogueStruct("*Crrroouuukk* (Heard Charon's pretty chill.)", 'd', Color.White, 'p', false, "", 0, 45),
-            new DialogueStruct("*Craaauukkkk* (Unlike The General.)\n*Creerk* (We're lucky to not be working for that guy.)", 'd', Color.White, 'p', true, "", 0, 45),
-            new DialogueStruct("*Coke* (Take it easy, new guy.)", 'd', Color.White, 'p', true, "", 0, 45),
-            new DialogueStruct("Oh, that's Charon's mask, isn't it?\nYou work for him?", 'd', Color.White, 'p', false, "", 0, 45),
-            new DialogueStruct("Wonder what Charon wanted you for.\nGuy doesn't usually ask for help.", 'd', Color.White, 'p', false, "", 0, 45),
-            new DialogueStruct("Now Reaper, she loves getting involved in people's business.\nBut not Charon.\nSeems happy just keeping to himself honestly.", 'd', Color.White, 'p', true, "", 0, 45),
-            new DialogueStruct("Charon's not that bad once you get to know him.\nYou'll do fine.", 'd', Color.White, 'p', true, "", 0, 45),
+            new DialogueStruct("*Crrrkkk* (One of Charon's, eh?)", 'd', Color.White, 'p', false, "", 0, 90),
+            new DialogueStruct("*Crrroouuukk* (Heard Charon's pretty chill.)\n*Craaauukkkk* (Unlike The General.)", 'd', Color.White, 'p', false, "", 0, 90),
+            new DialogueStruct("*Creerk* (Little guy over here's been telling me\nstories.)\n*Cookie* (Sounds like a real nutcase.)", 'd', Color.White, 'p', true, "", 0, 90),
+            new DialogueStruct("*Coke* (Take it easy, new guy.)", 'd', Color.White, 'p', true, "", 0, 90),
+            new DialogueStruct("Oh, that's Charon's mask, isn't it?\nYou work for him?", 'd', Color.White, 'p', false, "", 0, 135),
+            new DialogueStruct("Wonder what Charon wanted you for.\nGuy doesn't usually ask for help.", 'd', Color.White, 'p', false, "", 0, 135),
+            new DialogueStruct("Now Doc, he's always asking for more people.\nBut not Charon.\nSeems happy just keeping to himself honestly.", 'd', Color.White, 'p', true, "", 0, 135),
+            new DialogueStruct("Charon's not that bad once you get to know him.\nYou'll do fine.", 'd', Color.White, 'p', true, "", 0, 135),
         };
         readonly int[] frog_bps = { 0, 3 };
         readonly int[] gossiper_bps = { 4, 7 };
@@ -1027,7 +1027,12 @@ namespace PERSIST
                                 enemy_types.Add("trampoline");
 
                                 var temp2 = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
-                                var mouth = Int32.Parse(l.objects[i].properties[0].value);
+
+
+                                var mouth = 0;
+                                if (l.objects[i].properties.Length != 0)
+                                    mouth = int.Parse(l.objects[i].properties[0].value);
+
                                 mouth_locs.Add(mouth);
                                 AddSpecialWall(new Stem(temp2, this, tempoline, mouth));
                                 special_walls_bounds.Add(temp2);
@@ -1236,20 +1241,20 @@ namespace PERSIST
                                 enemy_types.Add("kanna_cutscene_hideout");
                             }
 
-                            if (l.objects[i].name == "guy")
+                            if (l.objects[i].name == "guy" && l.objects[i].properties.Length != 0)
                             {
                                 var temp_loc = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
-                                var temp = new InteractableGuy(temp_loc, this);
+                                var guy = new InteractableGuy(temp_loc, this);
                                 string value = l.objects[i].properties[0].value;
 
                                 if (value == "fisher")
                                 {
                                     if (!prog_manager.charons_blessing)
-                                        temp.SetType(dialogue_fisher, fisher_bps);
+                                        guy.SetType(dialogue_fisher, fisher_bps);
                                     else
-                                        temp.SetType(dialogue_fisher, fisher_bps_secret);
+                                        guy.SetType(dialogue_fisher, fisher_bps_secret);
 
-                                    temp.SetGuyInfo(
+                                    guy.SetGuyInfo(
                                         temp_loc,
                                         new Rectangle(0, 0, 32, 96),
                                         true,
@@ -1257,9 +1262,33 @@ namespace PERSIST
                                         4
                                         );
                                 }
-                                    
 
-                                AddInteractable(temp);
+                                if (value == "frog")
+                                {
+                                    guy.SetType(dialogue_charon_gossip, frog_bps);
+
+                                    guy.SetGuyInfo(
+                                        temp_loc,
+                                        new Rectangle(128, 0, 32, 32),
+                                        true,
+                                        1f,
+                                        2
+                                        );
+                                }
+
+                                if (value == "emo_imp")
+                                {
+                                    guy.SetType(dialogue_charon_gossip, gossiper_bps);
+
+                                    guy.SetGuyInfo(
+                                        temp_loc,
+                                        new Rectangle(128, 32, 16, 32),
+                                        false
+                                        );
+                                }
+
+
+                                AddInteractable(guy);
                             }
 
                             if (l.objects[i].name == "charonblock" && !prog_manager.charon_door)

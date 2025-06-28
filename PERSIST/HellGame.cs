@@ -133,24 +133,24 @@ namespace PERSIST
 
             // styx level template
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx1.tmx");
-            TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
-            TiledMap thr_map = new TiledMap(Content.RootDirectory + "\\rm_styx_secret.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
+            //TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
+            //TiledMap thr_map = new TiledMap(Content.RootDirectory + "\\rm_styx_secret.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
 
             List<Rectangle> bounds = new List<Rectangle>
             {
                 new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight),
-                new Rectangle(2096, 432 + (8 * 70), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight),
-                new Rectangle(304 - (thr_map.Width * thr_map.TileWidth), 880 - 64 - 240, thr_map.Width * thr_map.TileWidth, thr_map.Height * thr_map.TileHeight)
+                //new Rectangle(2096, 432 + (8 * 70), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight),
+                //new Rectangle(304 - (thr_map.Width * thr_map.TileWidth), 880 - 64 - 240, thr_map.Width * thr_map.TileWidth, thr_map.Height * thr_map.TileHeight)
             };
 
             TiledData one = new TiledData(bounds[0], one_map, one_tst);
-            TiledData two = new TiledData(bounds[1], two_map, one_tst);
-            TiledData thr = new TiledData(bounds[2], thr_map, one_tst);
+            //TiledData two = new TiledData(bounds[1], two_map, one_tst);
+            //TiledData thr = new TiledData(bounds[2], thr_map, one_tst);
 
-            List<TiledData> tld = new List<TiledData>{one, two, thr};
-            //List<TiledData> tld = new List<TiledData> {one};
+            //List<TiledData> tld = new List<TiledData>{one, two, thr};
+            List<TiledData> tld = new List<TiledData> {one};
 
             // determine how much to scale the window up
             // given how big the monitor is
@@ -177,7 +177,7 @@ namespace PERSIST
             Camera cam = new Camera(this);
             //the_level = new TutorialLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
-            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx1");
+            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx0");
 
             Window.Title = "Hell Escape [DEMO]";
         }
