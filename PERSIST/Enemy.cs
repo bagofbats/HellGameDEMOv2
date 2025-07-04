@@ -3122,22 +3122,16 @@ namespace PERSIST
 
         public override void Interact()
         {
-            if (!progMan.dash)
+            if (!progMan.map_obtained)
             {
                 root.StartDialogue(dialogue_deadguy, 0, 'c', 25f, true);
-                LearnDash();
             }
             else
             {
-                root.StartDialogue(dialogue_deadguy, 7, 'c', 25f, true);
+                root.StartDialogue(dialogue_deadguy, 11, 'c', 25f, true);
             }
 
 
-        }
-
-        public void LearnDash()
-        {
-            progMan.LearnDash();
         }
     }
 
@@ -3311,10 +3305,14 @@ namespace PERSIST
                 index = 18;
             else if (!stay_out_of_way && ask_hideout)
                 index = 19;
-            else if (stay_out_of_way && ask_hideout && !ask_leaving)
+            else if (stay_out_of_way && ask_hideout && !ask_leaving && !root.prog_manager.map_obtained)
                 index = 20;
-            else if (ask_leaving)
+            else if (ask_leaving && !root.prog_manager.map_obtained)
                 index = 36;
+            else if (stay_out_of_way && ask_hideout && !ask_leaving && root.prog_manager.map_obtained)
+                index = 37;
+            else if (stay_out_of_way && ask_hideout && ask_leaving && root.prog_manager.map_obtained)
+                index = 48;
 
             root.StartDialogue(diastruct, index, 'c', 25f, true);
         }

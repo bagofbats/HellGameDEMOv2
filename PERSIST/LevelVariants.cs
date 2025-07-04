@@ -693,6 +693,8 @@ namespace PERSIST
 
     public class StyxLevel : Level
     {
+        private GameTime saved_gameTime;
+
         private Texture2D tst_styx;
         private Texture2D bg_dark;
         private Texture2D bg_rocks;
@@ -752,6 +754,8 @@ namespace PERSIST
 
         private float saved_camera_x = 0f;
         private float saved_camera_y = 0f;
+
+        private bool saved_choice = false;
 
         DialogueStruct[] dialogue_ck = {
             new DialogueStruct("The flame burns bright in the dark.", 'd', Color.White, 'c'),
@@ -834,12 +838,16 @@ namespace PERSIST
         DialogueStruct[] dialogue_deadguy = {
             new DialogueStruct("Another corpse.", 'd', Color.White, 'c'),
             new DialogueStruct("There is a crumpled up piece of paper in her pocket.", 'd', Color.White, 'c'),
+            new DialogueStruct("Read it.\nDo not.", 'o', Color.White, 'l', false, "corpse 0|corpse 1"),
             new DialogueStruct("IN CASE I DIE HERE:\nMY NAME IS ALICE VIMES\nI AM 17 YEARS OLD.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
             new DialogueStruct("I HAVE A BROTHER NAMED LUKAS VIMES\nWE WOKE UP HERE TOGETHER.\nTHAT IS ALL I CAN REMEMBER.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
             new DialogueStruct("TAKE WHATEVER YOU NEED FROM ME.\nCARRY MY MEMORY WITH YOU.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
             new DialogueStruct("GODSPEED TRAVELER.\nMAY YOU SUCCEED WHERE I DID NOT.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
             new DialogueStruct(". . .", 'd', Color.White, 'c'),
-            new DialogueStruct("You learned how to dash!", 'd', Color.White, 'c', true),
+            new DialogueStruct("On the back, there is a map of The Underworld.", 'd', Color.White, 'c'),
+            new DialogueStruct("In the center, there is a great tower.\nUnderneath, a place labeled \"The Heart\".", 'd', Color.White, 'c'),
+            new DialogueStruct("You got the Underworld Map.", 'd', Color.White, 'c', true), // make this blue trigo thoughts
+            new DialogueStruct("( Kanna might want to see this. )", 'd', Color.DodgerBlue, 'p', true, "", 135, 0),
         };
 
         DialogueStruct[] dialogue_hideout =
@@ -850,28 +858,41 @@ namespace PERSIST
             new DialogueStruct(". . . No, it's alright.\nYou can stay if you want to.", 'd', Color.White, 'r', false, "", 270, 135),
             new DialogueStruct("This is my hideout.\nMake yourself at home, I guess.", 'd', Color.White, 'r', true, "", 270, 0),
 
-            new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\n\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 1|hideout0 2"), // <--- index 5
+            // index 5
+            new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\n\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 1|hideout0 2"),
 
+            // index 6
             new DialogueStruct("Yeah. Don't push your luck.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("I'm not against helping each other out.\nBut I'm not taking back what I said.", 'd', Color.White, 'p', true, "", 405, 0),
 
-            new DialogueStruct("Yep. My hideout.", 'd', Color.White, 'p', false, "", 405, 0),                                                                            // <------ index 8
+            // index 8
+            new DialogueStruct("Yep. My hideout.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("What do you think?\nTakes a lot of energy pretending all the time.\nNice to have a space where I won't be seen.", 'd', Color.White, 'p', false, "", 405, 0),
 
-            new DialogueStruct("It's cool!\nIt sucks.\nIt's somewhere between 'cool' and 'sucks'.", 'o', Color.White, 'l', false, "hideout1 0|hideout1 1|hideout1 2"), // <--- index 10
+            // index 10
+            new DialogueStruct("It's cool!\nIt sucks.\nIt's somewhere between 'cool' and 'sucks'.", 'o', Color.White, 'l', false, "hideout1 0|hideout1 1|hideout1 2"),
             new DialogueStruct("Is it? I dunno.\nI'd still rather be anywhere else, honestly.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("But it is better than nothing.\nSo I take what I can get.", 'd', Color.White, 'p', true, "", 405, 0),
-            new DialogueStruct("rude.", 'd', Color.White, 'p', false, "", 405, 0),                                                                                     // <------ index 13
+
+            // index 13
+            new DialogueStruct("rude.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("But also pretty true, this does kinda suck.\nI'd rather be anywhere else, honestly.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("But a sucky hideout is still better than nothing.\nSo I take what I can get.", 'd', Color.White, 'p', true, "", 405, 0),
-            new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 405, 90),                                                                                      // <------ index 16
+
+            // index 16
+            new DialogueStruct(". . .", 'd', Color.White, 'p', false, "", 405, 90),
             new DialogueStruct("You know, I was thinking the same thing about\nyou.", 'd', Color.White, 'p', true, "", 405, 90),
+            
+            // index 18
+            new DialogueStruct("\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 1|hideout0 2"),
 
-            new DialogueStruct("\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 1|hideout0 2"),                                          // <------- index 18
-            new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 2"),       // <--- index 19
+            // index 19
+            new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 2"),
 
-            new DialogueStruct("I'm getting out of here. Are you?\nNevermind.", 'o', Color.White, 'l', false, "hideout2 0|hideout0 2"),       // <--- index 20
+            // index 20
+            new DialogueStruct("I'm getting out of here. Are you?\nNevermind.", 'o', Color.White, 'l', false, "hideout2 0|hideout0 2"),
 
+            // index 21
             new DialogueStruct("You're . . . what?", 'd', Color.White, 'r', false, "", 270, 0),
             new DialogueStruct("Yeah, sure man. Whatever you say.", 'd', Color.White, 'r', false, "", 270, 180),
             new DialogueStruct("You don't think I can do it?", 'd', Color.White, 'p', false, "", 135, 0),
@@ -888,7 +909,56 @@ namespace PERSIST
             new DialogueStruct("This place is dangerous, Trigo.\nOne wrong turn and we're demon food.", 'd', Color.White, 'r', false, "", 270, 135),
             new DialogueStruct("No thanks. I'm good.", 'd', Color.White, 'r', true, "", 270, 45),
 
-            new DialogueStruct("Nevermind.", 'o', Color.White, 'l', false, "hideout0 2"),                   // <---- index 36
+            // index 36
+            new DialogueStruct("Nevermind.", 'o', Color.White, 'l', false, "hideout0 2"),
+
+            // index 37
+            new DialogueStruct("I'm getting out of here. Are you?\nNevermind.", 'o', Color.White, 'l', false, "hideout4 0|hideout0 2"),
+
+            // index 38
+            new DialogueStruct("You're . . . what?", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Yeah, sure man. Whatever you say.", 'd', Color.White, 'r', false, "", 270, 180),
+            new DialogueStruct("You don't think I can do it?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("I don't \"think\" you can't, I know you can't.", 'd', Color.White, 'r', false, "", 270, 90),
+            new DialogueStruct("There's a way out.\nIn the Heart of the Underworld.", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Charon told me so.\nWe can leave!", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Charon told you, huh?\nDid he tell you where it was?", 'd', Color.White, 'r', false, "", 270, 90),
+            new DialogueStruct("Huh?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Well, no, but . . .", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct("I have a map to the Heart of the Underworld.", 'o', Color.White, 'l', false, "hideout5 0"),
+
+            // index 48
+            new DialogueStruct("I have a map to the Heart of the Underworld.\nNevermind.", 'o', Color.White, 'l', false, "hideout5 0|hideout0 2"),
+
+            // index 49
+            new DialogueStruct("What??\nLet me see that . . .\nWhere'd you get THIS from?", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Not important.\nWhat matters is we have a way out.\nAnd we know how to get there now.", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Guess so.\nLooks like the way forward is just over that\nmoat.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Moat?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Yeah, the moat.\nThe one all the way down and to the right?", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Oh.", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Yeah, I uh . . .\nCan't get accross that.", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("What do you mean?\nJust dash accross.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct(". . . Dash?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Trigo I did that against you when we fought.\nDon't tell me you don't know how to dash.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("I, uh . . .", 'd', Color.White, 'p', false, "", 135, 0),
+
+            // index 60
+            new DialogueStruct("Yeah, I don't know how to dash.\nObviously I know how! Who doesn't?", 'o', Color.White, 'l', false, "hideout6 0|hideout6 1"),
+
+            // index 61
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Well, that's a relief.\nGuess you don't need me to teach you, then?", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Hey, hey hey!\nI was kidding!!", 'd', Color.White, 'p', false, "", 135, 0),
+
+            // index 64
+            new DialogueStruct("Alright, then.\nI'll show you how.", 'd', Color.White, 'r', true, "", 270, 0),
+
+            // index 65
+            new DialogueStruct("You learned how to dash!", 'd', Color.White, 'c', true),
+
+            // index 66
+            new DialogueStruct("Nevermind.", 'o', Color.White, 'l', false, "hideout0 2"),
         };
 
         DialogueStruct[] dialogue_defeat =
@@ -1434,6 +1504,8 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            saved_gameTime = gameTime;
+
             base.Update(gameTime);
 
             if (name == "rm_styx1")
@@ -1843,7 +1915,7 @@ namespace PERSIST
                 }
             }
 
-            if (code[0] == "hideout2" || code[0] == "hideout3")
+            if (code[0] == "hideout2" || code[0] == "hideout3" || code[0] == "hideout4")
             {
                 dialogue_num++;
                 dialogue_letter = 0f;
@@ -1853,6 +1925,50 @@ namespace PERSIST
 
 
                 return;
+            }
+
+            if (code[0] == "hideout5")
+            {
+                dialogue_num = 49;
+                dialogue_letter = 0f;
+
+                return;
+            }
+
+            if (code[0] == "hideout6")
+            {
+                // start a cutscene here
+                player.LeaveDialogue();
+                dialogue = false;
+                dialogue_letter = 0f;
+                dialogue_num = 0;
+
+                saved_choice = code[1] == "0";
+
+                HandleCutscene("learndash|empty|empty|empty|empty|empty", saved_gameTime, true);
+
+
+                return;
+            }
+
+            if (code[0] == "corpse")
+            {
+                if (code[1] == "1")
+                {
+                    player.LeaveDialogue();
+                    dialogue = false;
+                    dialogue_letter = 0f;
+                    dialogue_num = 0;
+                    return;
+                }
+
+                if (code[1] == "0")
+                {
+                    dialogue_num++;
+                    dialogue_letter = 0f;
+                    prog_manager.GetMap();
+                    return;
+                }
             }
         }
 
@@ -2342,6 +2458,76 @@ namespace PERSIST
                     prog_manager.OpenCharonDoor();
                 }
             }
+
+            if (cutscene_code[0] == "learndash")
+            {
+                int wipe_width = door_trans_rect_1.Width;
+
+                if (cutscene_timer > 0f && cutscene_code[1] == "empty")
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+
+                    int index = 61;
+                    if (saved_choice)
+                        index = 64;
+
+                    StartDialogue(dialogue_hideout, index, 'c', 25f, true);
+                    cutscene_code[1] = "-";
+                }
+
+                if (cutscene_timer > 0.3f && cutscene_timer < 1.7f)
+                {
+                    door_trans = true;
+                    force_draw_player = true;
+
+                    float mult = cutscene_timer - 0.3f;
+
+                    door_trans_rect_1.X = (int)(cam.GetPos().X - wipe_width + (258 * mult));
+                    door_trans_rect_2.X = (int)(cam.GetPos().X + 320 - (258 * mult));
+
+                    door_trans_rect_1.Y = (int)cam.GetPos().Y;
+                    door_trans_rect_2.Y = (int)cam.GetPos().Y;
+                }
+
+
+                if (cutscene_timer > 2f && cutscene_code[2] == "empty")
+                {
+                    StartDialogue(dialogue_hideout, 65, 'c', 25f, true);
+                    cutscene_code[2] = "-";
+
+                    prog_manager.LearnDash();
+
+                    for (int i = enemies.Count - 1; i > 0; i--)
+                        if (enemies[i].GetType() == typeof(Kanna_Cutscene))
+                        {
+                            RemoveEnemy(enemies[i]);
+                            break;
+                        }
+                }
+
+                if (cutscene_timer > 2.3f && cutscene_timer < 3.7f)
+                {
+                    door_trans = true;
+
+                    float mult = cutscene_timer - 2.3f;
+
+                    door_trans_rect_1.X = (int)(cam.GetPos().X - 128 - (258 * mult));
+                    door_trans_rect_2.X = (int)(cam.GetPos().X + 48 + (258 * mult));
+
+                    door_trans_rect_1.Y = (int)cam.GetPos().Y;
+                    door_trans_rect_2.Y = (int)cam.GetPos().Y;
+                }
+
+                if (cutscene_timer > 4f)
+                {
+                    door_trans = false;
+                    force_draw_player = false;
+                    player.ExitCutscene();
+                    cutscene = false;
+                }
+            }
         }
 
 
@@ -2377,7 +2563,7 @@ namespace PERSIST
             for (int i = interactables.Count - 1; i >= 0; i--)
                 interactables[i].Draw(_spriteBatch);
 
-            if (!player_dead && !door_trans)
+            if ((!player_dead && !door_trans) || force_draw_player)
                 player.Draw(_spriteBatch);
 
             int cam_x = (int)cam.GetPos().X;

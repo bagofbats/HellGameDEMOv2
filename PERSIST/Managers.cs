@@ -316,6 +316,8 @@ namespace PERSIST
         // cutscenes
         public bool hideout_entered
         { get; private set; }
+        public bool map_obtained
+        { get; private set; }
 
         // secrets
         public bool journal_secret
@@ -336,7 +338,7 @@ namespace PERSIST
             mask = true;
             journal_secret = false;
             charons_blessing = true;
-            dash = true;
+            dash = false;
             locks = true;
             jump_blocks = true;
             kanna_started = false;
@@ -345,6 +347,7 @@ namespace PERSIST
             mushroom_defeated = false;
             hideout_entered = false;
             charon_door = false;
+            map_obtained = false;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
@@ -420,6 +423,9 @@ namespace PERSIST
 
         public void OpenCharonDoor()
         { charon_door = true; }
+
+        public void GetMap()
+        { map_obtained = true; }
     }
 
     public class AudioManager

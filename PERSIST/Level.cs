@@ -80,6 +80,7 @@ namespace PERSIST
         protected bool cutscene_cam = false;
         protected Vector2 cutscene_cam_pos = new Vector2(0, 0);
         protected float cutscene_cam_speed = 5f;
+        protected bool force_draw_player = false;
 
         protected float boss_hp = 0;
         public int boss_max_hp
@@ -621,7 +622,7 @@ namespace PERSIST
             for (int i = interactables.Count - 1; i >= 0; i--)
                 interactables[i].Draw(_spriteBatch);
 
-            if (!player_dead && !door_trans)
+            if ((!player_dead && !door_trans) || force_draw_player)
                 player.Draw(_spriteBatch);
 
             foreach (TiledData t in tld)
