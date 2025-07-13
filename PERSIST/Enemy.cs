@@ -419,7 +419,7 @@ namespace PERSIST
         private float grav = 0.211f;
         private float vsp = 0f;
 
-        private float hp = 5f;
+        private float hp = 4f;
 
         private int shake_xoset = 0;
         private int shake_yoset = 0;
@@ -3241,10 +3241,6 @@ namespace PERSIST
         private bool trigger_watch = false;
         public bool mask = true;
 
-        public bool stay_out_of_way = false;
-        public bool ask_hideout = false;
-        public bool ask_leaving = false;
-
         private Rectangle frame = new Rectangle(256, 64, 32, 32);
 
         private int h_oset = 11;
@@ -3271,8 +3267,6 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            // nothing (for now)
-
             if (!root.prog_manager.GetFlag(FLAGS.hideout_entered))
             {
                 if (player.HitBox.Intersects(root.hideout_trigger))
@@ -3307,19 +3301,24 @@ namespace PERSIST
             if (diastruct == null)
                 return;
 
+            bool map = root.prog_manager.GetFlag(FLAGS.map_obtained);
+            bool stay_out_of_way = root.prog_manager.GetFlag(FLAGS.stay_out_of_way);
+            bool ask_hideout = root.prog_manager.GetFlag(FLAGS.ask_hideout);
+            bool ask_leaving = root.prog_manager.GetFlag(FLAGS.ask_leaving);
+
             int index = 5;
 
             if (stay_out_of_way && !ask_hideout)
                 index = 18;
             else if (!stay_out_of_way && ask_hideout)
                 index = 19;
-            else if (stay_out_of_way && ask_hideout && !ask_leaving && !root.prog_manager.GetFlag(FLAGS.map_obtained))
+            else if (stay_out_of_way && ask_hideout && !ask_leaving && !map)
                 index = 20;
-            else if (ask_leaving && !root.prog_manager.GetFlag(FLAGS.map_obtained))
+            else if (ask_leaving && !map)
                 index = 36;
-            else if (stay_out_of_way && ask_hideout && !ask_leaving && root.prog_manager.GetFlag(FLAGS.map_obtained))
+            else if (stay_out_of_way && ask_hideout && !ask_leaving && map)
                 index = 37;
-            else if (stay_out_of_way && ask_hideout && ask_leaving && root.prog_manager.GetFlag(FLAGS.map_obtained))
+            else if (stay_out_of_way && ask_hideout && ask_leaving && map)
                 index = 48;
 
             root.StartDialogue(diastruct, index, 'c', 25f, true);

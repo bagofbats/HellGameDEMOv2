@@ -303,6 +303,9 @@ namespace PERSIST
         // story flags
         hideout_entered,
         map_obtained,
+        stay_out_of_way,
+        ask_hideout,
+        ask_leaving,
 
         // secret flags
         journal_secret,
@@ -341,10 +344,13 @@ namespace PERSIST
                 // story flags
                 {FLAGS.hideout_entered      , false },
                 {FLAGS.map_obtained         , false },
+                {FLAGS.stay_out_of_way      , false },
+                {FLAGS.ask_hideout          , false },
+                {FLAGS.ask_leaving          , false },
 
                 // secret flags
                 {FLAGS.journal_secret       , false },
-                {FLAGS.charons_blessing     , true },
+                {FLAGS.charons_blessing     , false },
                 {FLAGS.charon_door          , false },
             };
         }

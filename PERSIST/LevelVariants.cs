@@ -1868,7 +1868,7 @@ namespace PERSIST
                 {
                     dialogue_num = 6;
                     dialogue_letter = 0f;
-                    kanna_cutscene.stay_out_of_way = true;
+                    prog_manager.SetFlag(FLAGS.stay_out_of_way);
                     return;
                 }
 
@@ -1876,7 +1876,7 @@ namespace PERSIST
                 {
                     dialogue_num = 8;
                     dialogue_letter = 0f;
-                    kanna_cutscene.ask_hideout = true;
+                    prog_manager.SetFlag(FLAGS.ask_hideout);
                     return;
                 }
 
@@ -1921,7 +1921,7 @@ namespace PERSIST
                 dialogue_letter = 0f;
 
                 if (code[0] == "hideout2")
-                    kanna_cutscene.ask_leaving = true;
+                    prog_manager.SetFlag(FLAGS.ask_leaving);
 
 
                 return;
