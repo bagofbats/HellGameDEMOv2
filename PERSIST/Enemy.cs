@@ -78,7 +78,7 @@ namespace PERSIST
         private int v_oset = 20;
         protected bool damaged = false;
         protected float damaged_timer = 0f;
-        private Random rnd = new Random();
+        protected Random rnd = new Random();
 
         private SleepFX sleepFX;
         private bool sleep;
@@ -967,6 +967,10 @@ namespace PERSIST
                 root.SplitSlime(this);
                 root.ResetBossHP();
             }
+
+            float pitch = (0.1f - (float)rnd.NextDouble()) / 1.2f;
+
+            root.audio_manager.PlaySound("tick", pitch);
         }
 
         public void UpdateSleepFX(GameTime gameTime)
@@ -1069,6 +1073,10 @@ namespace PERSIST
 
             damaged = true;
             damaged_timer = 0;
+
+            float pitch = (0.5f - (float)rnd.NextDouble()) / 1.2f;
+
+            root.audio_manager.PlaySound("tick", pitch);
         }
     }
 
@@ -1625,14 +1633,14 @@ namespace PERSIST
         {
             gt_copy = gameTime;
 
-            if (triggered && !root.prog_manager.kanna_defeated)
+            if (triggered && !root.prog_manager.GetFlag(FLAGS.kanna_defeated))
             {
                 ActualUpdate(gameTime);
 
                 return;
             }
 
-            else if (!root.prog_manager.kanna_defeated)
+            else if (!root.prog_manager.GetFlag(FLAGS.kanna_defeated))
             {
                 if (player.HitBox.Intersects(root.kanna_trigger))
                     trigger_watch = true;
@@ -1945,7 +1953,7 @@ namespace PERSIST
 
         public override void Damage(float damage)
         {
-            if (!root.prog_manager.kanna_defeated)
+            if (!root.prog_manager.GetFlag(FLAGS.kanna_defeated))
             {
                 hp -= damage;
                 flash = true;
@@ -3006,7 +3014,7 @@ namespace PERSIST
             this.root = root;
             this.progMan = progMan;
 
-            if (progMan.knife)
+            if (progMan.GetFlag(FLAGS.knife))
                 frame.X += 32;
         }
 
@@ -3042,7 +3050,7 @@ namespace PERSIST
 
         public override void Interact()
         {
-            if (!progMan.knife)
+            if (!progMan.GetFlag(FLAGS.knife))
             {
                 root.StartDialogue(dialogue_deadguy, 0, 'c', 25f, true);
             }
@@ -3063,7 +3071,7 @@ namespace PERSIST
 
         public void GetKnife()
         {
-            progMan.GetKnife();
+            progMan.SetFlag(FLAGS.knife);
             counter++;
             frame.X += 32;
         }
@@ -3122,7 +3130,7 @@ namespace PERSIST
 
         public override void Interact()
         {
-            if (!progMan.map_obtained)
+            if (!progMan.GetFlag(FLAGS.map_obtained))
             {
                 root.StartDialogue(dialogue_deadguy, 0, 'c', 25f, true);
             }
@@ -3265,7 +3273,7 @@ namespace PERSIST
         {
             // nothing (for now)
 
-            if (!root.prog_manager.hideout_entered)
+            if (!root.prog_manager.GetFlag(FLAGS.hideout_entered))
             {
                 if (player.HitBox.Intersects(root.hideout_trigger))
                     trigger_watch = true;
@@ -3305,13 +3313,13 @@ namespace PERSIST
                 index = 18;
             else if (!stay_out_of_way && ask_hideout)
                 index = 19;
-            else if (stay_out_of_way && ask_hideout && !ask_leaving && !root.prog_manager.map_obtained)
+            else if (stay_out_of_way && ask_hideout && !ask_leaving && !root.prog_manager.GetFlag(FLAGS.map_obtained))
                 index = 20;
-            else if (ask_leaving && !root.prog_manager.map_obtained)
+            else if (ask_leaving && !root.prog_manager.GetFlag(FLAGS.map_obtained))
                 index = 36;
-            else if (stay_out_of_way && ask_hideout && !ask_leaving && root.prog_manager.map_obtained)
+            else if (stay_out_of_way && ask_hideout && !ask_leaving && root.prog_manager.GetFlag(FLAGS.map_obtained))
                 index = 37;
-            else if (stay_out_of_way && ask_hideout && ask_leaving && root.prog_manager.map_obtained)
+            else if (stay_out_of_way && ask_hideout && ask_leaving && root.prog_manager.GetFlag(FLAGS.map_obtained))
                 index = 48;
 
             root.StartDialogue(diastruct, index, 'c', 25f, true);

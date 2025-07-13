@@ -30,6 +30,9 @@ art:
  - have it so when kanna jumps away from you she still fires the arrow in your direction
  - try chaning frame rate to see if anything breaks
 
+ misc:
+ - "thorns" level needs different right side
+
  area plan:
   - on new save file:
      - show player the controls menu, start opening cutscene when they hit "done"
@@ -117,3 +120,4 @@ epic room names
  - psychopomp           |  spirits whose responsibility is to escort newly deseased souls
  - pontifex             |  a member of the highest council of priests in ancient Rome
  - athazagoraphobia		|  fear of forgetting/being forgotten
+ - nyctophobia          |  fear of the dark

@@ -280,74 +280,83 @@ namespace PERSIST
         }
     }
 
+    public enum FLAGS
+    {
+        // player flags
+        knife,
+        ranged,
+        mask,
+        dash,
+
+        // mechanic flags
+        locks,
+        jump_blocks,
+
+        // boss flags
+        slime_dead,
+        slime_started,
+        kanna_started,
+        kanna_defeated,
+        mushroom_started,
+        mushroom_defeated,
+
+        // story flags
+        hideout_entered,
+        map_obtained,
+
+        // secret flags
+        journal_secret,
+        charons_blessing,
+        charon_door,
+    }
+
     public class ProgressionManager
     {
-        Checkpoint active_checkpoint;
+        private Checkpoint active_checkpoint;
 
-        public bool knife
-        { get; private set; }
-        public bool ranged
-        { get; private set; }
-        public bool mask
-        { get; set; }
-        public bool dash
-        { get; private set; }
-
-        // mechanics
-        public bool jump_blocks
-        { get; private set; }
-        public bool locks
-        { get; private set; }
-
-        // bosses and mini-bosses
-        public bool slime_started
-        { get; private set; }
-        public bool slime_dead
-        { get; private set; }
-        public bool kanna_started
-        { get; private set; }
-        public bool kanna_defeated
-        { get; private set; }
-        public bool mushroom_started
-        { get; private set; }
-        public bool mushroom_defeated
-        { get; private set; }
-
-        // cutscenes
-        public bool hideout_entered
-        { get; private set; }
-        public bool map_obtained
-        { get; private set; }
-
-        // secrets
-        public bool journal_secret
-        { get; private set; }
-
-        public bool charons_blessing
-        { get; private set; }
-
-        public bool charon_door
-        { get; private set; }
+        private Dictionary<FLAGS, bool> flag_map;
 
         public ProgressionManager()
         {
-            knife = true;
-            ranged = true;
-            slime_dead = false;
-            slime_started = false;
-            mask = true;
-            journal_secret = false;
-            charons_blessing = true;
-            dash = false;
-            locks = true;
-            jump_blocks = true;
-            kanna_started = false;
-            kanna_defeated = false;
-            mushroom_started = false;
-            mushroom_defeated = false;
-            hideout_entered = false;
-            charon_door = false;
-            map_obtained = false;
+            flag_map = new Dictionary<FLAGS, bool>()
+            {
+                // player flags
+                {FLAGS.knife                , true  },
+                {FLAGS.ranged               , true  },
+                {FLAGS.mask                 , true  },
+                {FLAGS.dash                 , false },
+
+                // mechanic flags
+                {FLAGS.jump_blocks          , false },
+                {FLAGS.locks                , false },
+
+                // boss flags
+                {FLAGS.slime_started        , false },
+                {FLAGS.slime_dead           , false },
+                {FLAGS.kanna_started        , false },
+                {FLAGS.kanna_defeated       , false },
+                {FLAGS.mushroom_started     , false },
+                {FLAGS.mushroom_defeated    , false },
+
+                // story flags
+                {FLAGS.hideout_entered      , false },
+                {FLAGS.map_obtained         , false },
+
+                // secret flags
+                {FLAGS.journal_secret       , false },
+                {FLAGS.charons_blessing     , true },
+                {FLAGS.charon_door          , false },
+            };
+        }
+
+        public bool GetFlag(FLAGS flag)
+        {
+            return flag_map[flag];
+        }
+
+        public void SetFlag(FLAGS flag)
+        {
+            flag_map[flag] = true;
         }
 
         public void SetActiveCheckpoint(Checkpoint newActiveCheckpoint)
@@ -360,72 +369,10 @@ namespace PERSIST
             return active_checkpoint;
         }
 
-        public void GetKnife()
+        public void TakeOffMask()
         {
-            knife = true;
+            flag_map[FLAGS.mask] = false;
         }
-
-        public void EncounterSlime()
-        {
-            slime_started = true;
-        }
-
-        public void DefeatSlime()
-        {
-            slime_dead = true;
-        }
-
-        public void GetRanged()
-        {
-            ranged = true;
-        }
-
-        public void ReadJournal()
-        {
-            journal_secret = true;
-        }
-
-        public void EncounterKanna()
-        {
-            kanna_started = true;
-        }
-
-        public void DefeatKanna()
-        {
-            kanna_defeated = true;
-        }
-
-        public void Unlock()
-        {
-            locks = true;
-        }
-
-        public void ShadeBlocks()
-        {
-            jump_blocks = true;
-        }
-
-        public void LearnDash()
-        {
-            dash = true;
-        }
-
-        public void EnterHideout()
-        {
-            hideout_entered = true;
-        }
-
-        public void EncounterMushroom()
-        { mushroom_started = true; }
-
-        public void DefeatMushroom()
-        { mushroom_defeated = true; }
-
-        public void OpenCharonDoor()
-        { charon_door = true; }
-
-        public void GetMap()
-        { map_obtained = true; }
     }
 
     public class AudioManager

@@ -65,10 +65,10 @@ namespace PERSIST
 
         public override void Interact()
         {
-            if (!progman.ranged)
+            if (!progman.GetFlag(FLAGS.ranged))
             {
                 root.StartDialogue(dialogue, 0, 'c', 25f, true);
-                progman.GetRanged();
+                progman.SetFlag(FLAGS.ranged);
                 root.RemoveInteractable(this);
             }
         }
@@ -122,10 +122,10 @@ namespace PERSIST
 
         public override void Interact()
         {
-            if (!progman.locks)
+            if (!progman.GetFlag(FLAGS.locks))
             {
                 root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
-                progman.Unlock();
+                progman.SetFlag(FLAGS.locks);
                 root.RemoveInteractable(this);
                 root.RemoveLukas();
             }
@@ -229,7 +229,7 @@ namespace PERSIST
 
         public override void Interact()
         {
-            if (!progman.jump_blocks)
+            if (!progman.GetFlag(FLAGS.jump_blocks))
             {
                 //root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
                 //progman.ShadeBlocks();
@@ -243,7 +243,7 @@ namespace PERSIST
                 else
                 {
                     root.StartDialogue(dialogue, dialogue_num, 'c', 25f, true);
-                    progman.ShadeBlocks();
+                    progman.SetFlag(FLAGS.jump_blocks);
                     root.RemoveInteractable(this);
                 }
             }
@@ -334,12 +334,12 @@ namespace PERSIST
 
         public override void Interact()
         {
-            if (progman.journal_secret && counter == 0)
+            if (progman.GetFlag(FLAGS.journal_secret) && counter == 0)
                 counter = 1;
 
             root.StartDialogue(dialogue, breakpoints[counter], 'c', 25f, true);
 
-            if (counter < breakpoints.Length - 1 && progman.journal_secret)
+            if (counter < breakpoints.Length - 1 && progman.GetFlag(FLAGS.journal_secret))
                 counter++;
         }
     }

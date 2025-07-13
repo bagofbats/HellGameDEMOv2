@@ -1651,7 +1651,7 @@ namespace PERSIST
         {
             frame = base_frame;
 
-            if (root.prog_manager.locks)
+            if (root.prog_manager.GetFlag(FLAGS.locks))
             {
                 if (keys_left < 7)
                 {
@@ -1755,7 +1755,7 @@ namespace PERSIST
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            if (root.prog_manager.locks)
+            if (root.prog_manager.GetFlag(FLAGS.locks))
                 frame.X = base_frame.X + 16;
 
             _spriteBatch.Draw(img, bounds, frame, Color.White);

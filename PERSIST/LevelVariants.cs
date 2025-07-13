@@ -207,7 +207,7 @@ namespace PERSIST
                                 enemy_locations.Add(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y));
                                 enemy_types.Add("switch_boss");
 
-                                if (!prog_manager.slime_dead)
+                                if (!prog_manager.GetFlag(FLAGS.slime_dead))
                                     temp.SetDisabled(true);
                             }
 
@@ -246,7 +246,7 @@ namespace PERSIST
                                 enemy_types.Add("lukas_boss");
                             }
 
-                            if (l.objects[i].name == "ranger_pickup" && !prog_manager.ranged)
+                            if (l.objects[i].name == "ranger_pickup" && !prog_manager.GetFlag(FLAGS.ranged))
                             {
                                 AddInteractable(new RangerPickup(new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y), this, prog_manager, dialogue_ranged));
                             }
@@ -386,7 +386,7 @@ namespace PERSIST
                 if (enemy_types[i] == "slime")
                     AddEnemy(new Slime(enemy_locations[i], this));
 
-                if (enemy_types[i] == "big_slime" && !prog_manager.slime_dead)
+                if (enemy_types[i] == "big_slime" && !prog_manager.GetFlag(FLAGS.slime_dead))
                     AddEnemy(new BigSlime(enemy_locations[i], player, this));
 
 
@@ -403,7 +403,7 @@ namespace PERSIST
                     AddEnemy(temp);
                     switches.Add(temp);
 
-                    if (!prog_manager.slime_dead)
+                    if (!prog_manager.GetFlag(FLAGS.slime_dead))
                         temp.SetDisabled(true);
                 }
 
@@ -495,7 +495,7 @@ namespace PERSIST
 
             else if (code[0] == "read")
             {
-                prog_manager.ReadJournal();
+                prog_manager.SetFlag(FLAGS.journal_secret);
                 dialogue_num++;
                 dialogue_letter = 0f;
                 opts_highlighted = 0;
@@ -563,14 +563,14 @@ namespace PERSIST
                     cutscene = false;
                     door_trans = false;
                     slimeboss = null;
-                    prog_manager.EncounterSlime();
+                    prog_manager.SetFlag(FLAGS.slime_started);
                 }
             }
         }
 
         public void WakeUpSlime(BigSlime slime, GameTime gameTime)
         {
-            if (!prog_manager.slime_started)
+            if (!prog_manager.GetFlag(FLAGS.slime_started))
             {
                 HandleCutscene("wakeslime|", gameTime, true);
                 slimeboss = slime;
@@ -620,7 +620,7 @@ namespace PERSIST
             if (slime_counter != 0)
                 return;
 
-            prog_manager.DefeatSlime();
+            prog_manager.SetFlag(FLAGS.slime_dead);
 
             Room temp = RealGetRoom(new Vector2(player.HitBox.X, player.HitBox.Y));
 
@@ -1221,7 +1221,7 @@ namespace PERSIST
                                 key_locations.Add(temp);
                             }
 
-                            if (l.objects[i].name == "kanna" && !prog_manager.kanna_defeated)
+                            if (l.objects[i].name == "kanna" && !prog_manager.GetFlag(FLAGS.kanna_defeated))
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
                                 AddEnemy(new Kanna_Boss(temp, player, this));
@@ -1229,7 +1229,7 @@ namespace PERSIST
                                 enemy_types.Add("kanna");
                             }
 
-                            if (l.objects[i].name == "mushroom_boss" && !prog_manager.mushroom_defeated)
+                            if (l.objects[i].name == "mushroom_boss" && !prog_manager.GetFlag(FLAGS.mushroom_defeated))
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
                                 AddEnemy(new Mushroom_Boss(temp, player, this));
@@ -1279,7 +1279,7 @@ namespace PERSIST
                                                                   (int)l.objects[i].width,
                                                                   (int)l.objects[i].height);
 
-                            if (l.objects[i].name == "key_pickup" && !prog_manager.locks)
+                            if (l.objects[i].name == "key_pickup" && !prog_manager.GetFlag(FLAGS.locks))
                             {
                                 var temp = new KeyPickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
                                                             this,
@@ -1290,7 +1290,7 @@ namespace PERSIST
                                 AddInteractable(temp);
                             }
 
-                            if (l.objects[i].name == "shade_pickup" && !prog_manager.jump_blocks)
+                            if (l.objects[i].name == "shade_pickup" && !prog_manager.GetFlag(FLAGS.jump_blocks))
                             {
                                 var temp = new ShadePickup(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y),
                                                             this,
@@ -1311,7 +1311,7 @@ namespace PERSIST
                                 enemy_types.Add("deadguy");
                             }
 
-                            if (l.objects[i].name == "lukas_cutscene_pickup" && !prog_manager.locks)
+                            if (l.objects[i].name == "lukas_cutscene_pickup" && !prog_manager.GetFlag(FLAGS.locks))
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
                                 AddEnemy(new Lukas_Cutscene(temp, this, "pickup"));
@@ -1319,7 +1319,7 @@ namespace PERSIST
                                 enemy_types.Add("lukas_cutscene_pickup");
                             }
 
-                            if (l.objects[i].name == "kanna_cutscene_hideout" && !prog_manager.dash)
+                            if (l.objects[i].name == "kanna_cutscene_hideout" && !prog_manager.GetFlag(FLAGS.dash))
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
                                 var kanna = new Kanna_Cutscene(temp, this, player, "hideout", dialogue_hideout);
@@ -1337,7 +1337,7 @@ namespace PERSIST
 
                                 if (value == "fisher")
                                 {
-                                    if (!prog_manager.charons_blessing)
+                                    if (!prog_manager.GetFlag(FLAGS.charons_blessing))
                                         guy.SetType(dialogue_fisher, fisher_bps);
                                     else
                                         guy.SetType(dialogue_fisher, fisher_bps_secret);
@@ -1392,7 +1392,7 @@ namespace PERSIST
                                 AddInteractable(guy);
                             }
 
-                            if (l.objects[i].name == "charonblock" && !prog_manager.charon_door)
+                            if (l.objects[i].name == "charonblock" && !prog_manager.GetFlag(FLAGS.charon_door))
                             {
                                 var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
                                 AddSpecialWall(new CharonBlock(temp, this, charon_frame));
@@ -1509,7 +1509,7 @@ namespace PERSIST
             base.Update(gameTime);
 
             if (name == "rm_styx1")
-                prog_manager.mask = true;
+                prog_manager.SetFlag(FLAGS.mask);
 
             if (lukas_cutscene != null && dialogue)
                 lukas_cutscene.Update(gameTime);
@@ -1527,7 +1527,7 @@ namespace PERSIST
                 river_frame_oset = (int)river_timer;
             }
 
-            if (prog_manager.locks && !(player_dead && !finish_player_dead))
+            if (prog_manager.GetFlag(FLAGS.locks) && !(player_dead && !finish_player_dead))
             {
                 List<Key> killed_keys = KeyCheckCollision(player.HitBox);
 
@@ -1622,7 +1622,7 @@ namespace PERSIST
                 if (special_walls_types[i] == "oneway")
                     AddSpecialWall(new OneWay(special_walls_bounds[i], new Rectangle(8, 184, 8, 8), this));
 
-                if (special_walls_types[i] == "charonblock" && !prog_manager.charon_door)
+                if (special_walls_types[i] == "charonblock" && !prog_manager.GetFlag(FLAGS.charon_door))
                     AddSpecialWall(new CharonBlock(special_walls_bounds[i], this, charon_frame));
             }
 
@@ -1650,10 +1650,10 @@ namespace PERSIST
                 if (enemy_types[i] == "walker")
                     AddEnemy(new Walker(enemy_locations[i], this));
 
-                if (enemy_types[i] == "kanna" && !prog_manager.kanna_defeated)
+                if (enemy_types[i] == "kanna" && !prog_manager.GetFlag(FLAGS.kanna_defeated))
                     AddEnemy(new Kanna_Boss(enemy_locations[i], player, this));
 
-                if (enemy_types[i] == "mushroom_boss" && !prog_manager.mushroom_defeated)
+                if (enemy_types[i] == "mushroom_boss" && !prog_manager.GetFlag(FLAGS.mushroom_defeated))
                     AddEnemy(new Mushroom_Boss(enemy_locations[i], player, this));
 
                 //if (enemy_types[i] == "trampoline")
@@ -1667,10 +1667,10 @@ namespace PERSIST
                     AddEnemy(temp);
                 }
 
-                if (enemy_types[i] == "lukas_cutscene_pickup" && !prog_manager.locks)
+                if (enemy_types[i] == "lukas_cutscene_pickup" && !prog_manager.GetFlag(FLAGS.locks))
                     AddEnemy(new Lukas_Cutscene(enemy_locations[i], this, "pickup"));
 
-                if (enemy_types[i] == "kanna_cutscene_hideout" && !prog_manager.dash)
+                if (enemy_types[i] == "kanna_cutscene_hideout" && !prog_manager.GetFlag(FLAGS.dash))
                 {
                     var temp = new Kanna_Cutscene(enemy_locations[i], this, player, "hideout", dialogue_hideout);
                     AddEnemy(temp);
@@ -1966,7 +1966,7 @@ namespace PERSIST
                 {
                     dialogue_num++;
                     dialogue_letter = 0f;
-                    prog_manager.GetMap();
+                    prog_manager.SetFlag(FLAGS.map_obtained);
                     return;
                 }
             }
@@ -2029,7 +2029,7 @@ namespace PERSIST
                     door_trans = false;
                     kanna_boss.Trigger();
                     kanna_boss = null;
-                    prog_manager.EncounterKanna();
+                    prog_manager.SetFlag(FLAGS.kanna_started);
                 }
             }
 
@@ -2123,7 +2123,7 @@ namespace PERSIST
 
                 if (cutscene_timer > 3.4f)
                 {
-                    prog_manager.mask = false;
+                    prog_manager.TakeOffMask();
                 }
 
                 if (cutscene_timer > 4f)
@@ -2201,7 +2201,7 @@ namespace PERSIST
                     door_trans = false;
                     RemoveEnemy(kanna_boss);
                     kanna_boss = null;
-                    prog_manager.DefeatKanna();
+                    prog_manager.SetFlag(FLAGS.kanna_defeated);
 
                     StartDialogue(dialogue_kanna_fight_done, 18, 'c', 25f, true);
                 }
@@ -2327,7 +2327,7 @@ namespace PERSIST
 
                     player.ExitCutscene();
                     cutscene = false;
-                    prog_manager.EnterHideout();
+                    prog_manager.SetFlag(FLAGS.hideout_entered);
                 }
                     
             }
@@ -2409,7 +2409,7 @@ namespace PERSIST
                     player.ExitCutscene();
                     cutscene = false;
 
-                    prog_manager.EncounterMushroom();
+                    prog_manager.SetFlag(FLAGS.mushroom_started);
                 }
             }
 
@@ -2455,7 +2455,7 @@ namespace PERSIST
                         charondoor = null;
                     }
 
-                    prog_manager.OpenCharonDoor();
+                    prog_manager.SetFlag(FLAGS.charon_door);
                 }
             }
 
@@ -2497,7 +2497,7 @@ namespace PERSIST
                     StartDialogue(dialogue_hideout, 65, 'c', 25f, true);
                     cutscene_code[2] = "-";
 
-                    prog_manager.LearnDash();
+                    prog_manager.SetFlag(FLAGS.dash);
 
                     for (int i = enemies.Count - 1; i > 0; i--)
                         if (enemies[i].GetType() == typeof(Kanna_Cutscene))
@@ -2726,7 +2726,7 @@ namespace PERSIST
 
         public override void JumpAction()
         {
-            if (!prog_manager.jump_blocks)
+            if (!prog_manager.GetFlag(FLAGS.jump_blocks))
                 return;
 
             Vector2 player_pos = player.GetPos();
@@ -2762,7 +2762,7 @@ namespace PERSIST
 
         public void FightKanna(Kanna_Boss kanna, GameTime gameTime)
         {
-            if (!prog_manager.kanna_started)
+            if (!prog_manager.GetFlag(FLAGS.kanna_started))
             {
                 HandleCutscene("fightkanna|empty|empty", gameTime, true);
                 kanna_boss = kanna;
@@ -2789,7 +2789,7 @@ namespace PERSIST
 
         public void EnterHideout(GameTime gameTime)
         {
-            if (!prog_manager.hideout_entered)
+            if (!prog_manager.GetFlag(FLAGS.hideout_entered))
             {
                 HandleCutscene("enterhideout|empty", gameTime, true);
             }
@@ -2797,7 +2797,7 @@ namespace PERSIST
 
         public void FightMushroom(GameTime gameTime)
         {
-            if (!prog_manager.mushroom_started)
+            if (!prog_manager.GetFlag(FLAGS.mushroom_started))
             {
                 HandleCutscene("fightmushroom|empty|empty", gameTime, true);
             }
@@ -2828,7 +2828,7 @@ namespace PERSIST
 
             StartDialogue(dialogue_defeat, 0, 'c', 10f, false, false);
 
-            prog_manager.DefeatMushroom();
+            prog_manager.SetFlag(FLAGS.mushroom_defeated);
 
             player.SetPogoed(0, false);
         }
@@ -2901,7 +2901,7 @@ namespace PERSIST
         {
             Vector2 ppos = root.player.GetPos() + new Vector2(16, 16);
 
-            if (!triggered && root.prog_manager.charons_blessing && root.charon_door_trigger.Contains(ppos))
+            if (!triggered && root.prog_manager.GetFlag(FLAGS.charons_blessing) && root.charon_door_trigger.Contains(ppos))
             {
                 triggered = true;
                 root.HandleCutscene("charondoor|empty|empty|empty|empty", gameTime, true);

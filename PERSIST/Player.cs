@@ -144,7 +144,7 @@ namespace PERSIST
 
         public void Update(GameTime gameTime)
         {
-            if (progManager.charons_blessing)
+            if (progManager.GetFlag(FLAGS.charons_blessing))
                 damage_multiplier = 0.6f;
             else
                 damage_multiplier = 1f;
@@ -211,12 +211,12 @@ namespace PERSIST
                 frame.Y = 1120;
 
             Color c = Color.White;
-            if (root.the_level.prog_manager.charons_blessing)
+            if (root.the_level.prog_manager.GetFlag(FLAGS.charons_blessing))
                 c = root.the_level.charon_atk_color;
 
             if (timer < 0.2)
             {
-                if (progManager.mask)
+                if (progManager.GetFlag(FLAGS.mask))
                     frame.X += 256;
 
                 _spriteBatch.Draw(sheet, DrawBox, frame, Color.White);
@@ -226,7 +226,7 @@ namespace PERSIST
             else
             {
                 int frame_xoset = 0;
-                if (progManager.mask)
+                if (progManager.GetFlag(FLAGS.mask))
                     frame_xoset = 256;
 
                 frame.X = 32 + (32 * (int)((timer - 0.1) * 16)) + frame_xoset;
@@ -471,7 +471,7 @@ namespace PERSIST
 
             // --------- dashing ---------
 
-            if (progManager.dash && shift_pressed && dash_ready && dash_cooldown >= dash_cooldown_over)
+            if (progManager.GetFlag(FLAGS.dash) && shift_pressed && dash_ready && dash_cooldown >= dash_cooldown_over)
             {
                 dashing = true;
                 dash_dir = last_hdir;
@@ -682,7 +682,7 @@ namespace PERSIST
             if (C != null && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED && !contManager.LEFT && !contManager.RIGHT)
                 C.Interact();
 
-            if (!progManager.locks)
+            if (!progManager.GetFlag(FLAGS.locks))
             {
                 List<Key> keys = root.the_level.KeyCheckCollision(HitBox);
                 if (keys.Count > 0 && contManager.DOWN_PRESSED && wall_down && !contManager.SPACE_PRESSED)
@@ -867,9 +867,9 @@ namespace PERSIST
 
         private void AtkTree(GameTime gameTime)
         {
-            if (progManager.knife)
+            if (progManager.GetFlag(FLAGS.knife))
             {
-                if (progManager.ranged)
+                if (progManager.GetFlag(FLAGS.ranged))
                 {
                     HandleAttacks(gameTime);
                     HandleThrown(gameTime);
@@ -881,7 +881,7 @@ namespace PERSIST
 
         private void AnimateTree(GameTime gameTime)
         {
-            if (progManager.knife)
+            if (progManager.GetFlag(FLAGS.knife))
             {
                 if (attacking)
                     AnimateAtk(gameTime);
@@ -907,7 +907,7 @@ namespace PERSIST
                 if (dash_dir == -1)
                     frame.Y += 32;
 
-                if (progManager.mask)
+                if (progManager.GetFlag(FLAGS.mask))
                     frame.X += 256;
 
                 return;
@@ -982,7 +982,7 @@ namespace PERSIST
                     
                 }
 
-                if (progManager.mask)
+                if (progManager.GetFlag(FLAGS.mask))
                     frame.X += 256;
 
                 return;
@@ -1053,7 +1053,7 @@ namespace PERSIST
                     
                 }
 
-                if (progManager.mask)
+                if (progManager.GetFlag(FLAGS.mask))
                     frame.X += 256;
 
                 return;
@@ -1148,7 +1148,7 @@ namespace PERSIST
             }
 
             // mask
-            if (progManager.mask)
+            if (progManager.GetFlag(FLAGS.mask))
                 frame.X += 256;
         }
 
@@ -1402,7 +1402,7 @@ namespace PERSIST
             }
 
             // mask
-            if (progManager.mask)
+            if (progManager.GetFlag(FLAGS.mask))
                 frame.X += 256;
         }
 

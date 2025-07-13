@@ -174,7 +174,7 @@ namespace PERSIST
         {
             Color c = Color.White;
 
-            if (level.prog_manager.charons_blessing)
+            if (level.prog_manager.GetFlag(FLAGS.charons_blessing))
                 c = level.charon_atk_color;
 
             _spriteBatch.Draw(img, pos, frame, c);
@@ -363,7 +363,7 @@ namespace PERSIST
         {
             Color c = Color.White;
 
-            if (level.prog_manager.charons_blessing)
+            if (level.prog_manager.GetFlag(FLAGS.charons_blessing))
                 c = level.charon_atk_color;
 
             _spriteBatch.Draw(img, pos, frame, c);

@@ -133,7 +133,7 @@ namespace PERSIST
 
             // styx level template
 
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx1.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
             TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
             TiledMap thr_map = new TiledMap(Content.RootDirectory + "\\rm_styx_secret.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
@@ -177,7 +177,7 @@ namespace PERSIST
             Camera cam = new Camera(this);
             //the_level = new TutorialLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
-            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx1");
+            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx0");
 
             Window.Title = "Hell Escape [DEMO]";
         }
