@@ -2774,6 +2774,62 @@ namespace PERSIST
 
     }
 
+    public class Famine : Enemy
+    {
+        private Player player;
+        private StyxLevel level;
+        private Texture2D sprite;
+
+        private int h_oset = 3;
+        private int v_oset = 3;
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
+
+        public Famine(Vector2 pos, Player player, StyxLevel root)
+        {
+            this.pos = pos;
+            this.player = player;
+            this.root = root;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // nothing (yet)
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            // nothing (yet)
+        }
+
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        
+    }
+
 
 
 

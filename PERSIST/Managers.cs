@@ -299,6 +299,8 @@ namespace PERSIST
         kanna_defeated,
         mushroom_started,
         mushroom_defeated,
+        famine_started,
+        famine_defeated,
 
         // story flags
         hideout_entered,
@@ -317,7 +319,7 @@ namespace PERSIST
     {
         private Checkpoint active_checkpoint;
 
-        private Dictionary<FLAGS, bool> flag_map;
+        private readonly Dictionary<FLAGS, bool> flag_map;
 
         public ProgressionManager()
         {
@@ -340,6 +342,8 @@ namespace PERSIST
                 {FLAGS.kanna_defeated       , false },
                 {FLAGS.mushroom_started     , false },
                 {FLAGS.mushroom_defeated    , false },
+                {FLAGS.famine_started       , false },
+                {FLAGS.famine_defeated      , false },
 
                 // story flags
                 {FLAGS.hideout_entered      , false },

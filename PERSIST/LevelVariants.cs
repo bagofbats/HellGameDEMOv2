@@ -533,6 +533,8 @@ namespace PERSIST
                 {
                     if (cutscene_code[1] == "")
                     {
+
+                        // should probably get rid of magic numbers here
                         BossBlock temp1 = new BossBlock(new Rectangle(888, 960, 16, 16), this, new Rectangle(48, 112, 16, 16));
                         BossBlock temp2 = new BossBlock(new Rectangle(888, 976, 16, 16), this, new Rectangle(48, 112, 16, 16));
                         BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 960, 16, 16), this, new Rectangle(48, 112, 16, 16));
@@ -579,6 +581,7 @@ namespace PERSIST
             {
                 slime.sleep = false;
 
+                // should probably get rid of magic numbers here
                 BossBlock temp1 = new BossBlock(new Rectangle(888, 960, 16, 16), this, new Rectangle(48, 112, 16, 16));
                 BossBlock temp2 = new BossBlock(new Rectangle(888, 976, 16, 16), this, new Rectangle(48, 112, 16, 16));
                 BossBlock temp3 = new BossBlock(new Rectangle(888 - 16, 960, 16, 16), this, new Rectangle(48, 112, 16, 16));
@@ -636,6 +639,7 @@ namespace PERSIST
                 if (s.disabled)
                     s.SetDisabled(false);
 
+            // should probably get rid of magic numbers in the vector here
             RangerPickup rpickup = new RangerPickup(new Vector2(984, 976), this, prog_manager, dialogue_ranged);
             rpickup.LoadAssets(spr_slime);
             AddInteractable(rpickup);
@@ -1237,6 +1241,14 @@ namespace PERSIST
                                 enemy_types.Add("mushroom_boss");
                             }
 
+                            if (l.objects[i].name == "famine" && !prog_manager.GetFlag(FLAGS.famine_defeated))
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Famine(temp, player, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("famine");
+                            }
+
                             if (l.objects[i].name == "kanna_trigger")
                                 kanna_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
                                                                 (int)l.objects[i].y + t.location.Y,
@@ -1445,6 +1457,7 @@ namespace PERSIST
             asset_map.Add(typeof(Mushroom_Hand), spr_mushroom);
             asset_map.Add(typeof(Lukas_Cutscene), spr_lukas);
             asset_map.Add(typeof(Kanna_Cutscene), spr_kanna);
+            asset_map.Add(typeof(Famine), spr_lukas);
 
             asset_map.Add(typeof(ShadePickup), tst_styx);
             asset_map.Add(typeof(KeyPickup), tst_styx);
@@ -1655,6 +1668,9 @@ namespace PERSIST
 
                 if (enemy_types[i] == "mushroom_boss" && !prog_manager.GetFlag(FLAGS.mushroom_defeated))
                     AddEnemy(new Mushroom_Boss(enemy_locations[i], player, this));
+
+                if (enemy_types[i] == "famine" && !prog_manager.GetFlag(FLAGS.famine_defeated))
+                    AddEnemy(new Famine(enemy_locations[i], player, this));
 
                 //if (enemy_types[i] == "trampoline")
                 //    AddEnemy(new Trampoline(enemy_locations[i], this));
@@ -1946,7 +1962,6 @@ namespace PERSIST
                 saved_choice = code[1] == "0";
 
                 HandleCutscene("learndash|empty|empty|empty|empty|empty", saved_gameTime, true);
-
 
                 return;
             }
@@ -2537,6 +2552,8 @@ namespace PERSIST
         // optional override
         public override void DrawTiles(SpriteBatch _spriteBatch, Texture2D tileset, Texture2D background)
         {
+            // overwritten for special case drawing river styx
+
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                 SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: cam.Transform);
 
