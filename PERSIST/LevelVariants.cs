@@ -1458,6 +1458,7 @@ namespace PERSIST
             asset_map.Add(typeof(Lukas_Cutscene), spr_lukas);
             asset_map.Add(typeof(Kanna_Cutscene), spr_kanna);
             asset_map.Add(typeof(Famine), spr_lukas);
+            asset_map.Add(typeof(Famine_Head), spr_lukas);
 
             asset_map.Add(typeof(ShadePickup), tst_styx);
             asset_map.Add(typeof(KeyPickup), tst_styx);

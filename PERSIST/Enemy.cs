@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -2140,14 +2141,6 @@ namespace PERSIST
             root.RemoveEnemy(this);
         }
 
-
-
-
-
-
-
-
-
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
         {
             spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
@@ -2783,6 +2776,14 @@ namespace PERSIST
         private int h_oset = 3;
         private int v_oset = 3;
 
+        private Famine_Head head;
+        private float head_timer;
+        private bool head_attacking = false;
+        private Vector2 head_target;
+
+        private float atk_threshold = 4f;
+        private float idle_threshold = 2f;
+
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
 
@@ -2794,16 +2795,43 @@ namespace PERSIST
             this.pos = pos;
             this.player = player;
             this.root = root;
+
+            head = new Famine_Head(pos, player, root);
+            root.AddEnemy(head);
         }
 
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
+
+            head.LoadAssets(sprite);
         }
 
         public override void Update(GameTime gameTime)
         {
-            // nothing (yet)
+            head_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (head_attacking)
+            {
+                head.Attack(gameTime, head_target);
+            }
+            else
+            {
+                head.Idle(gameTime);
+            }
+
+            if (!head_attacking && head_timer > atk_threshold)
+            {
+                head_attacking = true;
+                head_target = player.GetPos();
+                head_timer = 0f;
+            }
+
+            if (head_attacking && head_timer > idle_threshold) 
+            {
+                head_attacking = false;
+                head_timer = 0f;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -2828,6 +2856,118 @@ namespace PERSIST
         }
 
         
+    }
+
+    public class Famine_Head : Enemy
+    {
+        private Player player;
+        private StyxLevel level;
+        private Texture2D sprite;
+
+        private int h_oset = 3;
+        private int v_oset = 3;
+        private float vsp = 0f;
+        private float hsp = 0f;
+        private bool extended = false;
+
+        private float idle_timer = 0f;
+        private float atk_timer = 0f;
+
+        private Vector2 base_pos;
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
+
+        public Famine_Head(Vector2 pos, Player player, StyxLevel root)
+        {
+            this.pos = pos;
+            this.player = player;
+            this.root = root;
+
+            base_pos = pos;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // nothing (yet)
+        }
+
+        public void Idle(GameTime gameTime)
+        {
+            // retract
+            if (extended && pos != base_pos)
+            {
+                SmoothMove(gameTime, base_pos, 20);
+
+                return;
+            }
+
+            extended = false;
+
+            // circle spin
+            idle_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            hsp = 0.1f * (float)Math.Cos(idle_timer * 2) + 0.04f * Math.Sign(Math.Cos(idle_timer * 2));
+            vsp = 0.1f * (float)Math.Sin(idle_timer * 2) + 0.04f * Math.Sign(Math.Sin(idle_timer * 2));
+
+            pos.X += hsp;
+            pos.Y += vsp;
+        }
+
+        public void Attack(GameTime gameTime, Vector2 target)
+        {
+            atk_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            extended = true;
+
+            SmoothMove(gameTime, target, 17);
+        }
+
+        public void SmoothMove(GameTime gameTime, Vector2 target, float delta)
+        {
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            float x_dif = target.X - pos.X;
+            float y_dif = target.Y - pos.Y;
+
+            pos.X += x_dif / (delta / frame_factor);
+            pos.Y += y_dif / (delta / frame_factor);
+
+            if (Math.Abs(x_dif) < 2)
+                pos.X = target.X;
+
+            if (Math.Abs(y_dif) < 2)
+                pos.Y = target.Y;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            // nothing (yet)
+        }
+
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
     }
 
 
