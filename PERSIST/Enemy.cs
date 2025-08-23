@@ -2776,13 +2776,16 @@ namespace PERSIST
         private int h_oset = 3;
         private int v_oset = 3;
 
-        private Famine_Head head;
-        private float head_timer;
-        private bool head_attacking = false;
-        private Vector2 head_target;
+        private int num_heads = 3;
+        private Famine_Head[] heads = new Famine_Head[3];
+        private float[] head_timer = new float[3];
+        private bool[] head_attacking = { false, false, false };
+        private Vector2[] head_target = new Vector2[3];
 
         private float atk_threshold = 4f;
         private float idle_threshold = 2f;
+
+        private float target_fudge = 8f;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
@@ -2796,41 +2799,52 @@ namespace PERSIST
             this.player = player;
             this.root = root;
 
-            head = new Famine_Head(pos, player, root);
-            root.AddEnemy(head);
+            for (int i = 0; i < num_heads; i++)
+            {
+                Vector2 oset = new Vector2(0, i * 16);
+                heads[i] = new Famine_Head(pos + oset, player, root);
+                root.AddEnemy(heads[i]);
+            }
         }
 
         public override void LoadAssets(Texture2D sprite)
         {
             this.sprite = sprite;
 
-            head.LoadAssets(sprite);
+            for (int i = 0; i < num_heads; i++)
+                heads[i].LoadAssets(sprite);
         }
 
         public override void Update(GameTime gameTime)
         {
-            head_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            for (int i = 0; i < num_heads; i++)
+                UpdateHead(gameTime, heads[i], i);
+        }
 
-            if (head_attacking)
+        public void UpdateHead(GameTime gameTime, Famine_Head head, int i)
+        {
+            head_timer[i] += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (head_attacking[i])
             {
-                head.Attack(gameTime, head_target);
+                head.Attack(gameTime, head_target[i]);
             }
             else
             {
                 head.Idle(gameTime);
             }
 
-            if (!head_attacking && head_timer > atk_threshold)
+            if (!head_attacking[i] && head_timer[i] > atk_threshold)
             {
-                head_attacking = true;
-                head_target = player.GetPos();
-                head_timer = 0f;
+                head_attacking[i] = true;
+                head_target[i] = player.GetPos() + new Vector2(16, 16) + (head.calc_diff() / target_fudge);
+                head_timer[i] = 0f;
             }
 
-            if (head_attacking && head_timer > idle_threshold) 
+            if (head_attacking[i] && head_timer[i] > idle_threshold)
             {
-                head_attacking = false;
-                head_timer = 0f;
+                head_attacking[i] = false;
+                head_timer[i] = 0f;
             }
         }
 
@@ -2907,6 +2921,8 @@ namespace PERSIST
             {
                 SmoothMove(gameTime, base_pos, 20);
 
+                idle_timer = 0f;
+
                 return;
             }
 
@@ -2946,6 +2962,11 @@ namespace PERSIST
 
             if (Math.Abs(y_dif) < 2)
                 pos.Y = target.Y;
+        }
+
+        public Vector2 calc_diff()
+        {
+            return player.GetPos() - pos;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
