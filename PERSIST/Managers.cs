@@ -329,7 +329,7 @@ namespace PERSIST
                 {FLAGS.knife                , true  },
                 {FLAGS.ranged               , true  },
                 {FLAGS.mask                 , true  },
-                {FLAGS.dash                 , false },
+                {FLAGS.dash                 , true  },
 
                 // mechanic flags
                 {FLAGS.jump_blocks          , false },

@@ -99,7 +99,7 @@ namespace PERSIST
                 pos.Y = player.HitBox.Y;
             }
 
-            if (frame.X >= 256)
+            if (frame.X >= 256 - 32)
             {
                 player.FinishAttack(this);
             }

@@ -2770,7 +2770,6 @@ namespace PERSIST
     public class Famine : Enemy
     {
         private Player player;
-        private StyxLevel level;
         private Texture2D sprite;
 
         private int h_oset = 3;
@@ -2875,7 +2874,6 @@ namespace PERSIST
     public class Famine_Head : Enemy
     {
         private Player player;
-        private StyxLevel level;
         private Texture2D sprite;
 
         private int h_oset = 3;

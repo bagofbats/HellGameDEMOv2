@@ -157,7 +157,7 @@ namespace PERSIST
             {
                 HandleMovementAndCollisions(gameTime);
 
-                if (!root.the_level.player_dead)
+                if (!root.the_level.player_dead && !dashing)
                     AtkTree(gameTime);
 
                 AnimateTree(gameTime);
@@ -471,7 +471,7 @@ namespace PERSIST
 
             // --------- dashing ---------
 
-            if (progManager.GetFlag(FLAGS.dash) && shift_pressed && dash_ready && dash_cooldown >= dash_cooldown_over)
+            if (progManager.GetFlag(FLAGS.dash) && shift_pressed && dash_ready && dash_cooldown >= dash_cooldown_over && !attacking)
             {
                 dashing = true;
                 dash_dir = last_hdir;
@@ -484,6 +484,11 @@ namespace PERSIST
                 dash_ready = false;
 
                 dash_multiplier = dash_multiplier_default;
+
+                ranged_timer = 0;
+                ranged_ready = false;
+
+                SetPogoed(0, false);
             }
 
 
