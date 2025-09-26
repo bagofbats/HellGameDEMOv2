@@ -821,7 +821,7 @@ namespace PERSIST
             new DialogueStruct("Yeah, sure.", 'd', Color.White, 'p', false, "", 180, 0),
             new DialogueStruct("Good luck, hero.", 'd', Color.White, 'p', true, "", 180, 225),
             new DialogueStruct("You got that right.", 'd', Color.White, 'p', false, "", 180, 180),             // nineteen
-            new DialogueStruct("A mindless sentry, forced to attack intruders.\nIt's a freakish existance.", 'd', Color.White, 'p', false, "", 180, 90),
+            new DialogueStruct("A mindless sentry, forced to attack intruders.\nIt's a freakish existence.", 'd', Color.White, 'p', false, "", 180, 90),
             new DialogueStruct("\"Forced\", huh?", 'd', Color.White, 'r', false, "", 315, 45),
             new DialogueStruct("You mean you didn't want to attack me?", 'd', Color.White, 'r', false, "", 315, 0),
             new DialogueStruct("That's right.\nNow that I'm a shade, I'm part of this place's\ndefenses.", 'd', Color.White, 'p', false, "", 180, 90),
@@ -844,13 +844,13 @@ namespace PERSIST
             new DialogueStruct("There is a crumpled up piece of paper in her pocket.", 'd', Color.White, 'c'),
             new DialogueStruct("Read it.\nDo not.", 'o', Color.White, 'l', false, "corpse 0|corpse 1"),
             new DialogueStruct("IN CASE I DIE HERE:\nMY NAME IS ALICE VIMES\nI AM 17 YEARS OLD.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
-            new DialogueStruct("I HAVE A BROTHER NAMED LUKAS VIMES\nWE WOKE UP HERE TOGETHER.\nTHAT IS ALL I CAN REMEMBER.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
+            new DialogueStruct("I HAVE A BROTHER NAMED LUKAS VIMES\nWE WOKE UP HERE TOGETHER.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
             new DialogueStruct("TAKE WHATEVER YOU NEED FROM ME.\nCARRY MY MEMORY WITH YOU.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
             new DialogueStruct("GODSPEED TRAVELER.\nMAY YOU SUCCEED WHERE I DID NOT.", 'd', Color.White, 'l', false, "", 0, 0, 9999999),
             new DialogueStruct(". . .", 'd', Color.White, 'c'),
             new DialogueStruct("On the back, there is a map of The Underworld.", 'd', Color.White, 'c'),
             new DialogueStruct("In the center, there is a great tower.\nUnderneath, a place labeled \"The Heart\".", 'd', Color.White, 'c'),
-            new DialogueStruct("You got the Underworld Map.", 'd', Color.White, 'c', true), // make this blue trigo thoughts
+            new DialogueStruct("You got the Underworld Map.", 'd', Color.White, 'c', true),
             new DialogueStruct("( Kanna might want to see this. )", 'd', Color.DodgerBlue, 'p', true, "", 135, 0),
         };
 
@@ -941,17 +941,17 @@ namespace PERSIST
             new DialogueStruct("Moat?", 'd', Color.White, 'p', false, "", 135, 0),
             new DialogueStruct("Yeah, the moat.\nThe one all the way down and to the right?", 'd', Color.White, 'r', false, "", 270, 0),
             new DialogueStruct("Oh.", 'd', Color.White, 'p', false, "", 135, 0),
-            new DialogueStruct("Yeah, I uh . . .\nCan't get accross that.", 'd', Color.White, 'p', false, "", 135, 0),
-            new DialogueStruct("What do you mean?\nJust dash accross.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Yeah, I uh . . .\nCan't get accross that.", 'd', Color.White, 'p', false, "", 135, 180),
+            new DialogueStruct("What do you mean?\nJust dash accross.", 'd', Color.White, 'r', false, "", 270, 45),
             new DialogueStruct(". . . Dash?", 'd', Color.White, 'p', false, "", 135, 0),
-            new DialogueStruct("Trigo I did that against you when we fought.\nDon't tell me you don't know how to dash.", 'd', Color.White, 'r', false, "", 270, 0),
-            new DialogueStruct("I, uh . . .", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("Trigo I did that against you when we fought.\nDon't tell me you don't know how to dash.", 'd', Color.White, 'r', false, "", 270, 180),
+            new DialogueStruct("I, uh . . .", 'd', Color.White, 'p', false, "", 135, 90),
 
             // index 60
             new DialogueStruct("Yeah, I don't know how to dash.\nObviously I know how! Who doesn't?", 'o', Color.White, 'l', false, "hideout6 0|hideout6 1"),
 
             // index 61
-            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 90),
             new DialogueStruct("Well, that's a relief.\nGuess you don't need me to teach you, then?", 'd', Color.White, 'r', false, "", 270, 0),
             new DialogueStruct("Hey, hey hey!\nI was kidding!!", 'd', Color.White, 'p', false, "", 135, 0),
 
@@ -999,7 +999,7 @@ namespace PERSIST
             new DialogueStruct("*Coke* (Take it easy, new guy.)", 'd', Color.White, 'p', true, "", 0, 90),
             new DialogueStruct("Oh, that's Charon's mask, isn't it?\nYou work for him?", 'd', Color.White, 'p', false, "", 0, 135),
             new DialogueStruct("Wonder what Charon wanted you for.\nGuy doesn't usually ask for help.", 'd', Color.White, 'p', false, "", 0, 135),
-            new DialogueStruct("Now Doc, he's always asking for more people.\nBut not Charon.\nSeems happy just keeping to himself honestly.", 'd', Color.White, 'p', true, "", 0, 135),
+            new DialogueStruct("Now Doc, she's always asking for more people.\nBut not Charon.\nSeems happy just keeping to himself honestly.", 'd', Color.White, 'p', true, "", 0, 135),
             new DialogueStruct("Charon's not that bad once you get to know him.\nYou'll do fine.", 'd', Color.White, 'p', true, "", 0, 135),
         };
         readonly int[] frog_bps = { 0, 3 };
@@ -1014,6 +1014,90 @@ namespace PERSIST
             new DialogueStruct("Between this and the Evil Fungus Pit I'm getting\nreally tired of Reaper just saying stuff without\nelaborating.", 'd', Color.White, 'p', true, "", 0, 180),
         };
         readonly int[] look_down_bps = { 0, 4 };
+
+        DialogueStruct[] dialogue_chair = {
+            new DialogueStruct("It's a chair.", 'd', Color.White, 'c'),
+            new DialogueStruct("It would be rude to sit in someone else's chair.\nSo, you don't.", 'd', Color.White, 'c', true),
+            new DialogueStruct("Do you actually sit in this thing?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct(". . . Yes?", 'd', Color.White, 'r', false, "", 405, 135),
+            new DialogueStruct("Is it comfortable?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("No.", 'd', Color.White, 'r', true, "", 405, 90),
+        };
+        int[] chair_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_crate = {
+            new DialogueStruct("It's a crate.", 'd', Color.White, 'c'),
+            new DialogueStruct("Kanna is probably storing stuff in these.", 'd', Color.White, 'c', true),
+            new DialogueStruct("Whatcha got in here?", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct("Boring stuff.", 'd', Color.White, 'r', false, "", 405, 180),
+            new DialogueStruct("( Probably could have guessed . . . )", 'd', Color.DodgerBlue, 'p', true, "", 135, 180)
+        };
+        int[] crate_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_bed = {
+            new DialogueStruct("It's a bed.", 'd', Color.White, 'c'),
+            new DialogueStruct("Kanna probably sleeps in this.", 'd', Color.White, 'c', true),
+            new DialogueStruct("Search the bed.\nDo not.", 'o', Color.White, 'l', false, "bed 0|exit"),
+            new DialogueStruct("You start searching the bed.", 'd', Color.White, 'c'),
+            new DialogueStruct(". . . Oh?", 'd', Color.White, 'c'),
+            new DialogueStruct("There's something under the covers.", 'd', Color.White, 'c'),
+            new DialogueStruct("Trigo, what are you doing?", 'd', Color.White, 'r', false, "", 405, 180),
+            new DialogueStruct("Nothing!", 'd', Color.White, 'p', false, "", 315, 90),
+            new DialogueStruct("( Should probably check this out when Kanna isn't\n  looking . . . )", 'd', Color.DodgerBlue, 'p', true, "", 315, 135),
+
+            // index 9
+            new DialogueStruct("( Think the coast is clear . . . )", 'd', Color.DodgerBlue, 'p', false, "", 315, 180),
+            new DialogueStruct("( Oh? )", 'd', Color.DodgerBlue, 'p', false, "", 315, 0),
+            new DialogueStruct("( There's a key under the covers . . . )", 'd', Color.DodgerBlue, 'p', false, "", 315, 0),
+            new DialogueStruct("Grab the key.\nDo not.", 'o', Color.White, 'l', false, "bed 1|exit"),
+
+            // index 13
+            new DialogueStruct("It's a bed.", 'd', Color.White, 'c'),
+            new DialogueStruct("Kanna probably sleeps in this.", 'd', Color.White, 'c', true),
+        };
+        int[] bed_bps = { 0, 2, 8, 9, 13 };
+
+        DialogueStruct[] dialogue_table = {
+            new DialogueStruct("It's a crate.", 'd', Color.White, 'c'),
+            new DialogueStruct("It's positioned so that Kanna\ncan use it as a reading table.", 'd', Color.White, 'c', true),
+            new DialogueStruct("What kind of books do you read?", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct("Me?", 'd', Color.White, 'r', false, "", 405, 135),
+            new DialogueStruct("I, uh.\nDon't really read that much, actually.", 'd', Color.White, 'r', false, "", 405, 90),
+            new DialogueStruct("Oh, okay.", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("( Guess it's not a reading table then . . . ? )", 'd', Color.DodgerBlue, 'p', true, "", 135, 180)
+        };
+        int[] table_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_shelf = {
+            new DialogueStruct("It's a bookshelf.\nThe bottom two shelves are full of books.\nAnd the top appears to have knick-knacks.", 'd', Color.White, 'l'),
+            new DialogueStruct("Look through the bottom two shelves.\nLook through the top shelf.\nDo not look.", 'o', Color.White, 'l', false, "bookshelf 0|bookshelf 1|exit"),
+            new DialogueStruct("You thumb through the books.", 'd', Color.White, 'c'),
+            new DialogueStruct("Most of these are text books written by someone named\n\"Doctor Arapacia\".\nSeems boring.", 'd', Color.White, 'l'),
+            new DialogueStruct("On the second shelf is a book called \"Spott Killman III:\nthe Endless Masquerade\".", 'd', Color.White, 'l'),
+            new DialogueStruct("Looks like a graphic novel.\nThere's a badass wolf man on the cover with big muscles.\nHe has grey fur with a patch of white over one eye.", 'd', Color.White, 'l'),
+            //new DialogueStruct("( Spot Killman was never really my thing, honestly.\n  I'm more of an Azure Files kind of guy. )", 'd', Color.DodgerBlue, 'p', false, "", 90, 0),
+            new DialogueStruct("( How did this end up down here? )", 'd', Color.DodgerBlue, 'p', false, "", 135, 0),
+            new DialogueStruct("( More importantly, has Kanna read the Lavender\n  Sunrise series yet?\n  It's WAY better than Spott Killman . . . )", 'd', Color.DodgerBlue, 'p', true, "", 135, 90),
+
+            // index 8
+            new DialogueStruct("On the top shelf is a singular plush toy of a red demon.", 'd', Color.White, 'c'),
+            new DialogueStruct("Woah, Kanna is this yours?", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct("What?\nN-no . . .", 'd', Color.White, 'r', false, "", 270, 225),
+            new DialogueStruct("Oh.\nCan I have it, then?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("NO!", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("I mean, no.\nYou can't take it.", 'd', Color.White, 'r', false, "", 270, 225),
+            new DialogueStruct("( Sheesh.\n  Kanna seems really embarrassed to admit she \n  likes this thing . . . )", 'd', Color.DodgerBlue, 'p', true, "", 135, 180),
+
+            // index 15
+            new DialogueStruct("It's a bookshelf.\nThe bottom two shelves are full of books.\nAnd the top appears to have knick-knacks.", 'd', Color.White, 'l', true),
+        };
+        int[] shelf_bps = { 0, 15 };
+
+        DialogueStruct[] dialogue_dummy = {
+            new DialogueStruct("It's a training dummy.", 'd', Color.White, 'c'),
+            new DialogueStruct("Kanna probably uses this for target practice.\nMaybe someday, you'll be able to hit it too!", 'd', Color.White, 'c', true),
+        };
+        int[] dummy_bps = { 0 };
 
         // dialogue_key is inside the key object -- i know, confusing...
 
@@ -1412,6 +1496,42 @@ namespace PERSIST
                                 special_walls_bounds.Add(temp);
                                 special_walls_types.Add("charonblock");
                             }
+
+                            if (l.objects[i].name == "furniture")
+                            {
+                                var temp = new Furniture(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), this);
+                                string value = l.objects[i].properties[0].value;
+
+                                temp.kannas = true;
+
+                                if (value == "chair")
+                                    temp.SetType(dialogue_chair, chair_bps);
+
+                                if (value == "crate")
+                                    temp.SetType(dialogue_crate, crate_bps);
+
+                                if (value == "bed")
+                                {
+                                    temp.SetType(dialogue_bed, bed_bps);
+                                    temp.kannas_bed = true;
+                                }
+                                    
+
+                                if (value == "dummy")
+                                    temp.SetType(dialogue_dummy, dummy_bps);
+
+                                if (value == "shelf")
+                                {
+                                    temp.SetType(dialogue_shelf, shelf_bps);
+                                    temp.kannas_shelf = true;
+                                }
+                                    
+
+                                if (value == "reading_table")
+                                    temp.SetType(dialogue_table, table_bps);
+
+                                AddInteractable(temp);
+                            }
                         }
 
                 }
@@ -1463,6 +1583,7 @@ namespace PERSIST
             asset_map.Add(typeof(ShadePickup), tst_styx);
             asset_map.Add(typeof(KeyPickup), tst_styx);
             asset_map.Add(typeof(InteractableGuy), spr_guys);
+            asset_map.Add(typeof(Furniture), tst_styx);
 
             foreach (Enemy enemy in enemies)
                 enemy.LoadAssets(asset_map[enemy.GetType()]);
@@ -1967,6 +2088,22 @@ namespace PERSIST
                 return;
             }
 
+            if (code[0] == "bookshelf")
+            {
+                if (code[1] == "0")
+                {
+                    dialogue_num++;
+                    dialogue_letter = 0f;
+
+                    prog_manager.SetFlag(FLAGS.spott_killman);
+                }
+                else
+                {
+                    dialogue_num = 8;
+                    dialogue_letter = 0f;
+                }
+            }
+
             if (code[0] == "corpse")
             {
                 if (code[1] == "1")
@@ -1983,6 +2120,36 @@ namespace PERSIST
                     dialogue_num++;
                     dialogue_letter = 0f;
                     prog_manager.SetFlag(FLAGS.map_obtained);
+                    return;
+                }
+            }
+
+            if (code[0] == "bed")
+            {
+                if (code[1] == "0")
+                {
+                    // mark that you did this
+                    prog_manager.SetFlag(FLAGS.investigated_bed);
+
+                    dialogue_num++;
+                    dialogue_letter = 0f;
+                }
+
+                if (code[1] == "1")
+                {
+                    // remove the locks
+                    Room r = RealGetRoom(player.GetPos());
+
+                    for (int j = special_walls.Count() - 1; j >= 0; j--)
+                        if (special_walls[j].GetType() == typeof(Lock) && special_walls[j].bounds.Intersects(r.bounds))
+                            special_walls[j].DecrementKeys();
+
+                    prog_manager.SetFlag(FLAGS.kanna_bed);
+
+                    player.LeaveDialogue();
+                    dialogue = false;
+                    dialogue_letter = 0f;
+                    dialogue_num = 0;
                     return;
                 }
             }

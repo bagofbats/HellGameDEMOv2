@@ -275,6 +275,10 @@ namespace PERSIST
         protected int counter = 0;
         protected int[] breakpoints;
 
+        public bool kannas = false;
+        public bool kannas_shelf = false;
+        public bool kannas_bed = false;
+
         public Furniture(Rectangle pos, Level root)
         {
             this.pos = pos;
@@ -291,6 +295,40 @@ namespace PERSIST
 
         public override void Interact()
         {
+            // kanna's furniture
+            // can't advance in dialogue if kanna isn't there to talk to
+            if (kannas)
+            {
+                if (kannas_bed)
+                {
+
+                    if (!root.prog_manager.GetFlag(FLAGS.investigated_bed) && counter > 1 && !root.prog_manager.GetFlag(FLAGS.dash))
+                        counter = 1;
+
+                    else if (!root.prog_manager.GetFlag(FLAGS.dash) && counter > 2)
+                        counter = 2;
+
+                    else if (root.prog_manager.GetFlag(FLAGS.dash) && root.prog_manager.GetFlag(FLAGS.investigated_bed) && !root.prog_manager.GetFlag(FLAGS.kanna_bed))
+                        counter = 3;
+
+                    else if (root.prog_manager.GetFlag(FLAGS.dash) && (root.prog_manager.GetFlag(FLAGS.kanna_bed) || !root.prog_manager.GetFlag(FLAGS.investigated_bed)))
+                        counter = 4;
+                }
+                else
+                {
+                    if (root.prog_manager.GetFlag(FLAGS.dash))
+                        counter = 0;
+
+                    if (kannas_shelf)
+                    {
+                        counter = 0;
+                        if (root.prog_manager.GetFlag(FLAGS.dash))
+                            counter = 1;
+                    }
+                }
+            }
+
+
             root.StartDialogue(dialogue, breakpoints[counter], 'c', 25f, true);
 
             if (counter < breakpoints.Length - 1)

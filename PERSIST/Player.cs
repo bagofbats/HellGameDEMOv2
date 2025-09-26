@@ -738,6 +738,11 @@ namespace PERSIST
                 ranged_timer = 0;
                 ranged_ready = false;
             }
+            else if (!enter)
+            {
+                ranged_timer = 0;
+                ranged_ready = false;
+            }
         }
 
         private void HandleAttacksNoRanged(GameTime gameTime)

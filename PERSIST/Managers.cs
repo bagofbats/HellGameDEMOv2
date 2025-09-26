@@ -308,6 +308,10 @@ namespace PERSIST
         stay_out_of_way,
         ask_hideout,
         ask_leaving,
+        spott_killman,
+        investigated_bed,
+        kanna_bed,
+        kanna_plushie,
 
         // secret flags
         journal_secret,
@@ -329,11 +333,11 @@ namespace PERSIST
                 {FLAGS.knife                , true  },
                 {FLAGS.ranged               , true  },
                 {FLAGS.mask                 , true  },
-                {FLAGS.dash                 , true  },
+                {FLAGS.dash                 , false },
 
                 // mechanic flags
-                {FLAGS.jump_blocks          , false },
-                {FLAGS.locks                , false },
+                {FLAGS.jump_blocks          , true },
+                {FLAGS.locks                , true },
 
                 // boss flags
                 {FLAGS.slime_started        , false },
@@ -351,6 +355,10 @@ namespace PERSIST
                 {FLAGS.stay_out_of_way      , false },
                 {FLAGS.ask_hideout          , false },
                 {FLAGS.ask_leaving          , false },
+                {FLAGS.spott_killman        , false },
+                {FLAGS.investigated_bed     , false },
+                {FLAGS.kanna_bed            , false },
+                {FLAGS.kanna_plushie        , false },
 
                 // secret flags
                 {FLAGS.journal_secret       , false },
