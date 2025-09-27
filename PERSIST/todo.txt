@@ -29,6 +29,7 @@ art:
     - if the particle breaks on the corner of a wall the poof vfx is misplaced
  - have it so when kanna jumps away from you she still fires the arrow in your direction
  - try chaning frame rate to see if anything breaks
+ - add way to open plushie room after doing it once and then dying
 
  misc:
  - "thorns" level needs different right side

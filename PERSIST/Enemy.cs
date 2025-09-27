@@ -3280,8 +3280,6 @@ namespace PERSIST
                 root.StartDialogue(dialogue_deadguy, 5, 'c', 25f, true);
                 frame.X = 192 + 32;
             }
-                
-
         }
 
         public void GetKnife()
@@ -3563,5 +3561,64 @@ namespace PERSIST
             return input.Intersects(HitBox);
         }
 
+    }
+
+    public class SmallPlush : Enemy
+    {
+        Rectangle loc;
+        Texture2D sprite;
+        Rectangle frame = new Rectangle(32, 72, 8, 8);
+        Rectangle hitbox;
+        ProgressionManager progMan;
+
+        DialogueStruct[] dialogue;
+
+        int counter = 0;
+
+        public SmallPlush(Rectangle loc, DialogueStruct[] dialogue, ProgressionManager progMan, Level root)
+        {
+            this.loc = loc;
+            hurtful = false;
+            pogoable = false;
+            hitbox = new Rectangle(loc.X, loc.Y, 8, 8);
+            this.dialogue = dialogue;
+            this.root = root;
+            this.progMan = progMan;
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            // nothing xd (for now)
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, loc, frame, Color.White);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, hitbox, Color.Blue * 0.3f);
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(hitbox);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return hitbox;
+        }
+
+        public override void Interact()
+        {
+            root.StartDialogue(dialogue, 0, 'c', 25f, true);
+        }
     }
 }

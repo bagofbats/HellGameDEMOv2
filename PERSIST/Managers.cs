@@ -333,7 +333,7 @@ namespace PERSIST
                 {FLAGS.knife                , true  },
                 {FLAGS.ranged               , true  },
                 {FLAGS.mask                 , true  },
-                {FLAGS.dash                 , false },
+                {FLAGS.dash                 , true },
 
                 // mechanic flags
                 {FLAGS.jump_blocks          , true },
@@ -356,7 +356,7 @@ namespace PERSIST
                 {FLAGS.ask_hideout          , false },
                 {FLAGS.ask_leaving          , false },
                 {FLAGS.spott_killman        , false },
-                {FLAGS.investigated_bed     , false },
+                {FLAGS.investigated_bed     , true },
                 {FLAGS.kanna_bed            , false },
                 {FLAGS.kanna_plushie        , false },
 

@@ -1099,6 +1099,24 @@ namespace PERSIST
         };
         int[] dummy_bps = { 0 };
 
+        DialogueStruct[] dialogue_plush = {
+            new DialogueStruct("It's a plush toy of a demon.", 'd', Color.White, 'c', true),
+            new DialogueStruct("( Someone REALLY likes plushies . . . )", 'd', Color.DodgerBlue, 'p', true, "", 135, 180)
+        };
+        int[] plush_bps = { 0, 1 };
+
+        DialogueStruct[] dialogue_slime_plush = {
+            new DialogueStruct("It's a large plush toy of a slime.", 'd', Color.White, 'c'),
+            new DialogueStruct("Looks comfortable.", 'd', Color.White, 'c', true),
+            new DialogueStruct("( I bet this would make for an AWESOME bean bag chair. )", 'd', Color.DodgerBlue, 'p', true, "", 135, 180)
+        };
+        int[] slime_plush_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_small_plush = {
+            new DialogueStruct("It's a small plush toy of a slime.", 'd', Color.White, 'c'),
+            new DialogueStruct("It's small enough that you could take it with you,\nif you wanted to.", 'd', Color.White, 'c', true),
+        };
+
         // dialogue_key is inside the key object -- i know, confusing...
 
         private readonly Dictionary<Room, int> keys_in_room = new Dictionary<Room, int>();
@@ -1497,6 +1515,15 @@ namespace PERSIST
                                 special_walls_types.Add("charonblock");
                             }
 
+                            if (l.objects[i].name == "small_plush" && !prog_manager.GetFlag(FLAGS.kanna_plushie))
+                            {
+                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, 8, 8);
+                                AddEnemy(new SmallPlush(temp, dialogue_small_plush, prog_manager, this));
+
+                                enemy_locations.Add(new Vector2((int)l.objects[i].x + t.location.X, (int)l.objects[i].y));
+                                enemy_types.Add("small_plush");
+                            }
+
                             if (l.objects[i].name == "furniture")
                             {
                                 var temp = new Furniture(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), this);
@@ -1525,7 +1552,13 @@ namespace PERSIST
                                     temp.SetType(dialogue_shelf, shelf_bps);
                                     temp.kannas_shelf = true;
                                 }
-                                    
+
+                                if (value == "plush")
+                                    temp.SetType(dialogue_plush, plush_bps);
+
+                                if (value == "slime_plush")
+                                    temp.SetType(dialogue_slime_plush, slime_plush_bps);
+
 
                                 if (value == "reading_table")
                                     temp.SetType(dialogue_table, table_bps);
@@ -1579,6 +1612,7 @@ namespace PERSIST
             asset_map.Add(typeof(Kanna_Cutscene), spr_kanna);
             asset_map.Add(typeof(Famine), spr_lukas);
             asset_map.Add(typeof(Famine_Head), spr_lukas);
+            asset_map.Add(typeof(SmallPlush), tst_styx);
 
             asset_map.Add(typeof(ShadePickup), tst_styx);
             asset_map.Add(typeof(KeyPickup), tst_styx);
@@ -1802,6 +1836,14 @@ namespace PERSIST
                     var temp = new DeadGuyTwo(
                                     new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 32, 32),
                                     dialogue_deadguy, prog_manager, this);
+                    AddEnemy(temp);
+                }
+
+                if (enemy_types[i] == "small_plush" && !prog_manager.GetFlag(FLAGS.kanna_plushie))
+                {
+                    var temp = new SmallPlush(
+                                    new Rectangle((int)enemy_locations[i].X, (int)enemy_locations[i].Y, 8, 8),
+                                    dialogue_small_plush, prog_manager, this);
                     AddEnemy(temp);
                 }
 
