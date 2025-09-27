@@ -1040,7 +1040,7 @@ namespace PERSIST
             new DialogueStruct("Search the bed.\nDo not.", 'o', Color.White, 'l', false, "bed 0|exit"),
             new DialogueStruct("You start searching the bed.", 'd', Color.White, 'c'),
             new DialogueStruct(". . . Oh?", 'd', Color.White, 'c'),
-            new DialogueStruct("There's something under the covers.", 'd', Color.White, 'c'),
+            new DialogueStruct("There's something under the bed frame.", 'd', Color.White, 'c'),
             new DialogueStruct("Trigo, what are you doing?", 'd', Color.White, 'r', false, "", 405, 180),
             new DialogueStruct("Nothing!", 'd', Color.White, 'p', false, "", 315, 90),
             new DialogueStruct("( Should probably check this out when Kanna isn't\n  looking . . . )", 'd', Color.DodgerBlue, 'p', true, "", 315, 135),
@@ -1048,7 +1048,7 @@ namespace PERSIST
             // index 9
             new DialogueStruct("( Think the coast is clear . . . )", 'd', Color.DodgerBlue, 'p', false, "", 315, 180),
             new DialogueStruct("( Oh? )", 'd', Color.DodgerBlue, 'p', false, "", 315, 0),
-            new DialogueStruct("( There's a key under the covers . . . )", 'd', Color.DodgerBlue, 'p', false, "", 315, 0),
+            new DialogueStruct("( There's a key under the bed . . . )", 'd', Color.DodgerBlue, 'p', false, "", 315, 0),
             new DialogueStruct("Grab the key.\nDo not.", 'o', Color.White, 'l', false, "bed 1|exit"),
 
             // index 13
@@ -1101,7 +1101,7 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_plush = {
             new DialogueStruct("It's a plush toy of a demon.", 'd', Color.White, 'c', true),
-            new DialogueStruct("( Someone REALLY likes plushies . . . )", 'd', Color.DodgerBlue, 'p', true, "", 135, 180)
+            new DialogueStruct("( Someone REALLY likes plushies . . . )", 'd', Color.DodgerBlue, 'p', true, "", 135, 180),
         };
         int[] plush_bps = { 0, 1 };
 
@@ -1114,7 +1114,9 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_small_plush = {
             new DialogueStruct("It's a small plush toy of a slime.", 'd', Color.White, 'c'),
-            new DialogueStruct("It's small enough that you could take it with you,\nif you wanted to.", 'd', Color.White, 'c', true),
+            new DialogueStruct("It's small enough that you could take it with you,\nif you wanted to.", 'd', Color.White, 'c'),
+            new DialogueStruct("Take the plush.\nDo not.", 'o', Color.White, 'l', false, "plush|exit"),
+            new DialogueStruct("You got the Slime Plush.", 'd', Color.White, 'c', true),
         };
 
         // dialogue_key is inside the key object -- i know, confusing...
@@ -1295,18 +1297,32 @@ namespace PERSIST
                                 var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
 
                                 int key_init = 0;
+                                bool kannas = false;
 
                                 if (l.objects[i].properties.Count() != 0)
                                     key_init = int.Parse(l.objects[i].properties[0].value);
+
+                                if (l.objects[i].properties.Count() > 1)
+                                {
+                                    kannas = true;
+                                    if (prog_manager.GetFlag(FLAGS.kanna_bed))
+                                        continue;
+                                }
+                                    
 
                                 for (int j = 0; j < temp.Width; j += 16)
                                     for (int k = 0; k < temp.Height; k += 16)
                                     {
                                         Rectangle temp2 = new Rectangle(temp.X + j, temp.Y + k, 16, 16);
                                         var new_lock = new Lock(temp2, this, lock_block_frame);
+
                                         AddSpecialWall(new_lock);
                                         special_walls_bounds.Add(temp2);
-                                        special_walls_types.Add("lock");
+
+                                        if (kannas)
+                                            special_walls_types.Add("lock_k");
+                                        else
+                                            special_walls_types.Add("lock");
 
                                         if (key_init != 0)
                                         {
@@ -1773,7 +1789,7 @@ namespace PERSIST
                 else if (special_walls_types[i] == "badswitch")
                     AddEnemy(new GhostBlock(new Vector2(special_walls_bounds[i].X, special_walls_bounds[i].Y), this, ghost_block_frame));
 
-                else if (special_walls_types[i] == "lock")
+                else if (special_walls_types[i] == "lock" || (special_walls_types[i] == "lock_k" && !prog_manager.GetFlag(FLAGS.kanna_bed)))
                 {
                     var new_lock_temp = new Lock(special_walls_bounds[i], this, lock_block_frame);
                     AddSpecialWall(new_lock_temp);
@@ -1784,6 +1800,11 @@ namespace PERSIST
                         new_lock_temp.keys_set = true;
                     }
 
+                    key_init_counter++;
+                }
+
+                else if (special_walls_types[i] == "lock_k" && prog_manager.GetFlag(FLAGS.kanna_bed))
+                {
                     key_init_counter++;
                 }
                     
@@ -2194,6 +2215,21 @@ namespace PERSIST
                     dialogue_num = 0;
                     return;
                 }
+            }
+
+            if (code[0] == "plush")
+            {
+                prog_manager.SetFlag(FLAGS.kanna_plushie);
+
+                dialogue_num++;
+                dialogue_letter = 0f;
+
+                for (int i = enemies.Count - 1; i >= 0; i--)
+                    if (enemies[i].GetType() == typeof(SmallPlush))
+                    {
+                        RemoveEnemy(enemies[i]);
+                        break;
+                    }
             }
         }
 

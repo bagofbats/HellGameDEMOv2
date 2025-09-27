@@ -364,6 +364,7 @@
   <object id="1037" name="lock" x="2336" y="160" width="16" height="32">
    <properties>
     <property name="key_init" type="int" value="1"/>
+    <property name="zzz" type="bool" value="true"/>
    </properties>
   </object>
   <object id="1039" name="furniture" x="2296" y="240" width="16" height="16">
