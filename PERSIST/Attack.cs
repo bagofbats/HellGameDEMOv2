@@ -55,7 +55,7 @@ namespace PERSIST
             if (slash_dir)
                 pitch = 0.7f;
 
-            level.audio_manager.PlaySound("woosh2", pitch, 0.2f);
+            level.audio_manager.PlaySound("woosh2", pitch, level.audio_manager.swoosh_volume);
         }
 
         public Rectangle HitBox
@@ -252,7 +252,7 @@ namespace PERSIST
                 if (up)
                     pitch = -0.7f;
 
-                level.audio_manager.PlaySound("hit", pitch);
+                level.audio_manager.PlaySound("hit", pitch, level.audio_manager.ranged_done_volume);
             }
 
             player.FinishAttack(this);

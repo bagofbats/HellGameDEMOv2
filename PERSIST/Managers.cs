@@ -311,12 +311,12 @@ namespace PERSIST
         spott_killman,
         investigated_bed,
         kanna_bed,
-        kanna_plushie,
 
         // secret flags
         journal_secret,
         charons_blessing,
         charon_door,
+        kanna_plushie,
     }
 
     public class ProgressionManager
@@ -330,14 +330,14 @@ namespace PERSIST
             flag_map = new Dictionary<FLAGS, bool>()
             {
                 // player flags
-                {FLAGS.knife                , true  },
-                {FLAGS.ranged               , true  },
-                {FLAGS.mask                 , true  },
-                {FLAGS.dash                 , true },
+                {FLAGS.knife                , false },
+                {FLAGS.ranged               , false },
+                {FLAGS.mask                 , false },
+                {FLAGS.dash                 , false },
 
                 // mechanic flags
-                {FLAGS.jump_blocks          , true },
-                {FLAGS.locks                , true },
+                {FLAGS.jump_blocks          , false },
+                {FLAGS.locks                , false },
 
                 // boss flags
                 {FLAGS.slime_started        , false },
@@ -356,14 +356,14 @@ namespace PERSIST
                 {FLAGS.ask_hideout          , false },
                 {FLAGS.ask_leaving          , false },
                 {FLAGS.spott_killman        , false },
-                {FLAGS.investigated_bed     , true },
+                {FLAGS.investigated_bed     , false },
                 {FLAGS.kanna_bed            , false },
-                {FLAGS.kanna_plushie        , false },
 
                 // secret flags
                 {FLAGS.journal_secret       , false },
                 {FLAGS.charons_blessing     , false },
                 {FLAGS.charon_door          , false },
+                {FLAGS.kanna_plushie        , false },
             };
         }
 
@@ -399,6 +399,23 @@ namespace PERSIST
 
         private Dictionary<string, SoundEffect> sfx = new Dictionary<string, SoundEffect>();
 
+        private List<DelayedSound> delayedSounds = new List<DelayedSound>();
+
+        private float volume = 1f;
+
+        public float slime_volume
+        { get => 0.7f * volume; }
+        public float eye_volume
+        { get => 0.3f * volume; }
+        public float switch_volume
+        { get => 0.6f * volume; }
+        public float swoosh_volume
+        { get => 0.2f * volume; }
+        public float ranged_done_volume
+        { get => 1f * volume; }
+        public float breakable_volume
+        { get => 1f * volume; }
+
         public AudioManager(HellGame root)
         {
             this.root = root;
@@ -411,15 +428,67 @@ namespace PERSIST
             sfx.Add("tick", root.Content.Load<SoundEffect>("audio/snd_tick"));
             sfx.Add("tock", root.Content.Load<SoundEffect>("audio/snd_tock"));
             sfx.Add("woosh2", root.Content.Load<SoundEffect>("audio/snd_woosh2"));
+            sfx.Add("snap", root.Content.Load<SoundEffect>("audio/snd_snap"));
+            sfx.Add("swat", root.Content.Load<SoundEffect>("audio/snd_swat"));
         }
 
-        public void PlaySound(string snd, float pitch=1f, float volume=1f)
+        public void Update(GameTime gameTime)
+        {
+            for (int i = delayedSounds.Count - 1; i >= 0; i--) 
+            {
+                delayedSounds[i].Update(gameTime);
+            }
+        }
+
+        public void PlaySound(string snd, float pitch=0f, float volume=1f)
         {
             SoundEffectInstance snd_tmp = sfx[snd].CreateInstance();
             snd_tmp.Pitch = pitch;
             snd_tmp.Volume = volume;
 
             snd_tmp.Play();
+        }
+
+        public void DelaySound(float delay, string snd, float pitch=0f, float volume=0f)
+        {
+            delayedSounds.Add(new DelayedSound(delay, snd, pitch, volume, this));
+        }
+
+        public void DelaySoundDone(DelayedSound d)
+        {
+            delayedSounds.Remove(d);
+        }
+    }
+
+    public class DelayedSound
+    {
+        private readonly float delay;
+        private readonly float pitch;
+        private readonly float volume;
+        private readonly string snd;
+
+        private readonly AudioManager root;
+
+        private float timer;
+
+        public DelayedSound(float delay, string snd, float pitch, float volume, AudioManager root)
+        {
+            this.delay = delay;
+            this.snd = snd;
+            this.pitch = pitch;
+            this.volume = volume;
+            this.root = root;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (timer > delay)
+            {
+                root.PlaySound(snd, pitch, volume);
+                root.DelaySoundDone(this);
+            }
         }
     }
 

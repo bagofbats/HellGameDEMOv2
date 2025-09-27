@@ -258,7 +258,7 @@ namespace PERSIST
             damaged_timer = 0;
 
             
-            root.audio_manager.PlaySound("tick", pitch);
+            root.audio_manager.PlaySound("swat", pitch, root.audio_manager.slime_volume);
         }
 
         public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
@@ -381,8 +381,8 @@ namespace PERSIST
             root.Switch(room, two);
             damaged = true;
 
-            //float pitch = (0.5f - (float)rnd.NextDouble()) / 1.2f;
-            //root.audio_manager.PlaySound("tock", pitch);
+            float pitch = (0.7f - (float)rnd.NextDouble()) / 1.2f;
+            root.audio_manager.PlaySound("swat", pitch, root.audio_manager.eye_volume);
         }
 
         public override Rectangle GetHitBox(Rectangle input)
@@ -971,7 +971,7 @@ namespace PERSIST
 
             float pitch = (0.1f - (float)rnd.NextDouble()) / 1.2f;
 
-            root.audio_manager.PlaySound("tick", pitch);
+            root.audio_manager.PlaySound("swat", pitch, root.audio_manager.slime_volume);
         }
 
         public void UpdateSleepFX(GameTime gameTime)
@@ -1077,7 +1077,7 @@ namespace PERSIST
 
             float pitch = (0.5f - (float)rnd.NextDouble()) / 1.2f;
 
-            root.audio_manager.PlaySound("tick", pitch);
+            root.audio_manager.PlaySound("swat", pitch, root.audio_manager.slime_volume);
         }
     }
 

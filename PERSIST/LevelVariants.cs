@@ -429,10 +429,16 @@ namespace PERSIST
 
         public override void Switch(Room r, bool two)
         {
+            bool switched = false;
+
             for (int i = special_walls.Count - 1; i >= 0; i--)
                 if (special_walls[i].GetType() == typeof(SwitchBlock))
                     if (special_walls[i].bounds.Intersects(r.bounds))
+                    {
                         special_walls[i].FlashDestroy();
+                        switched = true;
+                    }
+                        
 
             if (two)
             {
@@ -444,6 +450,8 @@ namespace PERSIST
                                 var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this, new Rectangle(48, 32, 16, 16));
                                 AddSpecialWall(temp);
                                 temp.Load(tst_tutorial);
+
+                                switched = true;
                             }
                                 
             }
@@ -457,11 +465,20 @@ namespace PERSIST
                                 var temp = new SwitchBlock(new Rectangle(h, v, 16, 16), this, new Rectangle(48, 32, 16, 16));
                                 AddSpecialWall(temp);
                                 temp.Load(tst_tutorial);
+
+                                switched = true;
                             }
 
             foreach (EyeSwitch s in switches)
                 if (s.GetHitBox(new Rectangle(0,0,0,0)).Intersects(r.bounds))
                     s.two = !two;
+
+            float pitch = 0.0f;
+            if (!two)
+                pitch = -0.4f;
+
+            if (switched)
+                audio_manager.DelaySound(0.05f, "snap", pitch, root.audioManager.switch_volume);
         }
 
         public override void HandleDialogueOption(string opt_code, int choice)
@@ -866,7 +883,7 @@ namespace PERSIST
             new DialogueStruct("I thought you wanted me to \"stay out of your way\"?\n\"Hideout\", huh?\nNevermind.", 'o', Color.White, 'l', false, "hideout0 0|hideout0 1|hideout0 2"),
 
             // index 6
-            new DialogueStruct("Yeah. Don't push your luck.", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("Yeah.\nDon't push your luck.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("I'm not against helping each other out.\nBut I'm not taking back what I said.", 'd', Color.White, 'p', true, "", 405, 0),
 
             // index 8
@@ -999,7 +1016,7 @@ namespace PERSIST
             new DialogueStruct("*Coke* (Take it easy, new guy.)", 'd', Color.White, 'p', true, "", 0, 90),
             new DialogueStruct("Oh, that's Charon's mask, isn't it?\nYou work for him?", 'd', Color.White, 'p', false, "", 0, 135),
             new DialogueStruct("Wonder what Charon wanted you for.\nGuy doesn't usually ask for help.", 'd', Color.White, 'p', false, "", 0, 135),
-            new DialogueStruct("Now Doc, she's always asking for more people.\nBut not Charon.\nSeems happy just keeping to himself honestly.", 'd', Color.White, 'p', true, "", 0, 135),
+            new DialogueStruct("Now Doc, she's always asking for more people.\nBut not Charon.\nSeems happy just keeping to himself, honestly.", 'd', Color.White, 'p', true, "", 0, 135),
             new DialogueStruct("Charon's not that bad once you get to know him.\nYou'll do fine.", 'd', Color.White, 'p', true, "", 0, 135),
         };
         readonly int[] frog_bps = { 0, 3 };

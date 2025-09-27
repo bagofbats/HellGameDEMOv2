@@ -256,6 +256,9 @@ namespace PERSIST
                 dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_txt[dialogue_num].speed * dialogue_speed_multiplier;
                 dialogue_letter = Math.Min(dialogue_letter, dialogue_txt[dialogue_num].text.Length);
             }
+
+            // audio stuff
+            audio_manager.Update(gameTime);
         }
 
         public virtual void Draw(SpriteBatch _spriteBatch)
@@ -1385,7 +1388,7 @@ namespace PERSIST
         {
             damaged = true;
             float pitch = (0.5f - (float)rnd.NextDouble()) / 0.7f;
-            root.audio_manager.PlaySound("hit", pitch);
+            root.audio_manager.PlaySound("hit", pitch, root.audio_manager.breakable_volume);
         }
     }
 

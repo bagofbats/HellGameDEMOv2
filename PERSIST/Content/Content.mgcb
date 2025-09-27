@@ -26,6 +26,18 @@
 /processorParam:Quality=Best
 /build:audio/snd_hit.wav
 
+#begin audio/snd_snap.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/snd_snap.wav
+
+#begin audio/snd_swat.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/snd_swat.wav
+
 #begin audio/snd_tick.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
