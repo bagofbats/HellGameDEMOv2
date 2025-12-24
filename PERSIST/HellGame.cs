@@ -25,7 +25,7 @@ namespace PERSIST
 
     public class HellGame : Game
     {
-        private bool debug = false;
+        private bool debug = true;
         public bool opaque
         { get; private set; } = false;
 
@@ -125,18 +125,18 @@ namespace PERSIST
             fpsCounter = new FPSCounter(player);
 
             // tutorial level template
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial3.tmx");
-            TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
-            TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
+            //TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_tutorial1.tmx");
+            //TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_tutorial.tsx");
+            //TiledData one = new TiledData(new Rectangle(0, 0, 320, 240), one_map, one_tst);
 
-            List<TiledData> tld = new List<TiledData>{one};
+            //List<TiledData> tld = new List<TiledData>{one};
 
             // styx level template
 
-            //TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx0.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx4.tmx");
             //TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
             //TiledMap thr_map = new TiledMap(Content.RootDirectory + "\\rm_styx_secret.tmx");
-            //TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
+            TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
 
             List<Rectangle> bounds = new List<Rectangle>
             {
@@ -145,12 +145,12 @@ namespace PERSIST
                 //new Rectangle(304 - (thr_map.Width * thr_map.TileWidth), 880 - 64 - 240, thr_map.Width * thr_map.TileWidth, thr_map.Height * thr_map.TileHeight)
             };
 
-            //TiledData one = new TiledData(bounds[0], one_map, one_tst);
+            TiledData one = new TiledData(bounds[0], one_map, one_tst);
             //TiledData two = new TiledData(bounds[1], two_map, one_tst);
             //TiledData thr = new TiledData(bounds[2], thr_map, one_tst);
 
             //List<TiledData> tld = new List<TiledData>{one, two, thr};
-            //List<TiledData> tld = new List<TiledData> {one};
+            List<TiledData> tld = new List<TiledData> {one};
 
             // determine how much to scale the window up
             // given how big the monitor is
@@ -175,9 +175,9 @@ namespace PERSIST
             _graphics.ApplyChanges();
 
             Camera cam = new Camera(this);
-            the_level = new TutorialLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
+            //the_level = new TutorialLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_tutorial1");
 
-            //the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx0");
+            the_level = new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx4");
 
             Window.Title = "Hell Escape [DEMO]";
         }

@@ -32,6 +32,7 @@ namespace PERSIST
         
 
         private BigSlime slimeboss;
+        private Lukas_Tutorial lukasboss = null;
 
         private int slime_counter = 4;
 
@@ -96,7 +97,10 @@ namespace PERSIST
         };
         int[] desk_bps = { 0, 11, 14 };
 
-
+        DialogueStruct[] dialogue_lukas = {
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 180, 45),
+            new DialogueStruct("You should not be here, invader.", 'd', Color.White, 'r', true, "", 180, 135, 10f),
+        };
 
         public TutorialLevel(HellGame root, Rectangle bounds, Player player, List<TiledData> tld, Camera cam, ProgressionManager prog_manager, AudioManager audio_manager, bool debug, string name) : base(root, bounds, player, tld, cam, prog_manager, audio_manager, debug, name) 
         {
@@ -585,6 +589,67 @@ namespace PERSIST
                     prog_manager.SetFlag(FLAGS.slime_started);
                 }
             }
+
+            if (cutscene_code[0] == "fightlukas")
+            {
+                if (cutscene_timer > 0f)
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+
+                    lukasboss.Sleep(gameTime);
+                }
+
+                if (cutscene_timer > 1.4f)
+                {
+                    if (cutscene_code[1] != "-")
+                    {
+                        cutscene_code[1] = "-";
+                        StartDialogue(dialogue_lukas, 0, 'c', 10f, false);
+                    }
+                }
+
+                if (cutscene_timer > 1.43f)
+                {
+                    if (cutscene_code[2] != "-")
+                    {
+                        cutscene_code[2] = "-";
+                        int blocks_x = 2392;
+                        int blocks_y = 368;
+
+                        for (int i = blocks_x; i < blocks_x + 32; i += 16)
+                            for (int j = blocks_y; j < blocks_y + 64; j += 16)
+                            {
+                                BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this, new Rectangle(48, 112, 16, 16));
+                                temp1.Load(tst_tutorial);
+                                AddSpecialWall(temp1);
+                            }
+                    }
+
+                    else
+                    {
+                        for (int i = special_walls.Count - 1; i >= 0; i--)
+                            special_walls[i].Update(gameTime);
+                    }
+                }
+
+                if (cutscene_timer > 2f)
+                {
+                    lukasboss.sleep = false;
+                    lukasboss = null;
+
+                    player.ExitCutscene();
+                    cutscene = false;
+                    prog_manager.SetFlag(FLAGS.lukas_started);
+                }
+            }
+        }
+
+        public override void DialogueActions(GameTime gameTime)
+        {
+            if (lukasboss != null)
+                lukasboss.Sleep(gameTime);
         }
 
         public void WakeUpSlime(BigSlime slime, GameTime gameTime)
@@ -619,18 +684,26 @@ namespace PERSIST
 
         public void FightLukas(Lukas_Tutorial lukas, GameTime gameTime)
         {
-            int blocks_x = 2392;
-            int blocks_y = 368;
+            if (!prog_manager.GetFlag(FLAGS.lukas_started))
+            {
+                HandleCutscene("fightlukas|1|2|3|4|5|6|7", gameTime, true);
+                lukasboss = lukas;
+            }
+            else
+            {
+                int blocks_x = 2392;
+                int blocks_y = 368;
 
-            lukas.sleep = false;
+                lukas.sleep = false;
 
-            for (int i = blocks_x; i < blocks_x + 32; i += 16)
-                for (int j = blocks_y; j < blocks_y + 64; j += 16)
-                {
-                    BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this, new Rectangle(48, 112, 16, 16));
-                    temp1.Load(tst_tutorial);
-                    AddSpecialWall(temp1);
-                }
+                for (int i = blocks_x; i < blocks_x + 32; i += 16)
+                    for (int j = blocks_y; j < blocks_y + 64; j += 16)
+                    {
+                        BossBlock temp1 = new BossBlock(new Rectangle(i, j, 16, 16), this, new Rectangle(48, 112, 16, 16));
+                        temp1.Load(tst_tutorial);
+                        AddSpecialWall(temp1);
+                    }
+            }
         }
 
         public void DefeatSime()

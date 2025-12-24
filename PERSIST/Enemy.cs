@@ -1086,8 +1086,8 @@ namespace PERSIST
         private Texture2D sprite;
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
         private Player player;
-        private float hp = 22;
-        private int max_hp = 22;
+        private float hp = 17;
+        private int max_hp = 17;
         new private TutorialLevel root;
 
         private List<Lukas_Projectile> projectiles = new List<Lukas_Projectile>();
@@ -1234,10 +1234,23 @@ namespace PERSIST
         {
             if (player.HitBox.Intersects(wakeup_rectangle))
                 wakeup_ready = true;
+            
             else if (wakeup_ready && player.GetPos().X > wakeup_rectangle.X)
+            {
                 root.FightLukas(this, gameTime);
+                wakeup_ready = false;
+            }
             else if (wakeup_ready)
                 wakeup_ready = false;
+
+            float elapsed_time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            timer += elapsed_time;
+
+            frame.X = 32 * ((int)(timer * 10) % frame_reset);
+            vsp = 0.1f * (float)Math.Sin(timer * 2) + 0.04f * Math.Sign(Math.Sin(timer * 2));
+
+            pos.Y += vsp;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -2781,10 +2794,13 @@ namespace PERSIST
         private bool[] head_attacking = { false, false, false };
         private Vector2[] head_target = new Vector2[3];
 
-        private float atk_threshold = 4f;
-        private float idle_threshold = 2f;
+        private float atk_threshold = 6f;
+        public float idle_threshold = 2f;
 
         private float target_fudge = 8f;
+
+        private float hp;
+        private int hp_max = 50;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
@@ -2798,12 +2814,19 @@ namespace PERSIST
             this.player = player;
             this.root = root;
 
+            float[] timer_init = { 0, atk_threshold * 0.33f, atk_threshold * 0.66f };
+
             for (int i = 0; i < num_heads; i++)
             {
-                Vector2 oset = new Vector2(0, i * 16);
-                heads[i] = new Famine_Head(pos + oset, player, root);
+                // head init pos staggered
+                Vector2 oset = new Vector2(((i % 2) * 8) + (i / 2) * -12, i * 32);
+                heads[i] = new Famine_Head(pos + oset, player, root, this);
                 root.AddEnemy(heads[i]);
+
+                head_timer[i] = timer_init[i];
             }
+
+            hp = hp_max;
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -2816,6 +2839,13 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            root.GetBossHP(hp, hp_max);
+
+            Room r = root.RealGetRoom(pos);
+
+            if (r != root.RealGetRoom(player.GetPos()))
+                return;
+
             for (int i = 0; i < num_heads; i++)
                 UpdateHead(gameTime, heads[i], i);
         }
@@ -2868,13 +2898,19 @@ namespace PERSIST
             return HitBox;
         }
 
-        
+        public override void Damage(float damage)
+        {
+            hp -= damage;
+        }
+
+
     }
 
     public class Famine_Head : Enemy
     {
         private Player player;
         private Texture2D sprite;
+        private Famine famine;
 
         private int h_oset = 3;
         private int v_oset = 3;
@@ -2886,6 +2922,7 @@ namespace PERSIST
         private float atk_timer = 0f;
 
         private Vector2 base_pos;
+        private Vector2 windup;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
@@ -2893,11 +2930,12 @@ namespace PERSIST
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
 
-        public Famine_Head(Vector2 pos, Player player, StyxLevel root)
+        public Famine_Head(Vector2 pos, Player player, StyxLevel root, Famine famine)
         {
             this.pos = pos;
             this.player = player;
             this.root = root;
+            this.famine = famine;
 
             base_pos = pos;
         }
@@ -2912,8 +2950,15 @@ namespace PERSIST
             // nothing (yet)
         }
 
+        public override void Damage(float damage)
+        {
+            famine.Damage(damage);
+        }
+
         public void Idle(GameTime gameTime)
         {
+            atk_timer = 0;
+
             // retract
             if (extended && pos != base_pos)
             {
@@ -2938,11 +2983,22 @@ namespace PERSIST
 
         public void Attack(GameTime gameTime, Vector2 target)
         {
+            if (atk_timer == 0)
+            {
+                windup = target - pos;
+                windup.Normalize();
+                windup *= -16;
+                windup += pos;
+            }
+
             atk_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             extended = true;
 
-            SmoothMove(gameTime, target, 17);
+            if (atk_timer < famine.idle_threshold * 0.1f)
+                SmoothMove(gameTime, windup, 17);
+            else
+                SmoothMove(gameTime, target, 17);
         }
 
         public void SmoothMove(GameTime gameTime, Vector2 target, float delta)

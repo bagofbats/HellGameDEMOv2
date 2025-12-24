@@ -295,6 +295,8 @@ namespace PERSIST
         // boss flags
         slime_dead,
         slime_started,
+        lukas_started,
+        lukas_defeated,
         kanna_started,
         kanna_defeated,
         mushroom_started,
@@ -330,18 +332,20 @@ namespace PERSIST
             flag_map = new Dictionary<FLAGS, bool>()
             {
                 // player flags
-                {FLAGS.knife                , false },
-                {FLAGS.ranged               , false },
-                {FLAGS.mask                 , false },
-                {FLAGS.dash                 , false },
+                {FLAGS.knife                , true },
+                {FLAGS.ranged               , true },
+                {FLAGS.mask                 , true },
+                {FLAGS.dash                 , true },
 
                 // mechanic flags
-                {FLAGS.jump_blocks          , false },
-                {FLAGS.locks                , false },
+                {FLAGS.jump_blocks          , true },
+                {FLAGS.locks                , true },
 
                 // boss flags
                 {FLAGS.slime_started        , false },
                 {FLAGS.slime_dead           , false },
+                {FLAGS.lukas_started        , false },
+                {FLAGS.lukas_defeated       , false },
                 {FLAGS.kanna_started        , false },
                 {FLAGS.kanna_defeated       , false },
                 {FLAGS.mushroom_started     , false },

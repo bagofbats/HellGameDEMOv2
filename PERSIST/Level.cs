@@ -163,6 +163,12 @@ namespace PERSIST
                 HandleCutscene("", gameTime);
             }
 
+            // actions to still be taken during dialogue sequences
+            if (dialogue)
+            {
+                DialogueActions(gameTime);
+            }
+
 
             for (int i = 0; i < checkpoints.Count(); i++)
                 checkpoints[i].DontAnimate(gameTime);
@@ -1022,6 +1028,11 @@ namespace PERSIST
         }
 
         public virtual void JumpAction()
+        {
+            // nothing
+        }
+
+        public virtual void DialogueActions(GameTime gameTime)
         {
             // nothing
         }
