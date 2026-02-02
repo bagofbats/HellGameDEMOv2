@@ -51,6 +51,29 @@ namespace PERSIST
             // if it is not overwritten, it is an empty function.
         }
 
+        public virtual Vector2 GetPlayerPos()
+        {
+            return new Vector2(0, 0);
+        }
+
+        // generic methods
+        public void SmoothMove(GameTime gameTime, Vector2 target, float delta)
+        {
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            float x_dif = target.X - pos.X;
+            float y_dif = target.Y - pos.Y;
+
+            pos.X += x_dif / (delta / frame_factor);
+            pos.Y += y_dif / (delta / frame_factor);
+
+            if (Math.Abs(x_dif) < 2)
+                pos.X = target.X;
+
+            if (Math.Abs(y_dif) < 2)
+                pos.Y = target.Y;
+        }
+
         protected Level root;
         public Room room { get; set; } = null;
         protected Vector2 pos;
@@ -1304,7 +1327,7 @@ namespace PERSIST
             root.RemoveEnemy(proj);
         }
 
-        public Vector2 GetPlayerPos()
+        public override Vector2 GetPlayerPos()
         {
             return player.GetPos();
         }
@@ -1505,6 +1528,14 @@ namespace PERSIST
                 if (dir)
                     initial_mov = new Vector2(1, 1);
                 move = Vector2.Normalize(initial_mov) * speed * -1.1f;
+            }
+
+            if (type == "spew")
+            {
+                diff = player_pos - pos + new Vector2(16, 8);
+                diff.Normalize();
+
+                move = diff * 5;
             }
                 
                 
@@ -2802,6 +2833,11 @@ namespace PERSIST
         private float hp;
         private int hp_max = 50;
 
+        private int shooter_head = 2;
+        private int slowest_head = 0;
+
+        private Random rd = new Random();
+
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
 
@@ -2814,7 +2850,22 @@ namespace PERSIST
             this.player = player;
             this.root = root;
 
-            float[] timer_init = { 0, atk_threshold * 0.33f, atk_threshold * 0.66f };
+            room = root.RealGetRoom(pos);
+
+            List<float> timer_vals = new List<float>{ 0, atk_threshold * 0.33f, atk_threshold * 0.66f };
+            float[] timer_init = { 0, 0, 0 };
+
+            // randomize head atk timers
+
+            int idex = rd.Next(3);
+            timer_init[0] = timer_vals[idex];
+            timer_vals.Remove(timer_vals[idex]);
+
+            idex = rd.Next(2);
+            timer_init[1] = timer_vals[idex];
+            timer_vals.Remove(timer_vals[idex]);
+
+            timer_init[2] = timer_vals[0];
 
             for (int i = 0; i < num_heads; i++)
             {
@@ -2824,6 +2875,10 @@ namespace PERSIST
                 root.AddEnemy(heads[i]);
 
                 head_timer[i] = timer_init[i];
+
+                // pull out index of slowest head
+                if (timer_init[i] == 0)
+                    slowest_head = i;
             }
 
             hp = hp_max;
@@ -2847,16 +2902,23 @@ namespace PERSIST
                 return;
 
             for (int i = 0; i < num_heads; i++)
-                UpdateHead(gameTime, heads[i], i);
+                UpdateHead(gameTime, heads[i], i, i==slowest_head);
         }
 
-        public void UpdateHead(GameTime gameTime, Famine_Head head, int i)
+        public void UpdateHead(GameTime gameTime, Famine_Head head, int i, bool slowest)
         {
             head_timer[i] += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (head_attacking[i])
             {
-                head.Attack(gameTime, head_target[i]);
+                if (i == shooter_head && i != 2)
+                {
+                    head.Shoot(gameTime, new Vector2(-24, -24));
+                }
+                else
+                {
+                    head.Attack(gameTime, head_target[i]);
+                }
             }
             else
             {
@@ -2874,6 +2936,13 @@ namespace PERSIST
             {
                 head_attacking[i] = false;
                 head_timer[i] = 0f;
+
+                if (i == slowest_head)
+                {
+                    shooter_head++;
+                    if (shooter_head == 3)
+                        shooter_head = 0;
+                }
             }
         }
 
@@ -2917,6 +2986,7 @@ namespace PERSIST
         private float vsp = 0f;
         private float hsp = 0f;
         private bool extended = false;
+        private bool fired = false;
 
         private float idle_timer = 0f;
         private float atk_timer = 0f;
@@ -2970,6 +3040,7 @@ namespace PERSIST
             }
 
             extended = false;
+            fired = false;
 
             // circle spin
             idle_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -3001,21 +3072,33 @@ namespace PERSIST
                 SmoothMove(gameTime, target, 17);
         }
 
-        public void SmoothMove(GameTime gameTime, Vector2 target, float delta)
+        public void Shoot(GameTime gameTime, Vector2 oset)
         {
-            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            extended = true;
 
-            float x_dif = target.X - pos.X;
-            float y_dif = target.Y - pos.Y;
+            SmoothMove(gameTime, base_pos + oset, 17);
 
-            pos.X += x_dif / (delta / frame_factor);
-            pos.Y += y_dif / (delta / frame_factor);
+            atk_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (Math.Abs(x_dif) < 2)
-                pos.X = target.X;
+            if (atk_timer > 0.5f * famine.idle_threshold && !fired)
+            {
+                fired = true;
+                atk_timer = 0f;
+                AddProjectile(pos.X, pos.Y, "spew", famine.room.bounds, false);
+            }
+            else if (atk_timer > 0.1f * famine.idle_threshold && fired)
+            {
+                fired = false;
+                atk_timer = 0f;
+                AddProjectile(pos.X, pos.Y, "spew", famine.room.bounds, false);
+            }
+        }
 
-            if (Math.Abs(y_dif) < 2)
-                pos.Y = target.Y;
+        public void AddProjectile(float x, float y, string type, Rectangle room, bool dir)
+        {
+            var temp = new Projectile(new Vector2(x, y), type, this, root, room, dir);
+            temp.LoadAssets(sprite);
+            root.AddEnemy(temp);
         }
 
         public Vector2 calc_diff()
@@ -3258,6 +3341,130 @@ namespace PERSIST
         public override bool CheckCollision(Rectangle input)
         {
             return input.Intersects(HitBox);
+        }
+    }
+
+    public class Projectile : Enemy
+    {
+        private Texture2D sprite;
+        private string type;
+        private Enemy boss;
+
+        private Rectangle frame = new Rectangle(212, 80, 12, 12);
+        private float speed = 2f;
+        private Vector2 move;
+        private Vector2 diff;
+        private Rectangle room_bounds;
+
+        private bool flash = true;
+        private float flash_timer = 0f;
+
+        private bool backwards = true;
+        private bool dir;
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 12, 12); } }
+
+        public Projectile(Vector2 pos, string type, Enemy boss, Level root, Rectangle room_bounds, bool dir)
+        {
+            pogoable = false;
+            destroy_projectile = false;
+
+            this.pos = pos;
+            this.type = type;
+            this.root = root;
+            this.boss = boss;
+            this.room_bounds = room_bounds;
+            this.dir = dir;
+
+            Vector2 player_pos = boss.GetPlayerPos();
+            diff = player_pos - pos + new Vector2(16, 8);
+            diff = Vector2.Normalize(diff);
+
+            if (type == "aim")
+            {
+                Vector2 initial_mov = new Vector2(-1, 1);
+                if (dir)
+                    initial_mov = new Vector2(1, 1);
+                move = Vector2.Normalize(initial_mov) * speed * -1.1f;
+            }
+
+            if (type == "spew")
+            {
+                diff = player_pos - pos + new Vector2(16, 8);
+                diff.Normalize();
+
+                move = diff * 5;
+                move.Y *= -1;
+            }
+
+
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (flash)
+                spriteBatch.Draw(root.black, HitBox, Color.White);
+            else
+                spriteBatch.Draw(sprite, HitBox, frame, Color.White);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (!HitBox.Intersects(room_bounds))
+                root.RemoveEnemy(this);
+
+            pos += move;
+
+            if (type == "aim" && move.Length() < 5)
+            {
+                if (move.Length() < 0.05f)
+                {
+                    backwards = false;
+                    Vector2 player_pos = boss.GetPlayerPos();
+                    diff = player_pos - pos + new Vector2(16, 8);
+                    diff = Vector2.Normalize(diff);
+                }
+
+                if (backwards)
+                {
+                    Vector2 initial_mov = new Vector2(-1, 1);
+                    if (dir)
+                        initial_mov = new Vector2(1, 1);
+                    move += Vector2.Normalize(initial_mov) * 0.08f;
+                }
+
+
+                else
+                    move += diff * 0.08f;
+
+            }
+
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (flash_timer > 0.08f)
+                    flash = false;
+            }
+        }
+
+        // obligatory
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
         }
     }
 
