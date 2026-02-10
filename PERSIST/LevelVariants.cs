@@ -796,6 +796,7 @@ namespace PERSIST
         private Texture2D spr_kanna;
         private Texture2D spr_lukas;
         private Texture2D spr_guys;
+        private Texture2D spr_famine;
 
         private List<JumpSwitch> switches = new List<JumpSwitch>();
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
@@ -1705,6 +1706,7 @@ namespace PERSIST
             spr_kanna = root.Content.Load<Texture2D>("sprites/spr_kanna");
             spr_lukas = root.Content.Load<Texture2D>("sprites/spr_lukas");
             spr_guys = root.Content.Load<Texture2D>("sprites/spr_guys");
+            spr_famine = root.Content.Load<Texture2D>("sprites/spr_famine");
 
             asset_map.Add(typeof(Walker), spr_mushroom);
             asset_map.Add(typeof(Trampoline), spr_mushroom);
@@ -1716,8 +1718,8 @@ namespace PERSIST
             asset_map.Add(typeof(Mushroom_Hand), spr_mushroom);
             asset_map.Add(typeof(Lukas_Cutscene), spr_lukas);
             asset_map.Add(typeof(Kanna_Cutscene), spr_kanna);
-            asset_map.Add(typeof(Famine), spr_lukas);
-            asset_map.Add(typeof(Famine_Head), spr_lukas);
+            asset_map.Add(typeof(Famine), spr_famine);
+            asset_map.Add(typeof(Famine_Head), spr_famine);
             asset_map.Add(typeof(SmallPlush), tst_styx);
 
             asset_map.Add(typeof(ShadePickup), tst_styx);

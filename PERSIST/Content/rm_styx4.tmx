@@ -149,7 +149,7 @@
   <object id="5" name="player" x="104" y="88">
    <point/>
   </object>
-  <object id="6" name="famine" x="240" y="80">
+  <object id="6" name="famine" x="240" y="72">
    <point/>
   </object>
   <object id="7" name="oneway" x="72" y="200" width="64" height="8"/>

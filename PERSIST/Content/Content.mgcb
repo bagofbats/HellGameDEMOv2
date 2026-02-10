@@ -169,6 +169,18 @@
 /processorParam:TextureFormat=Color
 /build:sprites/spr_doorwipe.png
 
+#begin sprites/spr_famine.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/spr_famine.png
+
 #begin sprites/spr_guys.png
 /importer:TextureImporter
 /processor:TextureProcessor

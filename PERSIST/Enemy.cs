@@ -53,7 +53,10 @@ namespace PERSIST
 
         public virtual Vector2 GetPlayerPos()
         {
-            return new Vector2(0, 0);
+            if (player == null)
+                throw new System.NullReferenceException("enemy needs a player ref before calling GetPlayerPos()");
+
+            return player.GetPos();
         }
 
         // generic methods
@@ -75,6 +78,7 @@ namespace PERSIST
         }
 
         protected Level root;
+        protected Player player = null;
         public Room room { get; set; } = null;
         protected Vector2 pos;
         public Vector2 Pos { get => pos; }
@@ -320,7 +324,6 @@ namespace PERSIST
         private Rectangle bounds;
         public bool two = true;
         private Rectangle eye = new Rectangle(0, 0, 3, 3);
-        private Player player;
 
         private Color drawColor = Color.Red;
         private Color pupilColor = Color.DarkRed;
@@ -781,7 +784,6 @@ namespace PERSIST
         private int hdir = 1;
         private float hspeed = 1f;
         public bool sleep = true;
-        private Player player;
         private bool wakeup_ready = false;
         private Rectangle wakeup_rectangle = new Rectangle(880, 960, 24, 32);
         new private TutorialLevel root;
@@ -1108,7 +1110,6 @@ namespace PERSIST
     {
         private Texture2D sprite;
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
-        private Player player;
         private float hp = 17;
         private int max_hp = 17;
         new private TutorialLevel root;
@@ -1519,8 +1520,6 @@ namespace PERSIST
             this.dir = dir;
 
             Vector2 player_pos = boss.GetPlayerPos();
-            diff = player_pos - pos + new Vector2(16, 8);
-            diff = Vector2.Normalize(diff);
 
             if (type == "aim")
             {
@@ -1532,7 +1531,7 @@ namespace PERSIST
 
             if (type == "spew")
             {
-                diff = player_pos - pos + new Vector2(16, 8);
+                diff = player_pos - pos + new Vector2(-32, -32);
                 diff.Normalize();
 
                 move = diff * 5;
@@ -1570,7 +1569,7 @@ namespace PERSIST
                 {
                     backwards = false;
                     Vector2 player_pos = boss.GetPlayerPos();
-                    diff = player_pos - pos + new Vector2(16, 8);
+                    diff = player_pos - pos + new Vector2(-32, -32);
                     diff = Vector2.Normalize(diff);
                 }
                     
@@ -1614,7 +1613,6 @@ namespace PERSIST
     // styx
     public class Kanna_Boss : Enemy
     {
-        private Player player;
         private float hp = 24;
         private int max_hp = 24;
         new private StyxLevel root;
@@ -2203,7 +2201,6 @@ namespace PERSIST
 
     public class Mushroom_Boss : Enemy
     {
-        private Player player;
         private float hp = 11;
         private int max_hp = 11;
         new private StyxLevel root;
@@ -2604,7 +2601,6 @@ namespace PERSIST
 
     public class Mushroom_Body : Enemy
     {
-        private Player player;
         new private StyxLevel root;
         private Texture2D sprite;
 
@@ -2678,7 +2674,6 @@ namespace PERSIST
 
     public class Mushroom_Hand : Enemy
     {
-        private Player player;
         new private StyxLevel root;
         private Texture2D sprite;
 
@@ -2813,7 +2808,6 @@ namespace PERSIST
 
     public class Famine : Enemy
     {
-        private Player player;
         private Texture2D sprite;
 
         private int h_oset = 3;
@@ -2870,7 +2864,7 @@ namespace PERSIST
             for (int i = 0; i < num_heads; i++)
             {
                 // head init pos staggered
-                Vector2 oset = new Vector2(((i % 2) * 8) + (i / 2) * -12, i * 32);
+                Vector2 oset = new Vector2(((i % 2) * 8) + (i / 2) * -12, i * 40);
                 heads[i] = new Famine_Head(pos + oset, player, root, this);
                 root.AddEnemy(heads[i]);
 
@@ -2948,7 +2942,8 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            // nothing (yet)
+            for (int i = 0; i < num_heads; i++)
+                heads[i].Draw(spriteBatch);
         }
 
 
@@ -2977,12 +2972,11 @@ namespace PERSIST
 
     public class Famine_Head : Enemy
     {
-        private Player player;
         private Texture2D sprite;
         private Famine famine;
 
-        private int h_oset = 3;
-        private int v_oset = 3;
+        private int h_oset = 6;
+        private int v_oset = 8;
         private float vsp = 0f;
         private float hsp = 0f;
         private bool extended = false;
@@ -2991,14 +2985,16 @@ namespace PERSIST
         private float idle_timer = 0f;
         private float atk_timer = 0f;
 
+        private Rectangle frame = new Rectangle(0, 0, 32, 32);
+
         private Vector2 base_pos;
         private Vector2 windup;
 
         public Rectangle PositionRectangle
-        { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
+        { get { return new Rectangle((int)pos.X, (int)pos.Y - v_oset, 32, 32); } }
 
         public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
 
         public Famine_Head(Vector2 pos, Player player, StyxLevel root, Famine famine)
         {
@@ -3029,6 +3025,11 @@ namespace PERSIST
         {
             atk_timer = 0;
 
+            if ((pos - base_pos).Length() > 32)
+                frame.Y = 96;
+            else
+                frame.Y = 0;
+
             // retract
             if (extended && pos != base_pos)
             {
@@ -3041,6 +3042,7 @@ namespace PERSIST
 
             extended = false;
             fired = false;
+            hurtful = false;
 
             // circle spin
             idle_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -3067,9 +3069,26 @@ namespace PERSIST
             extended = true;
 
             if (atk_timer < famine.idle_threshold * 0.1f)
+            {
                 SmoothMove(gameTime, windup, 17);
+                frame.Y = 96;
+            }
+                
             else
-                SmoothMove(gameTime, target, 17);
+            {
+                SmoothMove(gameTime, target, 15);
+                //hurtful = pos != target;
+
+                hurtful = false;
+
+                frame.Y = 32;
+
+                if ((pos - target).Length() < 16)
+                {
+                    frame.Y = 64;
+                }
+            }
+                
         }
 
         public void Shoot(GameTime gameTime, Vector2 oset)
@@ -3079,6 +3098,8 @@ namespace PERSIST
             SmoothMove(gameTime, base_pos + oset, 17);
 
             atk_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            frame.Y = 32;
 
             if (atk_timer > 0.5f * famine.idle_threshold && !fired)
             {
@@ -3096,7 +3117,7 @@ namespace PERSIST
 
         public void AddProjectile(float x, float y, string type, Rectangle room, bool dir)
         {
-            var temp = new Projectile(new Vector2(x, y), type, this, root, room, dir);
+            var temp = new Projectile(new Vector2(x, y), type, this, root, room, dir, new Rectangle(240, 0, 16, 16));
             temp.LoadAssets(sprite);
             root.AddEnemy(temp);
         }
@@ -3108,7 +3129,7 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            // nothing (yet)
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
         }
 
 
@@ -3350,7 +3371,7 @@ namespace PERSIST
         private string type;
         private Enemy boss;
 
-        private Rectangle frame = new Rectangle(212, 80, 12, 12);
+        private Rectangle frame;
         private float speed = 2f;
         private Vector2 move;
         private Vector2 diff;
@@ -3365,10 +3386,12 @@ namespace PERSIST
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 12, 12); } }
 
-        public Projectile(Vector2 pos, string type, Enemy boss, Level root, Rectangle room_bounds, bool dir)
+        public Projectile(Vector2 pos, string type, Enemy boss, Level root, Rectangle room_bounds, bool dir, Rectangle frame)
         {
             pogoable = false;
             destroy_projectile = false;
+
+            hurtful = false;
 
             this.pos = pos;
             this.type = type;
@@ -3376,10 +3399,9 @@ namespace PERSIST
             this.boss = boss;
             this.room_bounds = room_bounds;
             this.dir = dir;
+            this.frame = frame;
 
             Vector2 player_pos = boss.GetPlayerPos();
-            diff = player_pos - pos + new Vector2(16, 8);
-            diff = Vector2.Normalize(diff);
 
             if (type == "aim")
             {
@@ -3391,11 +3413,10 @@ namespace PERSIST
 
             if (type == "spew")
             {
-                diff = player_pos - pos + new Vector2(16, 8);
+                diff = player_pos - pos + new Vector2(16, 16);
                 diff.Normalize();
 
                 move = diff * 5;
-                move.Y *= -1;
             }
 
 
@@ -3427,7 +3448,7 @@ namespace PERSIST
                 {
                     backwards = false;
                     Vector2 player_pos = boss.GetPlayerPos();
-                    diff = player_pos - pos + new Vector2(16, 8);
+                    diff = player_pos - pos + new Vector2(-32, -32);
                     diff = Vector2.Normalize(diff);
                 }
 
@@ -3710,7 +3731,6 @@ namespace PERSIST
         new private StyxLevel root;
         private Texture2D sprite;
         private String type;
-        private Player player;
         DialogueStruct[] diastruct;
 
         private bool triggered = false;
