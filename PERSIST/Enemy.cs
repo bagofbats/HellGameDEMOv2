@@ -1126,10 +1126,16 @@ namespace PERSIST
         private bool teleported = true;
         private bool hurt = false;
         private float hurt_timer = 0f;
+        private float hurt_threshhold = 2.7f;
+        private float hurt_threshhold_default = 2.7f;
+        private float idle_threshhold = 2.4f;
+        private float atk_threshhold = 3.46f;
+        private float atk_interval = 0.94f;
         public bool sleep
         { get; set; } = true;
         private Rectangle wakeup_rectangle = new Rectangle(2400, 368, 32, 64);
         private bool wakeup_ready = false;
+        private bool hit_while_down = false;
 
         // animation fields
         private float timer = 0f;
@@ -1139,7 +1145,6 @@ namespace PERSIST
         private bool flash = false;
         private float flash_timer = 0f;
         private bool teleporting = false;
-        private float teleport_threshhold = 2.2f;
         private bool teleport_flash = false;
         private float teleport_flash_timer = 0f;
 
@@ -1242,7 +1247,7 @@ namespace PERSIST
 
             float vsp_shift_down = 0f;
 
-            if (hurt && hurt_timer < teleport_threshhold)
+            if (hurt && hurt_timer < hurt_threshhold - 0.5f)
                 vsp_shift_down = Math.Max(0, (y_two - pos.Y) / 10);
 
             pos.Y += vsp + vsp_shift_down;
@@ -1250,8 +1255,8 @@ namespace PERSIST
 
 
             // think this isn't needed????
-            for (int i = projectiles.Count - 1; i >= 0; i--)
-                projectiles[i].Update(gameTime);
+            //for (int i = projectiles.Count - 1; i >= 0; i--)
+            //    projectiles[i].Update(gameTime);
         }
 
         public void Sleep(GameTime gameTime)
@@ -1298,10 +1303,18 @@ namespace PERSIST
 
         public override void Damage(float damage)
         {
+            if (hurt && !hit_while_down)
+            {
+                hit_while_down = true;
+                hurt_timer = 0f;
+                hurt_threshhold = hurt_threshhold_default;
+            }
+
             if (!hurt)
             {
                 hurt = true;
                 timer = 0f;
+                hurt_threshhold = hurt_threshhold_default + 8f;
             }
 
             flash = true;
@@ -1337,14 +1350,16 @@ namespace PERSIST
         {
             atk_timer += elapsed_time;
 
-            if ((atk_timer > 2 && !attacking) || (atk_timer > 2.8 && attacking))
+            hit_while_down = false;
+
+            if ((atk_timer > idle_threshhold && !attacking) || (atk_timer > atk_threshhold && attacking))
             {
                 attacking = !attacking;
                 atk_timer = 0;
                 atk_counter = 0;
             }
 
-            if (!attacking && atk_timer > 1.9 && !teleported)
+            if (!attacking && atk_timer > idle_threshhold - 0.1f && !teleported)
                 Teleport();
 
             if (attacking)
@@ -1392,7 +1407,7 @@ namespace PERSIST
             //                 not to be confused with teleportED which checks if Lukas already teleported in UpdateNormal
             //                 so he doesn't teleport every frame
 
-            if (hurt_timer > 1.7f)
+            if (hurt_timer > hurt_threshhold - 1)
             {
                 if (!teleporting)
                     timer = 0f;
@@ -1401,11 +1416,11 @@ namespace PERSIST
                 frame.Y = 288;
                 frame.X = 32 * ((int)(timer * 15) % 8);
 
-                if (hurt_timer > teleport_threshhold && frame.X == 0)
+                if (hurt_timer > hurt_threshhold - 0.5f && frame.X == 0)
                     TeleportOut();
             }
 
-            if (hurt_timer > 2.7f)
+            if (hurt_timer > hurt_threshhold)
             {
                 Teleport();
                 hurt_timer = 0;
@@ -1437,7 +1452,7 @@ namespace PERSIST
                     if (left)
                         offset = 22 - 26;
                     AddProjectile(pos.X + offset, pos.Y - 0, "aim", room.bounds, left);
-                    atk_counter += 0.8f;
+                    atk_counter += atk_interval;
                 }
                     
             }
@@ -1561,15 +1576,15 @@ namespace PERSIST
             if (!HitBox.Intersects(room_bounds))
                 boss.RemoveProjectile(this);
 
-            pos += move;
+            pos += move * 2;
 
             if (type == "aim" && move.Length() < 5)
             {
-                if (move.Length() < 0.05f)
+                if (move.Length() < 0.05f && backwards)
                 {
                     backwards = false;
                     Vector2 player_pos = boss.GetPlayerPos();
-                    diff = player_pos - pos + new Vector2(-32, -32);
+                    diff = player_pos - pos + new Vector2(16, 16);
                     diff = Vector2.Normalize(diff);
                 }
                     
@@ -1578,12 +1593,15 @@ namespace PERSIST
                     Vector2 initial_mov = new Vector2(-1, 1);
                     if (dir)
                         initial_mov = new Vector2(1, 1);
-                    move += Vector2.Normalize(initial_mov) * 0.08f;
+                    move += Vector2.Normalize(initial_mov) * 0.14f;
                 }
                     
 
                 else
-                    move += diff * 0.08f;
+                {
+                    move += diff * 0.15f;
+                }
+                    
                     
             }
 

@@ -71,7 +71,7 @@ namespace PERSIST
         private bool old_wallslide = false;
         private List<Attack> attacks = new List<Attack>();
         private float ranged_timer = 0f;
-        private float ranged_time = 0.36f;
+        private float ranged_time = 0.38f;
         private bool ranged_ready = false;
         private float pogo_height = 70f;
         private float pogo_target = 0f;
@@ -732,7 +732,7 @@ namespace PERSIST
                 ranged_ready = false;
                 thrown = true;
             }
-            else if (enter_released && ! attacking && !dialogue_recent)
+            else if (enter_pressed && ! attacking && !dialogue_recent)
             {
                 StartAttack();
                 ranged_timer = 0;
@@ -747,7 +747,7 @@ namespace PERSIST
 
         private void HandleAttacksNoRanged(GameTime gameTime)
         {
-            if (enter_pressed && !attacking)
+            if (enter_pressed && !attacking && !dialogue_recent)
             {
                 StartAttack();
             }

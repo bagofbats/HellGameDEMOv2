@@ -334,17 +334,17 @@ namespace PERSIST
                 // player flags
                 {FLAGS.knife                , true },
                 {FLAGS.ranged               , true },
-                {FLAGS.mask                 , true },
-                {FLAGS.dash                 , true },
+                {FLAGS.mask                 , false },
+                {FLAGS.dash                 , false },
 
                 // mechanic flags
-                {FLAGS.jump_blocks          , true },
-                {FLAGS.locks                , true },
+                {FLAGS.jump_blocks          , false },
+                {FLAGS.locks                , false },
 
                 // boss flags
                 {FLAGS.slime_started        , false },
                 {FLAGS.slime_dead           , false },
-                {FLAGS.lukas_started        , false },
+                {FLAGS.lukas_started        , true },
                 {FLAGS.lukas_defeated       , false },
                 {FLAGS.kanna_started        , false },
                 {FLAGS.kanna_defeated       , false },
