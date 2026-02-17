@@ -88,13 +88,6 @@ namespace PERSIST
         public bool destroy_projectile { get; protected set; } = true;
     }
 
-    public enum STATES
-    {
-        sleeping,
-        idle,
-        attacking,
-    }
-
     // regular enemies
     
     // tutorial
@@ -3176,8 +3169,8 @@ namespace PERSIST
 
     public class Alice_Boss : Enemy
     {
-        private float hp = 24;
-        private int max_hp = 24;
+        private float hp = 44;
+        private int max_hp = 44;
         new private StyxLevel root;
         private Texture2D sprite;
 
@@ -3198,6 +3191,13 @@ namespace PERSIST
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
+
+        private enum STATES
+        {
+            strike,
+            dive,
+            diagonal
+        }
 
         public Alice_Boss(Vector2 pos, Player player, StyxLevel root)
         {
@@ -3232,17 +3232,67 @@ namespace PERSIST
 
         private void ActualUpdate(GameTime gameTime)
         {
-            frame.X = 32;
+            root.GetBossHP(hp, max_hp);
+
+            CycleAttacks(gameTime);
+
+            HandleFlash(gameTime);
+        }
+
+        private void CycleAttacks(GameTime gameTime)
+        {
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            if (flash)
+            {
+                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.1f);
+            }
+        }
+
+        public override void Damage(float damage)
+        {
+            if (!root.prog_manager.GetFlag(FLAGS.alice_defeated))
+            {
+                hp -= damage;
+                flash = true;
+
+                /**
+                if (hp < 8)
+                {
+                    root.RemoveArrows();
+                    root.ResetBossHP();
+                    root.DefeatKanna(this, gt_copy);
+
+                    flash = false;
+                }
+                **/
+            }
         }
 
         public void Trigger()
         {
             triggered = true;
+        }
+
+        public void HandleFlash(GameTime gameTime)
+        {
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (flash_timer > CONSTANTS.flash_limit)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                }
+            }
         }
 
         public override void LoadAssets(Texture2D sprite)

@@ -1175,9 +1175,8 @@ namespace PERSIST
             new DialogueStruct("Most of these are text books written by someone named\n\"Doctor Arapacia\".\nSeems boring.", 'd', Color.White, 'l'),
             new DialogueStruct("On the second shelf is a book called \"Spott Killman III:\nthe Endless Masquerade\".", 'd', Color.White, 'l'),
             new DialogueStruct("Looks like a graphic novel.\nThere's a badass wolf man on the cover with big muscles.\nHe has grey fur with a patch of white over one eye.", 'd', Color.White, 'l'),
-            //new DialogueStruct("( Spot Killman was never really my thing, honestly.\n  I'm more of an Azure Files kind of guy. )", 'd', Color.DodgerBlue, 'p', false, "", 90, 0),
             new DialogueStruct("( How did this end up down here? )", 'd', Color.DodgerBlue, 'p', false, "", 135, 0),
-            new DialogueStruct("( More importantly, has Kanna read the Lavender\n  Sunrise series yet?\n  It's WAY better than Spott Killman . . . )", 'd', Color.DodgerBlue, 'p', true, "", 135, 90),
+            new DialogueStruct("( More importantly, has Kanna read the Azure\n  Files series yet?\n  It's WAY better than Spott Killman . . . )", 'd', Color.DodgerBlue, 'p', true, "", 135, 90),
 
             // index 8
             new DialogueStruct("On the top shelf is a singular plush toy of a red demon.", 'd', Color.White, 'c'),
@@ -3203,20 +3202,6 @@ namespace PERSIST
             }
         }
 
-        public void FightAlice(Alice_Boss alice, GameTime gameTime)
-        {
-            if (!prog_manager.GetFlag(FLAGS.alice_started))
-            {
-                HandleCutscene("fightalice|empty|empty", gameTime, true);
-                alice_boss = alice;
-            }
-            else
-            {
-                HandleCutscene("fightalice_short|empty", gameTime, true);
-                alice_boss = alice;
-            }
-        }
-
         public void DefeatKanna(Kanna_Boss kanna, GameTime gameTime)
         {
             kanna_boss = kanna;
@@ -3274,6 +3259,20 @@ namespace PERSIST
             prog_manager.SetFlag(FLAGS.mushroom_defeated);
 
             player.SetPogoed(0, false);
+        }
+
+        public void FightAlice(Alice_Boss alice, GameTime gameTime)
+        {
+            if (!prog_manager.GetFlag(FLAGS.alice_started))
+            {
+                HandleCutscene("fightalice|empty|empty", gameTime, true);
+                alice_boss = alice;
+            }
+            else
+            {
+                HandleCutscene("fightalice_short|empty", gameTime, true);
+                alice_boss = alice;
+            }
         }
 
         // end boss functions
