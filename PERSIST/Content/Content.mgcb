@@ -121,6 +121,18 @@
 /processor:BitmapFontProcessor
 /build:fonts/pixellocale_bmp.fnt
 
+#begin sprites/spr_alice.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:sprites/spr_alice.png
+
 #begin sprites/spr_atk_ranged.png
 /importer:TextureImporter
 /processor:TextureProcessor

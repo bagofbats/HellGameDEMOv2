@@ -303,6 +303,8 @@ namespace PERSIST
         mushroom_defeated,
         famine_started,
         famine_defeated,
+        alice_started,
+        alice_defeated,
 
         // story flags
         hideout_entered,
@@ -334,17 +336,17 @@ namespace PERSIST
                 // player flags
                 {FLAGS.knife                , true },
                 {FLAGS.ranged               , true },
-                {FLAGS.mask                 , false },
-                {FLAGS.dash                 , false },
+                {FLAGS.mask                 , true },
+                {FLAGS.dash                 , true },
 
                 // mechanic flags
-                {FLAGS.jump_blocks          , false },
-                {FLAGS.locks                , false },
+                {FLAGS.jump_blocks          , true },
+                {FLAGS.locks                , true },
 
                 // boss flags
                 {FLAGS.slime_started        , false },
                 {FLAGS.slime_dead           , false },
-                {FLAGS.lukas_started        , true },
+                {FLAGS.lukas_started        , false },
                 {FLAGS.lukas_defeated       , false },
                 {FLAGS.kanna_started        , false },
                 {FLAGS.kanna_defeated       , false },
@@ -352,6 +354,8 @@ namespace PERSIST
                 {FLAGS.mushroom_defeated    , false },
                 {FLAGS.famine_started       , false },
                 {FLAGS.famine_defeated      , false },
+                {FLAGS.alice_started        , false },
+                {FLAGS.alice_defeated       , false },
 
                 // story flags
                 {FLAGS.hideout_entered      , false },
@@ -365,7 +369,7 @@ namespace PERSIST
 
                 // secret flags
                 {FLAGS.journal_secret       , false },
-                {FLAGS.charons_blessing     , false },
+                {FLAGS.charons_blessing     , true },
                 {FLAGS.charon_door          , false },
                 {FLAGS.kanna_plushie        , false },
             };

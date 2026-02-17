@@ -88,6 +88,13 @@ namespace PERSIST
         public bool destroy_projectile { get; protected set; } = true;
     }
 
+    public enum STATES
+    {
+        sleeping,
+        idle,
+        attacking,
+    }
+
     // regular enemies
     
     // tutorial
@@ -3164,6 +3171,70 @@ namespace PERSIST
         public override Rectangle GetHitBox(Rectangle input)
         {
             return HitBox;
+        }
+    }
+
+    public class Alice_Boss : Enemy
+    {
+        private float hp = 24;
+        private int max_hp = 24;
+        new private StyxLevel root;
+        private Texture2D sprite;
+
+        private bool flash = false;
+        private float flash_timer = 0f;
+        private float flash_limit = 0.1f;
+        private int state = 1;
+        private float state_timer = 0f;
+
+        private int h_oset = 11;
+        private int v_oset = 14;
+
+        private Rectangle frame = new Rectangle(0, 0, 32, 32);
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
+
+        public Alice_Boss(Vector2 pos, Player player, StyxLevel root)
+        {
+            this.pos = pos;
+            this.player = player;
+            this.root = root;
+
+            hurtful = false;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
         }
     }
 

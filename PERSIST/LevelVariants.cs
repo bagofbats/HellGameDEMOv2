@@ -797,6 +797,7 @@ namespace PERSIST
         private Texture2D spr_lukas;
         private Texture2D spr_guys;
         private Texture2D spr_famine;
+        private Texture2D spr_alice;
 
         private List<JumpSwitch> switches = new List<JumpSwitch>();
         private List<Rectangle> switch_blocks_one = new List<Rectangle>();
@@ -1458,6 +1459,14 @@ namespace PERSIST
                                 enemy_types.Add("famine");
                             }
 
+                            if (l.objects[i].name == "alice" && !prog_manager.GetFlag(FLAGS.alice_defeated))
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Alice_Boss(temp, player, this));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("alice");
+                            }
+
                             if (l.objects[i].name == "kanna_trigger")
                                 kanna_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
                                                                 (int)l.objects[i].y + t.location.Y,
@@ -1707,6 +1716,7 @@ namespace PERSIST
             spr_lukas = root.Content.Load<Texture2D>("sprites/spr_lukas");
             spr_guys = root.Content.Load<Texture2D>("sprites/spr_guys");
             spr_famine = root.Content.Load<Texture2D>("sprites/spr_famine");
+            spr_alice = root.Content.Load<Texture2D>("sprites/spr_alice");
 
             asset_map.Add(typeof(Walker), spr_mushroom);
             asset_map.Add(typeof(Trampoline), spr_mushroom);
@@ -1721,6 +1731,7 @@ namespace PERSIST
             asset_map.Add(typeof(Famine), spr_famine);
             asset_map.Add(typeof(Famine_Head), spr_famine);
             asset_map.Add(typeof(SmallPlush), tst_styx);
+            asset_map.Add(typeof(Alice_Boss), spr_alice);
 
             asset_map.Add(typeof(ShadePickup), tst_styx);
             asset_map.Add(typeof(KeyPickup), tst_styx);
@@ -1940,6 +1951,9 @@ namespace PERSIST
 
                 if (enemy_types[i] == "famine" && !prog_manager.GetFlag(FLAGS.famine_defeated))
                     AddEnemy(new Famine(enemy_locations[i], player, this));
+
+                if (enemy_types[i] == "alice" && !prog_manager.GetFlag(FLAGS.alice_defeated))
+                    AddEnemy(new Alice_Boss(enemy_locations[i], player, this));
 
                 //if (enemy_types[i] == "trampoline")
                 //    AddEnemy(new Trampoline(enemy_locations[i], this));

@@ -51,7 +51,12 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(img, pos, frame, Color.White);
+            Color c = Color.White;
+
+            if (root.prog_manager.GetFlag(FLAGS.charons_blessing))
+                c = root.charon_atk_color;
+
+            spriteBatch.Draw(img, pos, frame, c);
         }
     }
 
