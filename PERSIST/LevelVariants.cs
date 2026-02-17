@@ -815,7 +815,7 @@ namespace PERSIST
         private Rectangle lock_block_frame = new Rectangle(224, 112, 16, 16);
         private Rectangle key_frame = new Rectangle(256, 120, 16, 8);
         private Rectangle charon_frame = new Rectangle(288, 184, 16, 40);
-        private String dialogue_exit_code = "";
+        private string dialogue_exit_code = "";
 
         private List<int> mouth_locs = new List<int>();
         private List<int> key_inits = new List<int>();
@@ -843,10 +843,18 @@ namespace PERSIST
         public CharonBlock charondoor
         { get; set; } = null;
 
+        public Rectangle alice_trigger
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
+        public Rectangle alice_zone
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
         private Kanna_Boss kanna_boss;
         private Lukas_Cutscene lukas_cutscene = null;
         private ShadePickup shade_pickup = null;
         private Kanna_Cutscene kanna_cutscene = null;
+
+        private Alice_Boss alice_boss;
 
         private float saved_camera_x = 0f;
         private float saved_camera_y = 0f;
@@ -1508,6 +1516,18 @@ namespace PERSIST
                                                                   (int)l.objects[i].y + t.location.Y,
                                                                   (int)l.objects[i].width,
                                                                   (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "alice_trigger")
+                                alice_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                              (int)l.objects[i].y + t.location.Y,
+                                                              (int)l.objects[i].width,
+                                                              (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "alice_zone")
+                                alice_zone = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                           (int)l.objects[i].y + t.location.Y,
+                                                           (int)l.objects[i].width,
+                                                           (int)l.objects[i].height);
 
                             if (l.objects[i].name == "key_pickup" && !prog_manager.GetFlag(FLAGS.locks))
                             {
@@ -2895,6 +2915,46 @@ namespace PERSIST
                     cutscene = false;
                 }
             }
+
+            if (cutscene_code[0] == "fightalice")
+            {
+                if (cutscene_timer > 0f)
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+                }
+
+                if (cutscene_timer > 0.8f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                    alice_boss.Trigger();
+                    alice_boss = null;
+
+                    prog_manager.SetFlag(FLAGS.alice_started);
+                }
+            }
+
+            if (cutscene_code[0] == "fightalice_short")
+            {
+                if (cutscene_timer > 0f)
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+                }
+
+                if (cutscene_timer > 0.8f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                    alice_boss.Trigger();
+                    alice_boss = null;
+                }
+            }
         }
 
 
@@ -3140,6 +3200,20 @@ namespace PERSIST
             {
                 HandleCutscene("fightkanna_short|empty", gameTime, true);
                 kanna_boss = kanna;
+            }
+        }
+
+        public void FightAlice(Alice_Boss alice, GameTime gameTime)
+        {
+            if (!prog_manager.GetFlag(FLAGS.alice_started))
+            {
+                HandleCutscene("fightalice|empty|empty", gameTime, true);
+                alice_boss = alice;
+            }
+            else
+            {
+                HandleCutscene("fightalice_short|empty", gameTime, true);
+                alice_boss = alice;
             }
         }
 

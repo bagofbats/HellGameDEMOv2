@@ -3181,9 +3181,10 @@ namespace PERSIST
         new private StyxLevel root;
         private Texture2D sprite;
 
+        private bool triggered = false;
+        private bool trigger_watch = false;
         private bool flash = false;
         private float flash_timer = 0f;
-        private float flash_limit = 0.1f;
         private int state = 1;
         private float state_timer = 0f;
 
@@ -3209,12 +3210,39 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            //throw new NotImplementedException();
+            if (triggered && !root.prog_manager.GetFlag(FLAGS.alice_defeated))
+            {
+                ActualUpdate(gameTime);
+
+                return;
+            }
+
+            else if (!root.prog_manager.GetFlag(FLAGS.alice_defeated))
+            {
+                if (player.HitBox.Intersects(root.alice_trigger))
+                    trigger_watch = true;
+
+                else if (player.HitBox.Y > root.alice_trigger.Y && trigger_watch)
+                    root.FightAlice(this, gameTime);
+
+                else
+                    trigger_watch = false;
+            }
+        }
+
+        private void ActualUpdate(GameTime gameTime)
+        {
+            frame.X = 32;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+        }
+
+        public void Trigger()
+        {
+            triggered = true;
         }
 
         public override void LoadAssets(Texture2D sprite)
