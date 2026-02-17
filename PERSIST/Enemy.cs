@@ -3178,11 +3178,15 @@ namespace PERSIST
         private bool trigger_watch = false;
         private bool flash = false;
         private float flash_timer = 0f;
-        private int state = 1;
+        private STATES state;
         private float state_timer = 0f;
+        private int num_states = 3;
 
         private int h_oset = 11;
         private int v_oset = 14;
+
+        private Random rd = new Random();
+        private int player_dir = 1;
 
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
 
@@ -3199,6 +3203,8 @@ namespace PERSIST
             diagonal
         }
 
+        private Dictionary<STATES, float> state_threshholds;
+
         public Alice_Boss(Vector2 pos, Player player, StyxLevel root)
         {
             this.pos = pos;
@@ -3206,6 +3212,15 @@ namespace PERSIST
             this.root = root;
 
             hurtful = false;
+
+            num_states = Enum.GetNames(typeof(STATES)).Length;
+
+            state_threshholds = new Dictionary<STATES, float>()
+            {
+                {STATES.strike,         0.86f },
+                {STATES.dive,           0.86f },
+                {STATES.diagonal,       0.86f }
+            };
         }
 
         public override void Update(GameTime gameTime)
@@ -3241,7 +3256,57 @@ namespace PERSIST
 
         private void CycleAttacks(GameTime gameTime)
         {
+            // player_dir
+            player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
 
+            if (player_dir == 0)
+                player_dir = 1;
+
+            if (state_timer > state_threshholds[state])
+            {
+                // change the state, save the player_dir, do attack specific setup
+                state_timer = 0f;
+
+                int next_state = rd.Next(num_states);
+
+                while ((STATES)next_state == state)
+                    next_state = rd.Next(num_states);
+
+                state = (STATES)next_state;
+
+                // player_dir
+                player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
+
+                if (player_dir == 0)
+                    player_dir = 1;
+
+
+                // atk specific setup
+            }
+
+            if (state == STATES.strike)
+                AtkStrike(gameTime);
+            else if (state == STATES.dive)
+                AtkDive(gameTime);
+            else if (state == STATES.diagonal)
+                AtkDiagonal(gameTime);
+
+            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        public void AtkStrike(GameTime gameTime)
+        {
+            frame.Y = 128;
+        }
+
+        public void AtkDive(GameTime gameTime)
+        {
+            frame.Y = 256;
+        }
+
+        public void AtkDiagonal(GameTime gameTime)
+        {
+            frame.Y = 64;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
