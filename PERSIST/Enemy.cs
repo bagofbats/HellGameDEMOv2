@@ -3177,16 +3177,23 @@ namespace PERSIST
         private bool triggered = false;
         private bool trigger_watch = false;
         private bool flash = false;
-        private float flash_timer = 0f;
+        private bool cooldown = false;
+        
         private STATES state;
-        private float state_timer = 0f;
-        private int num_states = 3;
+        private STATES old_state = STATES.diagonal;
+        private int num_states;
+
+        private float state_timer = 999f;
+        private float flash_timer = 0f;
+
+        private Random rd = new Random();
+        private int player_dir = 1;
+        private Vector2 starting_pos;
 
         private int h_oset = 11;
         private int v_oset = 14;
 
-        private Random rd = new Random();
-        private int player_dir = 1;
+        
 
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
 
@@ -3200,7 +3207,8 @@ namespace PERSIST
         {
             strike,
             dive,
-            diagonal
+            diagonal,
+            cooldown       // <--- this one HAS to be last in the order or else it breaks
         }
 
         private Dictionary<STATES, float> state_threshholds;
@@ -3211,15 +3219,18 @@ namespace PERSIST
             this.player = player;
             this.root = root;
 
+            starting_pos = pos;
+
             hurtful = false;
 
-            num_states = Enum.GetNames(typeof(STATES)).Length;
+            num_states = Enum.GetNames(typeof(STATES)).Length - 1;
 
             state_threshholds = new Dictionary<STATES, float>()
             {
                 {STATES.strike,         0.86f },
                 {STATES.dive,           0.86f },
-                {STATES.diagonal,       0.86f }
+                {STATES.diagonal,       0.86f },
+                {STATES.cooldown,       0.36f }
             };
         }
 
@@ -3264,24 +3275,34 @@ namespace PERSIST
 
             if (state_timer > state_threshholds[state])
             {
-                // change the state, save the player_dir, do attack specific setup
                 state_timer = 0f;
 
-                int next_state = rd.Next(num_states);
+                // special cooldown state for teleporting between attacks
+                cooldown = !cooldown;
 
-                while ((STATES)next_state == state)
-                    next_state = rd.Next(num_states);
+                if (cooldown)
+                    state = STATES.cooldown;
 
-                state = (STATES)next_state;
+                // change the state, save the player_dir, do attack specific setup
+                else
+                {
+                    int next_state = rd.Next(num_states);
 
-                // player_dir
-                player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
+                    while ((STATES)next_state == old_state)
+                        next_state = rd.Next(num_states);
 
-                if (player_dir == 0)
-                    player_dir = 1;
+                    state = (STATES)next_state;
+                    old_state = (STATES)next_state;
+
+                    // player_dir
+                    player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
+
+                    if (player_dir == 0)
+                        player_dir = 1;
 
 
-                // atk specific setup
+                    // atk specific setup
+                }
             }
 
             if (state == STATES.strike)
@@ -3290,23 +3311,33 @@ namespace PERSIST
                 AtkDive(gameTime);
             else if (state == STATES.diagonal)
                 AtkDiagonal(gameTime);
+            else if (state == STATES.cooldown)
+                Cooldown(gameTime);
 
             state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
-        public void AtkStrike(GameTime gameTime)
+        private void AtkStrike(GameTime gameTime)
         {
             frame.Y = 128;
+            pos.Y = starting_pos.Y;
         }
 
-        public void AtkDive(GameTime gameTime)
+        private void AtkDive(GameTime gameTime)
         {
             frame.Y = 256;
+            pos.Y = starting_pos.Y;
         }
 
-        public void AtkDiagonal(GameTime gameTime)
+        private void AtkDiagonal(GameTime gameTime)
         {
             frame.Y = 64;
+            pos.Y = starting_pos.Y;
+        }
+
+        private void Cooldown (GameTime gameTime)
+        {
+            pos.Y = starting_pos.Y + 128;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
