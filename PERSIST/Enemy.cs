@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac.Features.Metadata;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -3167,43 +3168,41 @@ namespace PERSIST
         }
     }
 
-    public class Alice_Boss : Enemy
+    public abstract class Alice_Abstract : Enemy
     {
-        private float hp = 44;
-        private int max_hp = 44;
-        new private StyxLevel root;
-        private Texture2D sprite;
+        protected float hp = 44;
+        protected int max_hp = 44;
+        new protected StyxLevel root;
+        protected Texture2D sprite;
 
-        private bool triggered = false;
-        private bool trigger_watch = false;
-        private bool flash = false;
-        private bool cooldown = false;
-        
-        private STATES state;
-        private STATES old_state = STATES.diagonal;
-        private int num_states;
+        protected bool triggered = false;
+        protected bool trigger_watch = false;
+        protected bool flash = false;
+        protected bool super_flash = false;
+        protected bool cooldown = false;
+        protected bool right = false;
+        protected bool second_alice = false;
+        protected bool over_middle = false;
 
-        private float state_timer = 999f;
-        private float flash_timer = 0f;
+        protected STATES state;
+        protected STATES old_state = STATES.diagonal;
+        protected int num_states;
 
-        private Random rd = new Random();
-        private int player_dir = 1;
-        private Vector2 starting_pos;
+        protected float state_timer = 999f;
+        protected float flash_timer = 0f;
+        protected float super_flash_timer = 0f;
+        protected float second_alice_threshhold = 0.9f;
 
-        private int h_oset = 11;
-        private int v_oset = 14;
+        protected Random rd = new Random();
+        protected int player_dir = 1;
+        protected Vector2 starting_pos;
+        protected Vector2 atk_target;
+        protected float vsp = 0f;
 
-        
+        protected int h_oset = 11;
+        protected int v_oset = 14;
 
-        private Rectangle frame = new Rectangle(0, 0, 32, 32);
-
-        public Rectangle PositionRectangle
-        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
-
-        public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
-
-        private enum STATES
+        protected enum STATES
         {
             strike,
             dive,
@@ -3211,15 +3210,16 @@ namespace PERSIST
             cooldown       // <--- this one HAS to be last in the order or else it breaks
         }
 
-        private Dictionary<STATES, float> state_threshholds;
+        protected Dictionary<STATES, float> state_threshholds;
 
-        public Alice_Boss(Vector2 pos, Player player, StyxLevel root)
+        public Alice_Abstract(Vector2 pos, Player player, StyxLevel root)
         {
             this.pos = pos;
             this.player = player;
             this.root = root;
 
             starting_pos = pos;
+            room = root.RealGetRoom(pos);
 
             hurtful = false;
 
@@ -3227,11 +3227,294 @@ namespace PERSIST
 
             state_threshholds = new Dictionary<STATES, float>()
             {
-                {STATES.strike,         0.86f },
-                {STATES.dive,           0.86f },
-                {STATES.diagonal,       0.86f },
-                {STATES.cooldown,       0.36f }
+                {STATES.strike,         1.06f },
+                {STATES.dive,           1.06f },
+                {STATES.diagonal,       1.86f },
+                {STATES.cooldown,       0.30f }
             };
+        }
+
+        protected Rectangle frame = new Rectangle(0, 0, 32, 32);
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
+
+        public Rectangle HitBox
+        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
+
+        protected void ActualUpdate(GameTime gameTime)
+        {
+            root.GetBossHP(hp, max_hp);
+
+            CycleAttacks(gameTime);
+
+            HandleFlash(gameTime);
+        }
+
+        protected void CycleAttacks(GameTime gameTime)
+        {
+            // player_dir
+            player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
+
+            if (player_dir == 0)
+                player_dir = 1;
+
+            if (state_timer > state_threshholds[state])
+            {
+                state_timer = 0f;
+
+                // special cooldown state for teleporting between attacks
+                cooldown = !cooldown;
+
+                if (cooldown)
+                    state = STATES.cooldown;
+
+                // change the state, save the player_dir, do attack specific setup
+                else
+                {
+                    int next_state = rd.Next(num_states);
+
+                    while ((STATES)next_state == old_state || (STATES)next_state == STATES.diagonal)
+                        next_state = rd.Next(num_states);
+
+                    state = (STATES)next_state;
+                    old_state = (STATES)next_state;
+
+                    // player_dir
+                    player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
+
+                    if (player_dir == 0)
+                        player_dir = 1;
+                }
+            }
+
+            if (state == STATES.strike)
+                AtkStrike(gameTime);
+            else if (state == STATES.dive)
+                AtkDive(gameTime);
+            else if (state == STATES.diagonal)
+                AtkDiagonal(gameTime);
+            else if (state == STATES.cooldown)
+                Cooldown(gameTime);
+
+            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (!second_alice && hp < max_hp * second_alice_threshhold && !cooldown)
+            {
+                // only spawn second alice in the middle of an attack
+                if (!over_middle && state_timer > state_threshholds[state] / 2.6f)
+                {
+                    var temp = new Spectral_Alice(starting_pos, player, root);
+                    root.AddEnemy(temp);
+                    temp.LoadAssets(sprite);
+                    second_alice = true;
+                }
+            }
+
+            over_middle = state_timer > state_threshholds[state] / 2;
+        }
+
+        protected void AtkStrike(GameTime gameTime)
+        {
+            int distance = 64;
+            int delta = 6;
+
+            float first_threshhold = 0.4f;
+            float flash_threshhold = CONSTANTS.flash_limit / 2;
+
+            // initial setup
+            if (state_timer == 0f)
+            {
+                Vector2 ppos = player.GetPos();
+
+                right = rd.Next(2) == 0;
+
+                if (right)
+                {
+                    // go right
+                    pos.X = ppos.X - distance;
+                    pos.Y = starting_pos.Y;
+
+                    atk_target.X = ppos.X + (distance / 1.6f);
+                    atk_target.Y = starting_pos.Y;
+                }
+                else
+                {
+                    // go left
+                    pos.X = ppos.X + distance;
+                    pos.Y = starting_pos.Y;
+
+                    atk_target.X = ppos.X - (distance / 1.6f);
+                    atk_target.Y = starting_pos.Y;
+                }
+
+            }
+
+            if (state_timer > first_threshhold)
+                SmoothMove(gameTime, atk_target, delta);
+
+            // animate
+            if (right)
+            {
+                if (state_timer <= first_threshhold)
+                    frame.Y = 128;
+                else if (state_timer > first_threshhold && Math.Abs(pos.X - atk_target.X) > 12)
+                    frame.Y = 192;
+                else
+                    frame.Y = 640;
+            }
+            else
+            {
+                if (state_timer <= first_threshhold)
+                    frame.Y = 512;
+                else if (state_timer > first_threshhold && Math.Abs(pos.X - atk_target.X) > 12)
+                    frame.Y = 576;
+                else
+                    frame.Y = 704;
+            }
+
+
+            if (state_timer < flash_threshhold || state_timer > state_threshholds[STATES.strike] - flash_threshhold)
+                super_flash = true;
+        }
+
+        protected void AtkDive(GameTime gameTime)
+        {
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            int delta = 16;
+
+            float first_threshhold = 0.4f;
+            float flash_threshhold = CONSTANTS.flash_limit / 2;
+            float gravity = 1.8f;
+
+            // initial setup
+            if (state_timer == 0f)
+            {
+                Vector2 ppos = player.GetPos();
+
+                pos.X = ppos.X;
+                pos.Y = ppos.Y - 64;
+
+                atk_target.X = ppos.X;
+                atk_target.Y = pos.Y - 8;
+
+                vsp = 0f;
+            }
+
+            // float gently upward
+            if (state_timer <= first_threshhold)
+            {
+                SmoothMove(gameTime, atk_target, delta);
+            }
+
+            // STRIKE !!!!!!!!
+            if (state_timer > first_threshhold && pos.Y != starting_pos.Y)
+            {
+                vsp += gravity * frame_factor;
+                Wall w = root.SimpleCheckCollision(new Rectangle(HitBox.X, (int)(HitBox.Y + vsp), HitBox.Width, HitBox.Height));
+
+                if (w != null)
+                {
+                    pos.Y = w.bounds.Top - PositionRectangle.Width;
+                    //pos.Y = starting_pos.Y;
+                    vsp = 0f;
+                }
+
+                pos.Y += vsp * frame_factor;
+            }
+
+
+
+            if (state_timer <= first_threshhold)
+                frame.Y = 256;
+            else if (state_timer > first_threshhold && pos.Y != starting_pos.Y)
+                frame.Y = 320;
+            else
+                frame.Y = 768;
+
+            if (state_timer < flash_threshhold || state_timer > state_threshholds[STATES.dive] - flash_threshhold)
+                super_flash = true;
+        }
+
+        protected void AtkDiagonal(GameTime gameTime)
+        {
+            frame.Y = 64;
+
+            // initial setup
+            if (state_timer == 0f)
+            {
+                pos.X = player.GetPos().X - 64;
+                pos.Y = player.GetPos().Y - 64;
+            }
+        }
+
+        protected void Cooldown(GameTime gameTime)
+        {
+            pos.Y = starting_pos.Y + 128;
+        }
+
+        public void HandleFlash(GameTime gameTime)
+        {
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (flash_timer > CONSTANTS.flash_limit)
+                {
+                    flash = false;
+                    flash_timer = 0f;
+                }
+            }
+
+            if (super_flash)
+            {
+                super_flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if (super_flash_timer > CONSTANTS.flash_limit / 2)
+                {
+                    super_flash = false;
+                    super_flash_timer = 0f;
+                }
+            }
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
+        }
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return HitBox;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(HitBox);
+        }
+
+        // fake functions
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class Alice_Boss : Alice_Abstract
+    {
+        public Alice_Boss(Vector2 pos, Player player, StyxLevel root) : base(pos, player, root)
+        {
         }
 
         public override void Update(GameTime gameTime)
@@ -3256,90 +3539,6 @@ namespace PERSIST
             }
         }
 
-        private void ActualUpdate(GameTime gameTime)
-        {
-            root.GetBossHP(hp, max_hp);
-
-            CycleAttacks(gameTime);
-
-            HandleFlash(gameTime);
-        }
-
-        private void CycleAttacks(GameTime gameTime)
-        {
-            // player_dir
-            player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
-
-            if (player_dir == 0)
-                player_dir = 1;
-
-            if (state_timer > state_threshholds[state])
-            {
-                state_timer = 0f;
-
-                // special cooldown state for teleporting between attacks
-                cooldown = !cooldown;
-
-                if (cooldown)
-                    state = STATES.cooldown;
-
-                // change the state, save the player_dir, do attack specific setup
-                else
-                {
-                    int next_state = rd.Next(num_states);
-
-                    while ((STATES)next_state == old_state)
-                        next_state = rd.Next(num_states);
-
-                    state = (STATES)next_state;
-                    old_state = (STATES)next_state;
-
-                    // player_dir
-                    player_dir = Math.Sign(player.HitBox.X + (player.HitBox.Width / 2) - (HitBox.X + (HitBox.Width / 2)));
-
-                    if (player_dir == 0)
-                        player_dir = 1;
-
-
-                    // atk specific setup
-                }
-            }
-
-            if (state == STATES.strike)
-                AtkStrike(gameTime);
-            else if (state == STATES.dive)
-                AtkDive(gameTime);
-            else if (state == STATES.diagonal)
-                AtkDiagonal(gameTime);
-            else if (state == STATES.cooldown)
-                Cooldown(gameTime);
-
-            state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-        }
-
-        private void AtkStrike(GameTime gameTime)
-        {
-            frame.Y = 128;
-            pos.Y = starting_pos.Y;
-        }
-
-        private void AtkDive(GameTime gameTime)
-        {
-            frame.Y = 256;
-            pos.Y = starting_pos.Y;
-        }
-
-        private void AtkDiagonal(GameTime gameTime)
-        {
-            frame.Y = 64;
-            pos.Y = starting_pos.Y;
-        }
-
-        private void Cooldown (GameTime gameTime)
-        {
-            pos.Y = starting_pos.Y + 128;
-        }
-
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
@@ -3348,6 +3547,13 @@ namespace PERSIST
             {
                 Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
                 spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.1f);
+            }
+
+            if (super_flash)
+            {
+                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.8f);
                 spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.1f);
             }
         }
@@ -3377,41 +3583,69 @@ namespace PERSIST
             triggered = true;
         }
 
-        public void HandleFlash(GameTime gameTime)
+        
+    }
+
+    public class Spectral_Alice : Alice_Abstract
+    {
+        public Spectral_Alice(Vector2 pos, Player player, StyxLevel root) : base(pos, player, root)
         {
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            CycleAttacks(gameTime);
+
+            HandleFlash(gameTime);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            //frame.X = 128;
+
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.DodgerBlue * 0.4f);
+
+            Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
+
+            spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.2f);
+
+            /**
             if (flash)
             {
-                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.1f);
+            }
 
-                if (flash_timer > CONSTANTS.flash_limit)
+            if (super_flash)
+            {
+                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.8f);
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.1f);
+            }
+            **/
+        }
+
+        public override void Damage(float damage)
+        {
+            if (!root.prog_manager.GetFlag(FLAGS.alice_defeated))
+            {
+                flash = true;
+
+                /**
+                if (hp < 8)
                 {
+                    root.RemoveArrows();
+                    root.ResetBossHP();
+                    root.DefeatKanna(this, gt_copy);
+
                     flash = false;
-                    flash_timer = 0f;
                 }
+                **/
             }
         }
 
-        public override void LoadAssets(Texture2D sprite)
-        {
-            this.sprite = sprite;
-        }
-
-        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
-        {
-            spriteBatch.Draw(blue, HitBox, Color.Blue * 0.3f);
-        }
-
-        public override Rectangle GetHitBox(Rectangle input)
-        {
-            return HitBox;
-        }
-
-        public override bool CheckCollision(Rectangle input)
-        {
-            return input.Intersects(HitBox);
-        }
     }
-
 
 
 
