@@ -2234,7 +2234,8 @@ namespace PERSIST
         private bool trigger_watch = false;
 
         private float atk_timer = 0f;
-        private float atk0_threshold = 3.5f;
+        private float atk0_threshold = 6.5f;                // initial threshhold starts very large
+        private float atk0_threshold_default = 3.5f;        // once player knows how to hit boss, lower it
         private float atk0_smash_threshold = 1f;
         private float atk1_threshold = 3f;
         private float atk1_stop_threshold = 1.5f;
@@ -2575,6 +2576,13 @@ namespace PERSIST
             //root.audio_manager.PlaySound("tick", fudge_factor);
 
             hp -= damage;
+
+            if (atk0_threshold > atk0_threshold_default && atk == 0)
+            {
+                atk0_threshold = atk0_threshold_default;
+                atk_timer = 2f;
+            }
+            
 
             flash = true;
 
@@ -3183,6 +3191,7 @@ namespace PERSIST
         protected bool right = false;
         protected bool second_alice = false;
         protected bool over_middle = false;
+        protected bool timers_changed = false;
 
         protected STATES state;
         protected STATES old_state = STATES.diagonal;
@@ -3301,8 +3310,17 @@ namespace PERSIST
 
             if (!second_alice && hp < max_hp * second_alice_threshhold && !cooldown)
             {
+                
+                if (!over_middle && !timers_changed && state_timer > state_threshholds[state] / 2.6f)
+                {
+                    state_threshholds[STATES.dive] += 0.34f;
+                    state_threshholds[STATES.strike] += 0.34f;
+                    state_threshholds[STATES.cooldown] += 0.34f;
+                    timers_changed = true;
+                }
+
                 // only spawn second alice in the middle of an attack
-                if (!over_middle && state_timer > state_threshholds[state] / 2.6f)
+                if (over_middle && timers_changed)
                 {
                     var temp = new Spectral_Alice(starting_pos, player, root);
                     root.AddEnemy(temp);
@@ -3583,13 +3601,16 @@ namespace PERSIST
             triggered = true;
         }
 
-        
+
     }
 
     public class Spectral_Alice : Alice_Abstract
     {
         public Spectral_Alice(Vector2 pos, Player player, StyxLevel root) : base(pos, player, root)
         {
+            state_threshholds[STATES.dive] += 0.34f;
+            state_threshholds[STATES.strike] += 0.34f;
+            state_threshholds[STATES.cooldown] += 0.34f;
         }
 
         public override void Update(GameTime gameTime)
@@ -3603,27 +3624,23 @@ namespace PERSIST
         {
             //frame.X = 128;
 
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.DodgerBlue * 0.4f);
-
             Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
 
-            spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.2f);
+            spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.4f);
 
-            /**
+            //spriteBatch.Draw(sprite, PositionRectangle, frame, Color.DodgerBlue * 0.4f);
+
             if (flash)
             {
-                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
                 spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.4f);
                 spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.1f);
             }
 
             if (super_flash)
             {
-                Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
                 spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White * 0.8f);
                 spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.1f);
             }
-            **/
         }
 
         public override void Damage(float damage)
