@@ -2915,6 +2915,9 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            if (!root.prog_manager.GetFlag(FLAGS.famine_started))
+                return;
+
             root.GetBossHP(hp, hp_max);
 
             Room r = root.RealGetRoom(pos);
@@ -4194,6 +4197,21 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            if (type == "famine")
+                UpdateFamine(gameTime);
+
+            // pickup type
+            else
+                UpdatePickup(gameTime);
+        }
+
+        private void UpdateFamine(GameTime gameTime)
+        {
+
+        }
+
+        private void UpdatePickup(GameTime gameTime)
+        {
             if (looking)
                 frame_base = 128;
             else
@@ -4210,7 +4228,7 @@ namespace PERSIST
                 frame.Y = 352;
                 frame_reset = 4;
             }
-                
+
 
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             frame.X = frame_base + (32 * ((int)(timer * 10) % frame_reset));
@@ -4358,6 +4376,61 @@ namespace PERSIST
             return input.Intersects(HitBox);
         }
 
+    }
+
+    public class Reaper_Cutscene : Enemy
+    {
+        private Texture2D sprite;
+        private Rectangle frame = new Rectangle(240, 48, 48, 48);
+        private String type;
+
+        public Rectangle PositionRectangle
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, 48, 48); } }
+
+        public Reaper_Cutscene(Vector2 pos, StyxLevel root, String type)
+        {
+            this.pos = pos;
+            this.root = root;
+            this.type = type;
+
+            hurtful = false;
+            pogoable = false;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+        }
+
+        public override void LoadAssets(Texture2D sprite)
+        {
+            this.sprite = sprite;
+        }
+
+
+
+
+        // trivial overrides
+
+        public override Rectangle GetHitBox(Rectangle input)
+        {
+            return PositionRectangle;
+        }
+
+        public override bool CheckCollision(Rectangle input)
+        {
+            return input.Intersects(PositionRectangle);
+        }
+
+        public override void DebugDraw(SpriteBatch spriteBatch, Texture2D blue)
+        {
+            // nothing
+        }
     }
 
     public class SmallPlush : Enemy

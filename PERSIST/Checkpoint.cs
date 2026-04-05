@@ -92,7 +92,7 @@ namespace PERSIST
 
         public void Interact()
         {
-            if (visible)
+            if (visible && root.boss_max_hp == 0)
             {
                 root.StartDialogue(root.dialogue_checkpoint, dialogue_num, 'c', 25f, true);
                 dialogue_num = root.dialogue_second_index;

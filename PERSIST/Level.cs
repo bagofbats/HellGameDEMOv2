@@ -1638,6 +1638,14 @@ namespace PERSIST
         }
     }
 
+    public class FakeWall : Wall
+    {
+        public FakeWall(Rectangle bounds) : base(bounds)
+        {
+
+        }
+    }
+
     public class Lock : Wall
     {
         private Level root;
@@ -1802,7 +1810,7 @@ namespace PERSIST
             else
                 vsp_col_check -= 1;
 
-            Wall vcheck = root.SimpleCheckCollision(new Rectangle(hitbox.X, (int)(hitbox.Y + vsp_col_check), hitbox.Width, hitbox.Height));
+            Wall vcheck = root.SimpleCheckCollision(new Rectangle(hitbox.X, (int)(hitbox.Y + vsp_col_check), hitbox.Width, hitbox.Height), false);
 
             if (vcheck != null)
             {

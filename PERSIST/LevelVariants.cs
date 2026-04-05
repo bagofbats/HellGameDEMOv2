@@ -796,6 +796,7 @@ namespace PERSIST
         private Texture2D spr_kanna;
         private Texture2D spr_lukas;
         private Texture2D spr_guys;
+        private Texture2D spr_reaper;
         private Texture2D spr_famine;
         private Texture2D spr_alice;
 
@@ -1305,6 +1306,15 @@ namespace PERSIST
                                 special_walls_types.Add(s);
                             }
 
+                            if (l.objects[i].name == "fake_wall")
+                            {
+                                var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
+                                var wall = new FakeWall(temp);
+                                AddSpecialWall(wall);
+                                special_walls_bounds.Add(temp);
+                                special_walls_types.Add("fake_wall");
+                            }
+
                             if (l.objects[i].name == "walker")
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
@@ -1568,6 +1578,22 @@ namespace PERSIST
                                 enemy_types.Add("lukas_cutscene_pickup");
                             }
 
+                            if (l.objects[i].name == "lukas_cutscene_famine" && !prog_manager.GetFlag(FLAGS.famine_started))
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Lukas_Cutscene(temp, this, "famine"));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("lukas_cutscene_famine");
+                            }
+
+                            if (l.objects[i].name == "reaper_cutscene" && !prog_manager.GetFlag(FLAGS.famine_started))
+                            {
+                                var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
+                                AddEnemy(new Reaper_Cutscene(temp, this, "famine"));
+                                enemy_locations.Add(temp);
+                                enemy_types.Add("reaper_cutscene");
+                            }
+
                             if (l.objects[i].name == "kanna_cutscene_hideout" && !prog_manager.GetFlag(FLAGS.dash))
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
@@ -1734,6 +1760,7 @@ namespace PERSIST
             spr_kanna = root.Content.Load<Texture2D>("sprites/spr_kanna");
             spr_lukas = root.Content.Load<Texture2D>("sprites/spr_lukas");
             spr_guys = root.Content.Load<Texture2D>("sprites/spr_guys");
+            spr_reaper = root.Content.Load<Texture2D>("sprites/spr_reaper");
             spr_famine = root.Content.Load<Texture2D>("sprites/spr_famine");
             spr_alice = root.Content.Load<Texture2D>("sprites/spr_alice");
 
@@ -1751,6 +1778,7 @@ namespace PERSIST
             asset_map.Add(typeof(Famine_Head), spr_famine);
             asset_map.Add(typeof(SmallPlush), tst_styx);
             asset_map.Add(typeof(Alice_Boss), spr_alice);
+            asset_map.Add(typeof(Reaper_Cutscene), spr_reaper);
 
             asset_map.Add(typeof(ShadePickup), tst_styx);
             asset_map.Add(typeof(KeyPickup), tst_styx);
@@ -1887,6 +1915,9 @@ namespace PERSIST
                 if (special_walls_types[i] == "crumble")
                     AddSpecialWall(new Crumble(special_walls_bounds[i], this));
 
+                if (special_walls_types[i] == "fake_wall")
+                    AddSpecialWall(new FakeWall(special_walls_bounds[i]));
+
                 if (special_walls_types[i] == "crumble_b")
                 {
                     var crumb = new Crumble(special_walls_bounds[i], this);
@@ -1995,6 +2026,12 @@ namespace PERSIST
 
                 if (enemy_types[i] == "lukas_cutscene_pickup" && !prog_manager.GetFlag(FLAGS.locks))
                     AddEnemy(new Lukas_Cutscene(enemy_locations[i], this, "pickup"));
+
+                if (enemy_types[i] == "lukas_cutscene_famine" && !prog_manager.GetFlag(FLAGS.famine_started))
+                    AddEnemy(new Lukas_Cutscene(enemy_locations[i], this, "famine"));
+
+                if (enemy_types[i] == "reaper_cutscene" && !prog_manager.GetFlag(FLAGS.famine_started))
+                    AddEnemy(new Reaper_Cutscene(enemy_locations[i], this, "famine"));
 
                 if (enemy_types[i] == "kanna_cutscene_hideout" && !prog_manager.GetFlag(FLAGS.dash))
                 {

@@ -337,11 +337,11 @@ namespace PERSIST
                 {FLAGS.knife                , true },
                 {FLAGS.ranged               , true },
                 {FLAGS.mask                 , true },
-                {FLAGS.dash                 , false },
+                {FLAGS.dash                 , true },
 
                 // mechanic flags
                 {FLAGS.jump_blocks          , true },
-                {FLAGS.locks                , false },
+                {FLAGS.locks                , true },
 
                 // boss flags
                 {FLAGS.slime_started        , false },
