@@ -844,6 +844,21 @@ namespace PERSIST
         public CharonBlock charondoor
         { get; set; } = null;
 
+        public Rectangle famine_trigger
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
+        public Rectangle dialogue_trigger1
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
+        public Rectangle dialogue_trigger2
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
+        public Rectangle dialogue_trigger3
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
+        public Rectangle dialogue_trigger4
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
         public Rectangle alice_trigger
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
@@ -902,7 +917,7 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_lukas_pickup = {
-            new DialogueStruct("I wouldn't bother picking that thing up if I were you.", 'd', Color.White, 'l', true), // <--- change this to true later
+            new DialogueStruct("I wouldn't bother picking that thing up if I were you.", 'd', Color.White, 'l', true),
             new DialogueStruct("It's practically useless in its current form.\nYou're better off leaving it there.", 'd', Color.White, 'p', false, "", 180, 180),
             new DialogueStruct("Oh, okay . . .", 'd', Color.White, 'r', false, "", 315, 90),
             new DialogueStruct("Hey, hold on a sec --\nDidn't you try to kill me earlier?", 'd', Color.White, 'r', false, "", 315, 0),
@@ -1070,6 +1085,17 @@ namespace PERSIST
         {
             new DialogueStruct("-- Defeated King Mush! --", 'd', Color.White, 'c', true, "", 0, 0, 10f),
         };
+
+        DialogueStruct[] dialogue_famine_start = {
+            new DialogueStruct("I see. And then?", 'd', Color.Gray, 'l', true, "", 0, 225),
+            new DialogueStruct("Got away from me, I'm afraid.", 'd', Color.White, 'l', true),
+            new DialogueStruct("And you have not seen him since?", 'd', Color.Gray, 'l', true, "", 0, 225),
+            new DialogueStruct("Yes, my lord. I have not.", 'd', Color.White, 'l', true),
+            new DialogueStruct("Lukas . . .", 'd', Color.Gray, 'l', true, "", 0, 225),
+            new DialogueStruct("You are not a good liar.", 'd', Color.Gray, 'r', true, "", 450, 0),
+        };
+        readonly int[] famine_start_bps = { 0, 1, 2, 3, 4, 5, 6 };
+        private int famine_dialogue_loc = 0;
 
         DialogueStruct[] dialogue_fisher =
         {
@@ -1526,6 +1552,36 @@ namespace PERSIST
                                                                   (int)l.objects[i].width,
                                                                   (int)l.objects[i].height);
 
+                            if (l.objects[i].name == "famine_trigger")
+                                famine_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                              (int)l.objects[i].y + t.location.Y,
+                                                              (int)l.objects[i].width,
+                                                              (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "dialogue_trigger1")
+                                dialogue_trigger1 = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                              (int)l.objects[i].y + t.location.Y,
+                                                              (int)l.objects[i].width,
+                                                              (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "dialogue_trigger2")
+                                dialogue_trigger2 = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                              (int)l.objects[i].y + t.location.Y,
+                                                              (int)l.objects[i].width,
+                                                              (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "dialogue_trigger3")
+                                dialogue_trigger3 = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                              (int)l.objects[i].y + t.location.Y,
+                                                              (int)l.objects[i].width,
+                                                              (int)l.objects[i].height);
+
+                            if (l.objects[i].name == "dialogue_trigger4")
+                                dialogue_trigger4 = new Rectangle((int)l.objects[i].x + t.location.X,
+                                                              (int)l.objects[i].y + t.location.Y,
+                                                              (int)l.objects[i].width,
+                                                              (int)l.objects[i].height);
+
                             if (l.objects[i].name == "alice_trigger")
                                 alice_trigger = new Rectangle((int)l.objects[i].x + t.location.X,
                                                               (int)l.objects[i].y + t.location.Y,
@@ -1589,7 +1645,7 @@ namespace PERSIST
                             if (l.objects[i].name == "reaper_cutscene" && !prog_manager.GetFlag(FLAGS.famine_started))
                             {
                                 var temp = new Vector2(l.objects[i].x + t.location.X, l.objects[i].y + t.location.Y);
-                                AddEnemy(new Reaper_Cutscene(temp, this, "famine"));
+                                AddEnemy(new Reaper_Cutscene(temp, this, player, "famine"));
                                 enemy_locations.Add(temp);
                                 enemy_types.Add("reaper_cutscene");
                             }
@@ -2031,7 +2087,7 @@ namespace PERSIST
                     AddEnemy(new Lukas_Cutscene(enemy_locations[i], this, "famine"));
 
                 if (enemy_types[i] == "reaper_cutscene" && !prog_manager.GetFlag(FLAGS.famine_started))
-                    AddEnemy(new Reaper_Cutscene(enemy_locations[i], this, "famine"));
+                    AddEnemy(new Reaper_Cutscene(enemy_locations[i], this, player, "famine"));
 
                 if (enemy_types[i] == "kanna_cutscene_hideout" && !prog_manager.GetFlag(FLAGS.dash))
                 {
@@ -2952,6 +3008,30 @@ namespace PERSIST
                 }
             }
 
+            if (cutscene_code[0] == "fightfamine")
+            {
+                if (cutscene_timer > 0f)
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+                }
+
+                if (cutscene_timer > famine_start_bps[famine_dialogue_loc + 1] && cutscene_code[famine_dialogue_loc + 1] == "")
+                {
+                    StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+                    cutscene_code[famine_dialogue_loc + 1] = "-";
+                    famine_dialogue_loc++;
+                }
+
+                if (cutscene_timer > 8.8f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                }
+            }
+
             if (cutscene_code[0] == "fightalice")
             {
                 if (cutscene_timer > 0f)
@@ -3296,6 +3376,20 @@ namespace PERSIST
             prog_manager.SetFlag(FLAGS.mushroom_defeated);
 
             player.SetPogoed(0, false);
+        }
+
+        public void FightFamine(GameTime gameTime)
+        {
+            if (!prog_manager.GetFlag(FLAGS.famine_started)) 
+            {
+                HandleCutscene("fightfamine|||||||||", gameTime, true);
+            }
+        }
+
+        public void FamineDialogue()
+        {
+            StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+            famine_dialogue_loc++;
         }
 
         public void FightAlice(Alice_Boss alice, GameTime gameTime)

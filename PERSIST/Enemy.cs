@@ -4380,18 +4380,28 @@ namespace PERSIST
 
     public class Reaper_Cutscene : Enemy
     {
+        new private StyxLevel root;
+
         private Texture2D sprite;
         private Rectangle frame = new Rectangle(240, 48, 48, 48);
         private String type;
+        private bool trigger_watch = false;
+        private bool triggered = false;
+
+        private bool dtrig1 = false;
+        private bool dtrig2 = false;
+        private bool dtrig3 = false;
+        private bool dtrig4 = false;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 48, 48); } }
 
-        public Reaper_Cutscene(Vector2 pos, StyxLevel root, String type)
+        public Reaper_Cutscene(Vector2 pos, StyxLevel root, Player player, String type)
         {
             this.pos = pos;
             this.root = root;
             this.type = type;
+            this.player = player;
 
             hurtful = false;
             pogoable = false;
@@ -4399,7 +4409,41 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            
+            // entry dialogue
+            if (!root.prog_manager.GetFlag(FLAGS.famine_started))
+            {
+                if (!dtrig1 && player.GetPos().X > root.dialogue_trigger1.X)
+                {
+                    root.FamineDialogue();
+                    dtrig1 = true;
+                }
+
+                if (!dtrig2 && player.GetPos().X > root.dialogue_trigger2.X)
+                {
+                    root.FamineDialogue();
+                    dtrig2 = true;
+                }
+
+                if (!dtrig3 && player.GetPos().X > root.dialogue_trigger3.X)
+                {
+                    root.FamineDialogue();
+                    dtrig3 = true;
+                }
+
+                if (!dtrig4 && player.GetPos().X > root.dialogue_trigger4.X)
+                {
+                    root.FamineDialogue();
+                    dtrig4 = true;
+                }
+            }
+
+            trigger_watch = (root.famine_trigger.Intersects(player.HitBox));
+
+            if (!triggered && trigger_watch && player.GetPos().X > root.famine_trigger.X)
+            {
+                root.FightFamine(gameTime);
+                triggered = true;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)

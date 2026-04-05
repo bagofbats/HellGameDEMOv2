@@ -31,6 +31,12 @@ art:
  - try chaning frame rate to see if anything breaks
  - add way to open plushie room after doing it once and then dying
 
+ - think there's a way to trigger kanna cutscene without being in the right room
+    - lower yourself into kanna trigger zone, but don't trigger cutscene
+    - jump out
+    - walk over to previous room
+    - jump into pit
+
  misc:
  - "thorns" level needs different right side
 
