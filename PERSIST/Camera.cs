@@ -68,6 +68,28 @@ namespace PERSIST
             Follow(new Vector2(current_x, current_y));
         }
 
+        public void SimpleFollow(Vector2 target, GameTime gameTime, float speed = 5f)
+        {
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float diff = speed * frame_factor;
+            int xdir = Math.Sign(target.X - current_x);
+            int ydir = Math.Sign(target.Y - current_y);
+
+            if (Math.Abs(current_x - target.X) <= diff)
+                current_x = target.X;
+            if (Math.Abs(current_y - target.Y) <= diff)
+                current_y = target.Y;
+
+            if (current_x != target.X)
+                current_x += diff;
+            if (current_y != target.Y)
+                current_y += diff;
+
+            stable = current_x == target.X && current_y == target.Y;
+
+            Follow(new Vector2(current_x, current_y));
+        }
+
         public void SetPos(Vector2 pos)
         {
             current_x = pos.X;

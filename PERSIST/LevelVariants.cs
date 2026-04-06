@@ -1093,8 +1093,21 @@ namespace PERSIST
             new DialogueStruct("Yes, my lord. I have not.", 'd', Color.White, 'l', true),
             new DialogueStruct("Lukas . . .", 'd', Color.Gray, 'l', true, "", 0, 225),
             new DialogueStruct("You are not a good liar.", 'd', Color.Gray, 'r', true, "", 450, 0),
+
+            new DialogueStruct("H-Huh?\nY-y-y-you . . . ?", 'd', Color.White, 'p', false, "", 540, 225),
+            new DialogueStruct("L-L-Listen, buddy.\nYou g-gotta get out of here.\nReaper, she doesn't", 'd', Color.White, 'p', true, "", 540, 0),
+
+            new DialogueStruct("\"FOR THEM, THE LIVING\"\n\"FOR US, THE DEAD\"\nYou know these words, do you not?", 'd', Color.Gray, 'r', false, "", 450, 135),
+            new DialogueStruct("As a shade, your fate is to keep the order.\nYou have already failed once.\nDo not fail again.", 'd', Color.Gray, 'r', false, "", 450, 135),
+
+            new DialogueStruct(". . .", 'd', Color.Gray, 'r', false, "", 450, 45),
+            new DialogueStruct("Trigo, was it?", 'd', Color.Gray, 'r', false, "", 450, 45),
+            new DialogueStruct("I apologize.\nI really do.\nIt is not supposed to be this way.", 'd', Color.Gray, 'r', false, "", 450, 180),
+            new DialogueStruct("But as long as you're here, well . . .", 'd', Color.Gray, 'r', false, "", 450, 45),
+
+            new DialogueStruct("I don't have a choice.", 'd', Color.Gray, 'r', true, "", 450, 90),
         };
-        readonly int[] famine_start_bps = { 0, 1, 2, 3, 4, 5, 6 };
+        readonly int[] famine_start_bps = { 0, 1, 2, 3, 4, 5, 6, 8 };
         private int famine_dialogue_loc = 0;
 
         DialogueStruct[] dialogue_fisher =
@@ -3015,19 +3028,53 @@ namespace PERSIST
                     player.SetNoInput();
                     player.DoMovement(gameTime);
                     player.DoAnimate(gameTime);
+
+                    if (cutscene_code[1] == "")
+                    {
+                        StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+                        cutscene_code[1] = "-";
+                        famine_dialogue_loc++;
+
+                        saved_camera_x = cam.GetPos().X;
+                        saved_camera_y = cam.GetPos().Y;
+                    }
                 }
 
-                if (cutscene_timer > famine_start_bps[famine_dialogue_loc + 1] && cutscene_code[famine_dialogue_loc + 1] == "")
+                if (cutscene_timer > 0.03f)
+                {
+                    cutscene_cam = true;
+                    cutscene_cam_simple = true;
+                    cutscene_cam_speed = 0.7f;
+                    cutscene_cam_pos = new Vector2(saved_camera_x + 128, saved_camera_y);
+                }
+
+                if (cutscene_timer > 4f && cutscene_code[2] == "")
                 {
                     StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
-                    cutscene_code[famine_dialogue_loc + 1] = "-";
+                    cutscene_code[2] = "-";
                     famine_dialogue_loc++;
                 }
 
-                if (cutscene_timer > 8.8f)
+                if (cutscene_timer > 6f && cutscene_code[3] == "")
+                {
+                    StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+                    cutscene_code[3] = "-";
+                    famine_dialogue_loc++;
+                }
+
+                if (cutscene_timer > 8f && cutscene_code[4] == "")
+                {
+                    StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+                    cutscene_code[4] = "-";
+                    famine_dialogue_loc++;
+                }
+
+                if (cutscene_timer > 99.8f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
+                    cutscene_cam = false;
+                    cutscene_cam_simple = false;
                     door_trans = false;
                 }
             }

@@ -78,6 +78,7 @@ namespace PERSIST
         protected bool dialogue_skippable = true;
         protected int opts_highlighted = 0;
         protected bool cutscene_cam = false;
+        protected bool cutscene_cam_simple = false;
         protected Vector2 cutscene_cam_pos = new Vector2(0, 0);
         protected float cutscene_cam_speed = 5f;
         protected bool force_draw_player = false;
@@ -249,7 +250,10 @@ namespace PERSIST
 
             else
             {
-                cam.TargetFollow(cutscene_cam_pos, cutscene_cam_speed);
+                if (cutscene_cam_simple)
+                    cam.SimpleFollow(cutscene_cam_pos, gameTime, cutscene_cam_speed);
+                else
+                    cam.TargetFollow(cutscene_cam_pos, cutscene_cam_speed);
             }
 
             
