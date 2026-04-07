@@ -115,9 +115,6 @@
     <property name="type" value="downer"/>
    </properties>
   </object>
-  <object id="284" name="player" x="760" y="48">
-   <point/>
-  </object>
  </objectgroup>
  <layer id="2" name="background_lower" width="160" height="60">
   <data encoding="csv">

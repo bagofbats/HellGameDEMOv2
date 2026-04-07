@@ -1247,7 +1247,7 @@ namespace PERSIST
         DialogueStruct[] dialogue_slime_plush = {
             new DialogueStruct("It's a large plush toy of a slime.", 'd', Color.White, 'c'),
             new DialogueStruct("Looks comfortable.", 'd', Color.White, 'c', true),
-            new DialogueStruct("( I bet this would make for an AWESOME bean bag chair. )", 'd', Color.DodgerBlue, 'p', true, "", 135, 180)
+            new DialogueStruct("( I bet this would make for an AWESOME bean bag\n  chair. )", 'd', Color.DodgerBlue, 'p', true, "", 135, 0)
         };
         int[] slime_plush_bps = { 0, 2 };
 
@@ -1257,6 +1257,41 @@ namespace PERSIST
             new DialogueStruct("Take the plush.\nDo not.", 'o', Color.White, 'l', false, "plush|exit"),
             new DialogueStruct("You got the Slime Plush.", 'd', Color.White, 'c', true),
         };
+
+        DialogueStruct[] dialogue_famine_statue = {
+            new DialogueStruct("A statue of a gaping maw.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an enscription on the pedestal.", 'd', Color.White, 'c'),
+            new DialogueStruct("FAMINE, the first primordial\nHungering for what it can not have", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+        };
+        int[] famine_statue_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_pestilence_statue = {
+            new DialogueStruct("A statue of spotted fungus.\nLooks like what you saw in that old tower.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an enscription on the pedestal.", 'd', Color.White, 'c'),
+            new DialogueStruct("PESTILENCE, the second primordial\nRotting from what it refuses to cure", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+        };
+        int[] pestilence_statue_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_war_statue = {
+            new DialogueStruct("A statue of a horn.\nLooks like the ones on your mask.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an enscription on the pedestal.", 'd', Color.White, 'c'),
+            new DialogueStruct("WAR, the third primordial\nFighting battles it will never win", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+        };
+        int[] war_statue_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_death_statue = {
+            new DialogueStruct("This statue appears to have been destroyed.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an enscription on the pedestal.\nUsing context clues, you can figure out what it says.", 'd', Color.White, 'c'),
+            new DialogueStruct("DEATH, the fourth primordial\nEnding all that it has started", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+        };
+        int[] death_statue_bps = { 0, 2 };
+
+        DialogueStruct[] dialogue_conquest_statue = {
+            new DialogueStruct("This statue appears to have been destroyed.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an enscription on the pedestal.\nUsing context clues, you can figure out what it says.", 'd', Color.White, 'c'),
+            new DialogueStruct("CONQUEST, the forgotten primordial\nCampaigning for greatness it has been denied", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+        };
+        int[] conquest_statue_bps = { 0, 2 };
 
         // dialogue_key is inside the key object -- i know, confusing...
 
@@ -1759,7 +1794,8 @@ namespace PERSIST
                                 var temp = new Furniture(new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height), this);
                                 string value = l.objects[i].properties[0].value;
 
-                                temp.kannas = true;
+                                if (value == "chair" || value == "crate" || value == "bed" || value == "dummy" || value == "shelf" || value == "reading_table")
+                                    temp.kannas = true;
 
                                 if (value == "chair")
                                     temp.SetType(dialogue_chair, chair_bps);
@@ -1792,6 +1828,18 @@ namespace PERSIST
 
                                 if (value == "reading_table")
                                     temp.SetType(dialogue_table, table_bps);
+
+                                if (value == "famine_statue")
+                                    temp.SetType(dialogue_famine_statue, famine_statue_bps);
+
+                                if (value == "pestilence_statue")
+                                    temp.SetType(dialogue_pestilence_statue, pestilence_statue_bps);
+
+                                if (value == "war_statue")
+                                    temp.SetType(dialogue_war_statue, war_statue_bps);
+
+                                if (value == "death_statue")
+                                    temp.SetType(dialogue_death_statue, death_statue_bps);
 
                                 AddInteractable(temp);
                             }
