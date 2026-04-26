@@ -63,6 +63,8 @@ namespace PERSIST
 
         protected Dictionary<Type, Texture2D> asset_map = new Dictionary<Type, Texture2D>();
 
+        protected float generic_timer = 0f;
+
         public bool player_dead
         { get; protected set; } = false;
         protected bool finish_player_dead = false;
@@ -82,6 +84,8 @@ namespace PERSIST
         protected Vector2 cutscene_cam_pos = new Vector2(0, 0);
         protected float cutscene_cam_speed = 5f;
         protected bool force_draw_player = false;
+        protected float dialogue_vfx_xoset = 0f;
+        protected float dialogue_vfx_yoset = 0f;
 
         protected float boss_hp = 0;
         public int boss_max_hp
@@ -146,6 +150,8 @@ namespace PERSIST
 
         public virtual void Update(GameTime gameTime)
         {
+            generic_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
+
             if (!player_dead)
                 player.Update(gameTime);
             else
@@ -265,6 +271,9 @@ namespace PERSIST
             {
                 dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_txt[dialogue_num].speed * dialogue_speed_multiplier;
                 dialogue_letter = Math.Min(dialogue_letter, dialogue_txt[dialogue_num].text.Length);
+
+                dialogue_vfx_yoset = 2f * (float)Math.Sin(generic_timer * 3); //+ 0.04f * Math.Sign(Math.Sin(generic_timer * 3));
+                dialogue_vfx_xoset = 2f * (float)Math.Cos((generic_timer * 3) + 0.2f); //+ 0.04f * Math.Sign(Math.Cos(generic_timer * 3));
             }
 
             // audio stuff
@@ -756,6 +765,7 @@ namespace PERSIST
                     Rectangle portrait = dialogue_txt[dialogue_num].portrait;
                     Rectangle portrait_loc = new Rectangle((int)cam.GetPos().X + 2, (int)cam.GetPos().Y + 2, 45, 45);
                     Rectangle right_portrait_loc = new Rectangle((int)cam.GetPos().X + 320 - 47, (int)cam.GetPos().Y + 2, 45, 45);
+                    DialogueVFXStruct dialogueVFX = dialogue_txt[dialogue_num].dialogueVFX;
 
                     // default is to left-justify text, no portrait
                     Vector2 textMiddlePoint = new Vector2(0, 0);
@@ -827,6 +837,27 @@ namespace PERSIST
                         string message = dialogue_txt[dialogue_num].text.Substring(0, (int)dialogue_letter);
                         string future_msg = dialogue_txt[dialogue_num].text.Substring(0, Math.Min((int)dialogue_letter + 2, dialogue_txt[dialogue_num].text.Length));
                         _spriteBatch.DrawString(bm_font, message, textDrawPoint, dialogue_txt[dialogue_num].color, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+
+                        if (dialogueVFX.transparency != 0f && dialogueVFX.num != 0)
+                        {
+                            for (int i = 0; i < dialogueVFX.num; i++)
+                            {
+                                Vector2 modifiedDrawPoint = textDrawPoint;
+                                Vector2 VFX_oset = new Vector2(dialogue_vfx_xoset, dialogue_vfx_yoset);
+
+                                for (int j = 0; j < i; j++)
+                                {
+                                    // rotate it to be out of phase with the others
+                                    var num_fx = dialogueVFX.num;
+                                    var ca = Math.Cos(360 / num_fx * CONSTANTS.DegToRad);
+                                    var sa = Math.Sin(360 / num_fx * CONSTANTS.DegToRad);
+                                    VFX_oset = new Vector2((float)(ca * VFX_oset.X - sa * VFX_oset.Y), (float)(sa * VFX_oset.X + ca * VFX_oset.Y));
+                                }
+
+                                _spriteBatch.DrawString(bm_font, message, modifiedDrawPoint + VFX_oset, dialogueVFX.color * dialogueVFX.transparency, 0, textMiddlePoint, 1f, SpriteEffects.None, 0f);
+                            }
+                        }
+
                         if (message.EndsWith('.') && future_msg.EndsWith('.'))
                             dialogue_speed_multiplier = 0.1f;
                         else
@@ -2048,7 +2079,7 @@ namespace PERSIST
 
     public struct DialogueStruct
     {
-        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, string opt_code="", int portrait_x=0, int portrait_y=0, float speed=25f)
+        public DialogueStruct(string text, char type, Color color, char loc='l', bool end=false, string opt_code="", int portrait_x=0, int portrait_y=0, float speed=25f, DialogueVFXStruct dialogueVFX=default)
         {
             this.text = text;
             this.type = type;
@@ -2058,6 +2089,7 @@ namespace PERSIST
             portrait = new Rectangle(portrait_x, portrait_y, 45, 45);
             this.opt_code = opt_code;
             this.speed = speed;
+            this.dialogueVFX = dialogueVFX;
         }
 
         public string text;
@@ -2068,5 +2100,20 @@ namespace PERSIST
         public bool end;
         public string opt_code;
         public float speed;
+        public DialogueVFXStruct dialogueVFX;
+    }
+
+    public struct DialogueVFXStruct
+    {
+        public DialogueVFXStruct(Color color, float transparency, int num)
+        {
+            this.color = color;
+            this.transparency = transparency;
+            this.num = num;
+        }
+
+        public Color color;
+        public float transparency;
+        public int num;
     }
 }

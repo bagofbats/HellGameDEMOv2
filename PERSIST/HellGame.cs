@@ -21,6 +21,11 @@ namespace PERSIST
         public const float angle90 = 1.5708f;
         public const float flash_limit = 0.1f;
         public const int frame_rate = 60;
+
+        public const float reaper_calm_trans = 0.43f;
+        public const float reaper_angry_trans = 0.5f;
+
+        public const double DegToRad = Math.PI / 180;
     }
 
     public class HellGame : Game
@@ -673,16 +678,16 @@ namespace PERSIST
 
         private Level GenerateStyxLevel(Camera cam)
         {
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx1.tmx");
-            TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
-            TiledMap thr_map = new TiledMap(Content.RootDirectory + "\\rm_styx_secret.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx4.tmx");
+            //TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
+            //TiledMap thr_map = new TiledMap(Content.RootDirectory + "\\rm_styx_secret.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
 
             List<Rectangle> bounds = new List<Rectangle>
             {
                 new Rectangle(0, 0, one_map.Width * one_map.TileWidth, one_map.Height * one_map.TileHeight),
-                new Rectangle(2096, 432 + (8 * 70), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight),
-                new Rectangle(304 - (thr_map.Width * thr_map.TileWidth), 880 - 64 - 240, thr_map.Width * thr_map.TileWidth, thr_map.Height * thr_map.TileHeight)
+            //    new Rectangle(2096, 432 + (8 * 70), two_map.Width * two_map.TileWidth, two_map.Height * two_map.TileHeight),
+            //    new Rectangle(304 - (thr_map.Width * thr_map.TileWidth), 880 - 64 - 240, thr_map.Width * thr_map.TileWidth, thr_map.Height * thr_map.TileHeight)
             };
 
             TiledData one = new TiledData(bounds[0], one_map, one_tst);

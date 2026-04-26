@@ -1087,25 +1087,25 @@ namespace PERSIST
         };
 
         DialogueStruct[] dialogue_famine_start = {
-            new DialogueStruct("I see. And then?", 'd', Color.Gray, 'l', true, "", 0, 225),
+            new DialogueStruct("I see. And then?", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
             new DialogueStruct("Got away from me, I'm afraid.", 'd', Color.White, 'l', true),
-            new DialogueStruct("And you have not seen him since?", 'd', Color.Gray, 'l', true, "", 0, 225),
+            new DialogueStruct("And you have not seen him since?", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
             new DialogueStruct("Yes, my lord. I have not.", 'd', Color.White, 'l', true),
-            new DialogueStruct("Lukas . . .", 'd', Color.Gray, 'l', true, "", 0, 225),
-            new DialogueStruct("You are not a good liar.", 'd', Color.Gray, 'r', true, "", 450, 0),
+            new DialogueStruct("Lukas . . .", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
+            new DialogueStruct("You are not a good liar.", 'd', Color.Gray, 'r', true, "", 450, 0, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 3)),
 
             new DialogueStruct("H-Huh?\nY-y-y-you . . . ?", 'd', Color.White, 'p', false, "", 540, 225),
             new DialogueStruct("L-L-Listen, buddy.\nYou g-gotta get out of here.\nReaper, she doesn't", 'd', Color.White, 'p', true, "", 540, 0),
 
-            new DialogueStruct("\"FOR THEM, THE LIVING\"\n\"FOR US, THE DEAD\"\nYou know these words, do you not?", 'd', Color.Gray, 'r', false, "", 450, 135),
-            new DialogueStruct("As a shade, your fate is to keep the order.\nYou have already failed once.\nDo not fail again.", 'd', Color.Gray, 'r', false, "", 450, 135),
+            new DialogueStruct("\"FOR THEM, THE LIVING\"\n\"FOR US, THE DEAD\"\nYou know these words, do you not?", 'd', Color.DeepSkyBlue * 0.8f, 'r', false, "", 450, 135, 25f, new DialogueVFXStruct(Color.DeepSkyBlue, CONSTANTS.reaper_angry_trans, 4)),
+            new DialogueStruct("As a shade, your fate is to keep the order.\nYou have already failed once.\nDo not fail again.", 'd', Color.DeepSkyBlue * 0.8f, 'r', false, "", 450, 135, 25f, new DialogueVFXStruct(Color.DeepSkyBlue, CONSTANTS.reaper_angry_trans, 4)),
 
-            new DialogueStruct(". . .", 'd', Color.Gray, 'r', false, "", 450, 45),
-            new DialogueStruct("Trigo, was it?", 'd', Color.Gray, 'r', false, "", 450, 45),
-            new DialogueStruct("I apologize.\nI really do.\nIt is not supposed to be this way.", 'd', Color.Gray, 'r', false, "", 450, 180),
-            new DialogueStruct("But as long as you're here, well . . .", 'd', Color.Gray, 'r', false, "", 450, 45),
+            new DialogueStruct(". . .", 'd', Color.Gray, 'r', false, "", 450, 45, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
+            new DialogueStruct("Trigo, was it?", 'd', Color.Gray, 'r', false, "", 450, 45, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
+            new DialogueStruct("I apologize.\nI really do.\nIt is not supposed to be this way.", 'd', Color.Gray, 'r', false, "", 450, 180, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
+            new DialogueStruct("But as long as you're here, well . . .", 'd', Color.Gray, 'r', false, "", 450, 45, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 3)),
 
-            new DialogueStruct("I don't have a choice.", 'd', Color.Gray, 'r', true, "", 450, 90),
+            new DialogueStruct("I don't have a choice.", 'd', Color.DeepSkyBlue * 0.8f, 'r', true, "", 450, 90, 25f, new DialogueVFXStruct(Color.DeepSkyBlue, CONSTANTS.reaper_angry_trans, 4)),
         };
         readonly int[] famine_start_bps = { 0, 1, 2, 3, 4, 5, 6, 8 };
         private int famine_dialogue_loc = 0;
@@ -1260,38 +1260,40 @@ namespace PERSIST
 
         DialogueStruct[] dialogue_famine_statue = {
             new DialogueStruct("A statue of a gaping maw.", 'd', Color.White, 'c'),
-            new DialogueStruct("There is an enscription on the pedestal.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an inscription on the pedestal.", 'd', Color.White, 'c'),
             new DialogueStruct("FAMINE, the first primordial\nHungering for what it can not have", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
         };
         int[] famine_statue_bps = { 0, 2 };
 
         DialogueStruct[] dialogue_pestilence_statue = {
             new DialogueStruct("A statue of spotted fungus.\nLooks like what you saw in that old tower.", 'd', Color.White, 'c'),
-            new DialogueStruct("There is an enscription on the pedestal.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an inscription on the pedestal.", 'd', Color.White, 'c'),
             new DialogueStruct("PESTILENCE, the second primordial\nRotting from what it refuses to cure", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
         };
         int[] pestilence_statue_bps = { 0, 2 };
 
         DialogueStruct[] dialogue_war_statue = {
             new DialogueStruct("A statue of a horn.\nLooks like the ones on your mask.", 'd', Color.White, 'c'),
-            new DialogueStruct("There is an enscription on the pedestal.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an inscription on the pedestal.", 'd', Color.White, 'c'),
             new DialogueStruct("WAR, the third primordial\nFighting battles it will never win", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
         };
         int[] war_statue_bps = { 0, 2 };
 
         DialogueStruct[] dialogue_death_statue = {
             new DialogueStruct("This statue appears to have been destroyed.", 'd', Color.White, 'c'),
-            new DialogueStruct("There is an enscription on the pedestal.\nUsing context clues, you can figure out what it says.", 'd', Color.White, 'c'),
+            new DialogueStruct("There was an inscription on the pedestal.\nYou can still make out just enough to read what it said.", 'd', Color.White, 'c'),
             new DialogueStruct("DEATH, the fourth primordial\nEnding all that it has started", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
         };
         int[] death_statue_bps = { 0, 2 };
 
         DialogueStruct[] dialogue_conquest_statue = {
             new DialogueStruct("This statue appears to have been destroyed.", 'd', Color.White, 'c'),
-            new DialogueStruct("There is an enscription on the pedestal.\nUsing context clues, you can figure out what it says.", 'd', Color.White, 'c'),
+            new DialogueStruct("There was an inscription on the pedestal.\nYou can still make out just enough to read what it said.", 'd', Color.White, 'c'),
             new DialogueStruct("CONQUEST, the forgotten primordial\nCampaigning for greatness it has been denied", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
         };
         int[] conquest_statue_bps = { 0, 2 };
+
+        
 
         // dialogue_key is inside the key object -- i know, confusing...
 
