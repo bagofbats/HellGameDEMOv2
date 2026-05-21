@@ -3,7 +3,6 @@
  - saving/reloading
  - inventory
  - have tilting the joystick just a little bit make trigo walk slowly?
- - interactable little guys on the reused level parts
  - have some collapsable blocks go behind styx
  - think harder abt dashing and attacking at the same time
  - have different levels be able to load/unload sounds from audio manager
@@ -22,6 +21,7 @@ art:
  - adjust in-air sprites to be less misleading abt hitbox
  - death animation for mushroom ppl
  - adjust trigo's in-air sprites to better align with hitbox??
+ - have trigo turn around in lukas medallion cutscene
 
  bugs:
  - ranged attacks get stopped by one-way platforms

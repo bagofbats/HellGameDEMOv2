@@ -337,7 +337,7 @@ namespace PERSIST
                 // player flags
                 {FLAGS.knife                , true },
                 {FLAGS.ranged               , true },
-                {FLAGS.mask                 , false },
+                {FLAGS.mask                 , true },
                 {FLAGS.dash                 , true },
 
                 // mechanic flags

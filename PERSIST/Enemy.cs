@@ -2575,6 +2575,11 @@ namespace PERSIST
             //float fudge_factor = (0.5f - (float)rnd.NextDouble());
             //root.audio_manager.PlaySound("tick", fudge_factor);
 
+            flash = true;
+
+            if (player.GetPos().Y > HitBox.Y)
+                return;
+
             hp -= damage;
 
             if (atk0_threshold > atk0_threshold_default && atk == 0)
@@ -2584,7 +2589,7 @@ namespace PERSIST
             }
             
 
-            flash = true;
+            
 
             damaged = true;
 
