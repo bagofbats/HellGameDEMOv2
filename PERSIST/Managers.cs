@@ -315,6 +315,7 @@ namespace PERSIST
         spott_killman,
         investigated_bed,
         kanna_bed,
+        tutorial_sign,
 
         // secret flags
         journal_secret,
@@ -336,8 +337,8 @@ namespace PERSIST
                 // player flags
                 {FLAGS.knife                , true },
                 {FLAGS.ranged               , true },
-                {FLAGS.mask                 , true },
-                {FLAGS.dash                 , false },
+                {FLAGS.mask                 , false },
+                {FLAGS.dash                 , true },
 
                 // mechanic flags
                 {FLAGS.jump_blocks          , true },
@@ -352,7 +353,7 @@ namespace PERSIST
                 {FLAGS.kanna_defeated       , false },
                 {FLAGS.mushroom_started     , false },
                 {FLAGS.mushroom_defeated    , false },
-                {FLAGS.famine_started       , false },
+                {FLAGS.famine_started       , true },
                 {FLAGS.famine_defeated      , false },
                 {FLAGS.alice_started        , false },
                 {FLAGS.alice_defeated       , false },
@@ -366,6 +367,7 @@ namespace PERSIST
                 {FLAGS.spott_killman        , false },
                 {FLAGS.investigated_bed     , false },
                 {FLAGS.kanna_bed            , false },
+                {FLAGS.tutorial_sign        , false },
 
                 // secret flags
                 {FLAGS.journal_secret       , false },

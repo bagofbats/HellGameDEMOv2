@@ -2846,6 +2846,8 @@ namespace PERSIST
         private bool[] head_attacking = { false, false, false };
         private Vector2[] head_target = new Vector2[3];
 
+        private float timer = 0f;
+
         private float atk_threshold = 6f;
         public float idle_threshold = 2f;
 
@@ -2857,10 +2859,14 @@ namespace PERSIST
         private int shooter_head = 2;
         private int slowest_head = 0;
 
+        private Rectangle body_frame = new Rectangle(0, 128, 112, 240);
+        private int num_body_frames = 5;
+        private Vector2 neck_oset = new Vector2(56, 56);
+
         private Random rd = new Random();
 
         public Rectangle PositionRectangle
-        { get { return new Rectangle((int)pos.X, (int)pos.Y, 16, 16); } }
+        { get { return new Rectangle((int)pos.X - 16, (int)pos.Y - 32, 112, 256 + 16); } }
 
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
@@ -2892,7 +2898,8 @@ namespace PERSIST
             {
                 // head init pos staggered
                 Vector2 oset = new Vector2(((i % 2) * 8) + (i / 2) * -12, i * 40);
-                heads[i] = new Famine_Head(pos + oset, player, root, this);
+                Vector2 neck_oset_tmp = new Vector2(neck_oset.X, neck_oset.Y + (8 * i)); 
+                heads[i] = new Famine_Head(pos + oset, neck_oset_tmp, player, root, this);
                 root.AddEnemy(heads[i]);
 
                 head_timer[i] = timer_init[i];
@@ -2924,6 +2931,8 @@ namespace PERSIST
 
             if (r != root.RealGetRoom(player.GetPos()))
                 return;
+
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
 
             for (int i = 0; i < num_heads; i++)
                 UpdateHead(gameTime, heads[i], i, i==slowest_head);
@@ -2972,8 +2981,17 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            Rectangle body_frame_tmp = body_frame;
+            body_frame_tmp.X += body_frame.Width * (int)(timer * 10 % num_body_frames);
+
+            spriteBatch.Draw(sprite, PositionRectangle, body_frame_tmp, Color.White);
+
             for (int i = 0; i < num_heads; i++)
+            {
+                heads[i].timer = timer;
                 heads[i].Draw(spriteBatch);
+            }
+                
         }
 
 
@@ -3009,6 +3027,8 @@ namespace PERSIST
         private int v_oset = 8;
         private float vsp = 0f;
         private float hsp = 0f;
+        private float neck_vsp = 0f;
+        private float neck_hsp = 0f;
         private bool extended = false;
         private bool fired = false;
 
@@ -3016,9 +3036,17 @@ namespace PERSIST
         private float atk_timer = 0f;
 
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
+        private Rectangle neck_frame = new Rectangle(256, 0, 16, 16);
 
         private Vector2 base_pos;
         private Vector2 windup;
+        private Vector2 neck_oset;
+        private int num_neck_frames = 5;
+        private int neck_num = 7;
+        private int num_head_frames = 4;
+
+        // this one is public
+        public float timer = 0f;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y - v_oset, 32, 32); } }
@@ -3026,12 +3054,13 @@ namespace PERSIST
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
 
-        public Famine_Head(Vector2 pos, Player player, StyxLevel root, Famine famine)
+        public Famine_Head(Vector2 pos, Vector2 neck_oset, Player player, StyxLevel root, Famine famine)
         {
             this.pos = pos;
             this.player = player;
             this.root = root;
             this.famine = famine;
+            this.neck_oset = neck_oset;
 
             base_pos = pos;
         }
@@ -3082,6 +3111,9 @@ namespace PERSIST
 
             pos.X += hsp;
             pos.Y += vsp;
+
+            neck_hsp = 5f * (float)Math.Cos(idle_timer * 2) + 0.04f * Math.Sign(Math.Cos(idle_timer * 2));
+            neck_vsp = 14f * (float)Math.Sin(idle_timer * 2) + 0.04f * Math.Sign(Math.Sin(idle_timer * 2));
         }
 
         public void Attack(GameTime gameTime, Vector2 target)
@@ -3159,7 +3191,35 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            for (int i = 1; i < neck_num; i++)
+            {
+                float neck_hsp_tmp = neck_hsp / (neck_num - i);
+                float neck_vsp_tmp = neck_vsp / (neck_num - i);
+
+                if (!extended)
+                {
+                    neck_hsp_tmp = 0f;
+                    neck_vsp_tmp = 0f;
+                }
+
+                Vector2 neck_base = base_pos + neck_oset;
+                Vector2 neck_pos = (neck_base - pos) * i / neck_num;
+                Rectangle neck_rect = new Rectangle(
+                    (int)(pos.X + neck_pos.X + 8 + neck_hsp_tmp), 
+                    (int)(pos.Y + neck_pos.Y + neck_vsp_tmp), 
+                    16, 
+                    16
+                    );
+
+                Rectangle neck_frame_tmp = neck_frame;
+                neck_frame_tmp.X += neck_frame.Width * (int)(timer * 10 % num_neck_frames);
+                spriteBatch.Draw(sprite, neck_rect, neck_frame_tmp, Color.White);
+            }
+
+            Rectangle head_frame_tmp = frame;
+            head_frame_tmp.X += frame.Width * (int)(timer * 10 % num_head_frames);
+            spriteBatch.Draw(sprite, PositionRectangle, head_frame_tmp, Color.White);
         }
 
 
@@ -3193,7 +3253,9 @@ namespace PERSIST
         protected bool cooldown = false;
         protected bool right = false;
         protected bool second_alice = false;
+        protected bool third_alice = false;
         protected bool over_middle = false;
+        protected bool over_two_thirds = false;
         protected bool timers_changed = false;
 
         protected STATES state;
@@ -3203,7 +3265,7 @@ namespace PERSIST
         protected float state_timer = 999f;
         protected float flash_timer = 0f;
         protected float super_flash_timer = 0f;
-        protected float second_alice_threshhold = 0.9f;
+        protected float second_alice_threshhold = 0.94f;
 
         protected Random rd = new Random();
         protected int player_dir = 1;
@@ -3233,14 +3295,14 @@ namespace PERSIST
             starting_pos = pos;
             room = root.RealGetRoom(pos);
 
-            hurtful = false;
+            hurtful = true;
 
             num_states = Enum.GetNames(typeof(STATES)).Length - 1;
 
             state_threshholds = new Dictionary<STATES, float>()
             {
-                {STATES.strike,         1.06f },
-                {STATES.dive,           1.06f },
+                {STATES.strike,         1.36f },
+                {STATES.dive,           1.36f },
                 {STATES.diagonal,       1.86f },
                 {STATES.cooldown,       0.30f }
             };
@@ -3311,14 +3373,15 @@ namespace PERSIST
 
             state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            /**
             if (!second_alice && hp < max_hp * second_alice_threshhold && !cooldown)
             {
                 
                 if (!over_middle && !timers_changed && state_timer > state_threshholds[state] / 2.6f)
                 {
-                    state_threshholds[STATES.dive] += 0.34f;
-                    state_threshholds[STATES.strike] += 0.34f;
-                    state_threshholds[STATES.cooldown] += 0.34f;
+                    state_threshholds[STATES.dive] += 0.44f;
+                    state_threshholds[STATES.strike] += 0.44f;
+                    state_threshholds[STATES.cooldown] += 0.44f;
                     timers_changed = true;
                 }
 
@@ -3333,6 +3396,41 @@ namespace PERSIST
             }
 
             over_middle = state_timer > state_threshholds[state] / 2;
+            **/
+
+            if (!(second_alice && third_alice) && hp < max_hp * second_alice_threshhold && !cooldown)
+            {
+
+                if (!over_middle && !timers_changed && state_timer > state_threshholds[state] / 3.4f)
+                {
+                    state_threshholds[STATES.dive] += 0.44f * 2;
+                    state_threshholds[STATES.strike] += 0.44f * 2;
+                    // state_threshholds[STATES.cooldown] += 0.44f;
+                    timers_changed = true;
+                }
+
+                // only spawn second alice in the middle of an attack
+                if (over_middle && timers_changed && !second_alice)
+                {
+                    var temp = new Spectral_Alice(starting_pos, player, root);
+                    root.AddEnemy(temp);
+                    temp.LoadAssets(sprite);
+                    second_alice = true;
+                }
+
+                // only spawn second alice in the middle of an attack
+                if (over_two_thirds && timers_changed)
+                {
+                    var temp = new Spectral_Alice(starting_pos, player, root);
+                    root.AddEnemy(temp);
+                    temp.LoadAssets(sprite);
+                    third_alice = true;
+                }
+            }
+
+            over_middle = state_timer > state_threshholds[state] / 3;
+
+            over_two_thirds = state_timer > state_threshholds[state] * 2 / 3;
         }
 
         protected void AtkStrike(GameTime gameTime)
@@ -3340,7 +3438,7 @@ namespace PERSIST
             int distance = 64;
             int delta = 6;
 
-            float first_threshhold = 0.4f;
+            float first_threshhold = 0.67f;
             float flash_threshhold = CONSTANTS.flash_limit / 2;
 
             // initial setup
@@ -3405,7 +3503,7 @@ namespace PERSIST
 
             int delta = 16;
 
-            float first_threshhold = 0.4f;
+            float first_threshhold = 0.67f;
             float flash_threshhold = CONSTANTS.flash_limit / 2;
             float gravity = 1.8f;
 
@@ -3611,9 +3709,12 @@ namespace PERSIST
     {
         public Spectral_Alice(Vector2 pos, Player player, StyxLevel root) : base(pos, player, root)
         {
-            state_threshholds[STATES.dive] += 0.34f;
-            state_threshholds[STATES.strike] += 0.34f;
-            state_threshholds[STATES.cooldown] += 0.34f;
+            state_threshholds[STATES.dive] -= 0.29f;
+            state_threshholds[STATES.strike] -= 0.29f;
+            state_threshholds[STATES.cooldown] += 0.44f + 0.44f + 0.29f;
+
+            state = STATES.strike;
+            state_timer = 0f;
         }
 
         public override void Update(GameTime gameTime)

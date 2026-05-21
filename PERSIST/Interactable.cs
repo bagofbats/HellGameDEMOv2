@@ -275,6 +275,8 @@ namespace PERSIST
         protected int counter = 0;
         protected int[] breakpoints;
 
+        public bool tutorial_sign = false;
+
         public bool kannas = false;
         public bool kannas_shelf = false;
         public bool kannas_bed = false;
@@ -295,6 +297,17 @@ namespace PERSIST
 
         public override void Interact()
         {
+            // tutorial sign has branching path, don't want to advance sometimes
+            // easier to do this than make a new class every time ig...
+            if (tutorial_sign)
+            {
+                if (!root.prog_manager.GetFlag(FLAGS.tutorial_sign))
+                    counter = 0;
+
+                else
+                    counter = 2;
+            }
+
             // kanna's furniture
             // can't advance in dialogue if kanna isn't there to talk to
             if (kannas)

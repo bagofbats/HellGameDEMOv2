@@ -97,6 +97,26 @@ namespace PERSIST
         };
         int[] desk_bps = { 0, 11, 14 };
 
+        DialogueStruct[] dialogue_sign = {
+            // index 0
+            new DialogueStruct("It's a sign.\nThere's writing on it in a language you don't recognize.", 'd', Color.White, 'c'),
+            new DialogueStruct("Leave it alone.\nTry to read it anyway.", 'o', Color.White, 'l', false, "exit 0|read_sign"),
+
+            // index 2
+            new DialogueStruct("If you're playing with a controller, angling the analog stick\nto move while looking down can be awkward.", 'd', Color.Orange, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("There's an option to bind looking down to a button.\nThat way, looking down while moving is as easy on controller\nas it is on keyboard.", 'd', Color.Orange, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("Check it out in the settings menu sometime!", 'd', Color.Orange, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("( . . . )", 'd', Color.DodgerBlue, 'p', false, "", 90, 135),
+            new DialogueStruct("( Yeah, I still don't know what this says.\n  Guess it's meant for someone else? )", 'd', Color.DodgerBlue, 'p', true, "", 45, 135),
+
+            // index 7
+            new DialogueStruct("If you're playing with a controller, angling the analog stick\nto move while looking down can be awkward.", 'd', Color.Orange, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("There's an option to bind looking down to a button.\nThat way, looking down while moving is as easy on controller\nas it is on keyboard.", 'd', Color.Orange, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("Check it out in the settings menu sometime!", 'd', Color.Orange, 'l', false, "", 0, 0, 99999999999999),
+            new DialogueStruct("P.S. -- Trigo can't read text written in orange.\n         But you can!\n         So signs like these are our little secret :)", 'd', Color.Orange, 'l', true, "", 0, 0, 99999999999999),
+        };
+        int[] sign_bps = { 0, 2, 7 };
+
         DialogueStruct[] dialogue_lukas = {
             new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 180, 45),
             new DialogueStruct("You should not be here, invader.", 'd', Color.White, 'r', true, "", 180, 135, 10f),
@@ -271,6 +291,13 @@ namespace PERSIST
 
                                 if (value == "crate")
                                     temp.SetType(dialogue_crate, crate_bps);
+
+                                if (value == "look_down_sign")
+                                {
+                                    temp.SetType(dialogue_sign, sign_bps);
+                                    temp.tutorial_sign = true;
+                                }
+                                    
 
                                 AddInteractable(temp);
                             }
@@ -517,6 +544,14 @@ namespace PERSIST
             else if (code[0] == "read")
             {
                 prog_manager.SetFlag(FLAGS.journal_secret);
+                dialogue_num++;
+                dialogue_letter = 0f;
+                opts_highlighted = 0;
+            }
+
+            else if (code[0] == "read_sign")
+            {
+                prog_manager.SetFlag(FLAGS.tutorial_sign);
                 dialogue_num++;
                 dialogue_letter = 0f;
                 opts_highlighted = 0;
@@ -1089,7 +1124,7 @@ namespace PERSIST
         DialogueStruct[] dialogue_famine_start = {
             new DialogueStruct("I see. And then?", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
             new DialogueStruct("Got away from me, I'm afraid.", 'd', Color.White, 'l', true),
-            new DialogueStruct("And you have not seen him since?", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
+            new DialogueStruct("And you have not seen them since?", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
             new DialogueStruct("Yes, my lord. I have not.", 'd', Color.White, 'l', true),
             new DialogueStruct("Lukas . . .", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
             new DialogueStruct("You are not a good liar.", 'd', Color.Gray, 'r', true, "", 450, 0, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 3)),

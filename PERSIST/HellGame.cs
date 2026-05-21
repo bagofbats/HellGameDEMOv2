@@ -153,8 +153,8 @@ namespace PERSIST
 
             Camera cam = new Camera(this);
 
-            //the_level = GenerateTutorialLevel(cam, "3");
-            the_level = GenerateStyxLevel(cam);
+            the_level = GenerateTutorialLevel(cam, "2");
+            //the_level = GenerateStyxLevel(cam);
 
             Window.Title = "Hell Escape [DEMO]";
         }
@@ -697,7 +697,7 @@ namespace PERSIST
             //List<TiledData> tld = new List<TiledData> { one, two, thr };
             List<TiledData> tld = new List<TiledData> { one };
 
-            return new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx4");
+            return new StyxLevel(this, SmallestRectangle(bounds), player, tld, cam, progManager, audioManager, debug, "rm_styx3");
         }
     }
 }
