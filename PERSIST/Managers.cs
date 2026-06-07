@@ -371,7 +371,7 @@ namespace PERSIST
 
                 // secret flags
                 {FLAGS.journal_secret       , false },
-                {FLAGS.charons_blessing     , true },
+                {FLAGS.charons_blessing     , false },
                 {FLAGS.charon_door          , false },
                 {FLAGS.kanna_plushie        , false },
             };

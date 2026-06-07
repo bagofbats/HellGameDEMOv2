@@ -2852,6 +2852,7 @@ namespace PERSIST
         private Vector2[] head_target = new Vector2[3];
 
         private float timer = 0f;
+        private float flash_timer = 0f;
 
         private float atk_threshold = 6f;
         public float idle_threshold = 2f;
@@ -2864,8 +2865,10 @@ namespace PERSIST
         private int shooter_head = 2;
         private int slowest_head = 0;
 
+        private bool flash = false;
+
         private Rectangle body_frame = new Rectangle(0, 128, 112, 240);
-        private int num_body_frames = 5;
+        private int num_body_frames = 3;
         private Vector2 neck_oset = new Vector2(56, 56);
 
         private Random rd = new Random();
@@ -2907,6 +2910,9 @@ namespace PERSIST
                 heads[i] = new Famine_Head(pos + oset, neck_oset_tmp, player, root, this);
                 root.AddEnemy(heads[i]);
 
+                if (i == 0)
+                    heads[i].highest = true;
+
                 head_timer[i] = timer_init[i];
 
                 // pull out index of slowest head
@@ -2941,10 +2947,22 @@ namespace PERSIST
 
             for (int i = 0; i < num_heads; i++)
                 UpdateHead(gameTime, heads[i], i, i==slowest_head);
+
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
+                if (flash_timer > CONSTANTS.flash_limit)
+                {
+                    flash_timer = 0;
+                    flash = false;
+                }
+            }
         }
 
         public void UpdateHead(GameTime gameTime, Famine_Head head, int i, bool slowest)
         {
+            head.Update(gameTime);
+
             head_timer[i] += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (head_attacking[i])
@@ -2989,13 +3007,16 @@ namespace PERSIST
             Rectangle body_frame_tmp = body_frame;
             body_frame_tmp.X += body_frame.Width * (int)(timer * 10 % num_body_frames);
 
-            spriteBatch.Draw(sprite, PositionRectangle, body_frame_tmp, Color.White);
-
             for (int i = 0; i < num_heads; i++)
             {
                 heads[i].timer = timer;
                 heads[i].Draw(spriteBatch);
             }
+
+            spriteBatch.Draw(sprite, PositionRectangle, body_frame_tmp, Color.Black);
+
+            if (flash)
+                spriteBatch.Draw(sprite, PositionRectangle, body_frame_tmp, Color.White * 0.03f);
                 
         }
 
@@ -3018,6 +3039,7 @@ namespace PERSIST
         public override void Damage(float damage)
         {
             hp -= damage;
+            flash = true;
         }
 
 
@@ -3029,19 +3051,28 @@ namespace PERSIST
         private Famine famine;
 
         private int h_oset = 6;
-        private int v_oset = 8;
+        private int v_oset = 18;
         private float vsp = 0f;
         private float hsp = 0f;
         private float neck_vsp = 0f;
         private float neck_hsp = 0f;
         private bool extended = false;
         private bool fired = false;
+        public bool highest = false;
+        public bool flash = false;
+        private bool draw_blue = false;
 
         private float idle_timer = 0f;
         private float atk_timer = 0f;
+        private float flash_timer = 0f;
+
+        private Queue<Vector2> blue_queue = new Queue<Vector2>();
+        int blue_queue_max = 0;
 
         private Rectangle frame = new Rectangle(0, 0, 32, 32);
         private Rectangle neck_frame = new Rectangle(256, 0, 16, 16);
+        private int flash_xoset = 336;
+        private int blue_xoset = 464;
 
         private Vector2 base_pos;
         private Vector2 windup;
@@ -3054,10 +3085,10 @@ namespace PERSIST
         public float timer = 0f;
 
         public Rectangle PositionRectangle
-        { get { return new Rectangle((int)pos.X, (int)pos.Y - v_oset, 32, 32); } }
+        { get { return new Rectangle((int)pos.X - h_oset, (int)pos.Y - (v_oset / 2), 32, 32); } }
 
         public Rectangle HitBox
-        { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
+        { get { return new Rectangle((int)pos.X, (int)pos.Y, PositionRectangle.Width - (h_oset * 2), PositionRectangle.Height - v_oset); } }
 
         public Famine_Head(Vector2 pos, Vector2 neck_oset, Player player, StyxLevel root, Famine famine)
         {
@@ -3077,12 +3108,21 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            // nothing (yet)
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
+                if (flash_timer > CONSTANTS.flash_limit)
+                {
+                    flash_timer = 0;
+                    flash = false;
+                }
+            }
         }
 
         public override void Damage(float damage)
         {
             famine.Damage(damage);
+            flash = true;
         }
 
         public void Idle(GameTime gameTime)
@@ -3144,15 +3184,21 @@ namespace PERSIST
             else
             {
                 SmoothMove(gameTime, target, 15);
-                //hurtful = pos != target;
+                hurtful = pos != target;
 
-                hurtful = false;
+                //hurtful = false;
 
                 frame.Y = 32;
 
                 if ((pos - target).Length() < 16)
                 {
                     frame.Y = 64;
+                    //blue_queue.Clear();
+                    blue_queue_max = 0;
+                }
+                else
+                {
+                    blue_queue_max = 7;
                 }
             }
                 
@@ -3196,17 +3242,42 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            // draw spectral blue VFX when attacking
+            if (blue_queue.Count > blue_queue_max)
+                blue_queue.Dequeue();
 
+            for (int i = 0; i < blue_queue.Count; i++)
+            {
+                Rectangle d_pos = new Rectangle((int)blue_queue.ToArray()[i].X - h_oset, 
+                                                (int)blue_queue.ToArray()[i].Y - (v_oset / 2), 
+                                                PositionRectangle.Width, 
+                                                PositionRectangle.Height);
+
+                Rectangle head_blue_frame = frame;
+                head_blue_frame.X += blue_xoset;
+                head_blue_frame.X += frame.Width * (int)(timer * 10 % num_head_frames);
+
+                spriteBatch.Draw(sprite, d_pos, head_blue_frame, Color.White * 0.06f);
+            }
+
+            if (blue_queue_max != 0)
+                blue_queue.Enqueue(pos);
+
+
+            // draw neck
             for (int i = 1; i < neck_num; i++)
             {
                 float neck_hsp_tmp = neck_hsp / (neck_num - i);
                 float neck_vsp_tmp = neck_vsp / (neck_num - i);
 
-                if (!extended)
+                if (extended)
                 {
                     neck_hsp_tmp = 0f;
                     neck_vsp_tmp = 0f;
                 }
+
+                if (highest)
+                    neck_vsp_tmp /= 2;
 
                 Vector2 neck_base = base_pos + neck_oset;
                 Vector2 neck_pos = (neck_base - pos) * i / neck_num;
@@ -3219,12 +3290,30 @@ namespace PERSIST
 
                 Rectangle neck_frame_tmp = neck_frame;
                 neck_frame_tmp.X += neck_frame.Width * (int)(timer * 10 % num_neck_frames);
-                spriteBatch.Draw(sprite, neck_rect, neck_frame_tmp, Color.White);
+
+                if (flash)
+                {
+                    spriteBatch.Draw(sprite, neck_rect, neck_frame_tmp, Color.Black * 0.14f);
+                    spriteBatch.Draw(sprite, neck_rect, neck_frame_tmp, Color.White * 0.06f);
+                }
+                else
+                {
+                    spriteBatch.Draw(sprite, neck_rect, neck_frame_tmp, Color.Black * 0.2f);
+                }
+
+
             }
 
             Rectangle head_frame_tmp = frame;
             head_frame_tmp.X += frame.Width * (int)(timer * 10 % num_head_frames);
             spriteBatch.Draw(sprite, PositionRectangle, head_frame_tmp, Color.White);
+
+            if (flash)
+            {
+                Rectangle head_flash_frame = head_frame_tmp;
+                head_flash_frame.X += flash_xoset;
+                spriteBatch.Draw(sprite, PositionRectangle, head_flash_frame, Color.White * 0.3f);
+            }
         }
 
 
