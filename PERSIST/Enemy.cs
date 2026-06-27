@@ -78,6 +78,13 @@ namespace PERSIST
                 pos.Y = target.Y;
         }
 
+        public float GentleFloat(float timer, float base_y, float amplitude=4, float speed=2)
+        {
+            // returns a y value that results in the enemy gently floating up and down
+            float oset = amplitude * (float)Math.Sin(timer * speed);
+            return base_y + oset;
+        }
+
         protected Level root;
         protected Player player = null;
         public Room room { get; set; } = null;
@@ -4361,6 +4368,10 @@ namespace PERSIST
         private float timer = 0f;
         private int frame_reset = 4;
         private int frame_base = 0;
+        private int frame_xbase = 0;
+        private int frame_ybase = 0;
+        private float base_y = 0;
+        private float vsp = 0f;
         private string type;
 
         private Rectangle frame = new Rectangle(0, 352, 32, 32);
@@ -4379,6 +4390,8 @@ namespace PERSIST
             this.pos = pos;
             this.root = root;
             this.type = type;
+
+            base_y = pos.Y;
 
             hurtful = false;
             pogoable = false;
@@ -4402,7 +4415,20 @@ namespace PERSIST
 
         private void UpdateFamine(GameTime gameTime)
         {
+            if (looking)
+                frame_ybase = 416;
+            else
+                frame_ybase = 32;
 
+            frame_reset = 4;
+
+            frame.Y = frame_ybase;
+
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            frame.X = frame_xbase + (32 * ((int)(timer * 10) % frame_reset));
+
+            // gentle float
+            pos.Y = GentleFloat(timer, base_y, 2, 2);
         }
 
         private void UpdatePickup(GameTime gameTime)
@@ -4425,7 +4451,7 @@ namespace PERSIST
             }
 
 
-            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds * (60 / CONSTANTS.frame_rate);
             frame.X = frame_base + (32 * ((int)(timer * 10) % frame_reset));
         }
 
@@ -4582,11 +4608,14 @@ namespace PERSIST
         private String type;
         private bool trigger_watch = false;
         private bool triggered = false;
+        private float base_y = 0f;
 
         private bool dtrig1 = false;
         private bool dtrig2 = false;
         private bool dtrig3 = false;
         private bool dtrig4 = false;
+
+        private float timer = 0f;
 
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 48, 48); } }
@@ -4597,6 +4626,8 @@ namespace PERSIST
             this.root = root;
             this.type = type;
             this.player = player;
+
+            base_y = pos.Y;
 
             hurtful = false;
             pogoable = false;
@@ -4639,6 +4670,13 @@ namespace PERSIST
                 root.FightFamine(gameTime);
                 triggered = true;
             }
+        }
+
+        public void Animate(GameTime gameTime)
+        {
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds * (60 / CONSTANTS.frame_rate);
+
+            pos.Y = GentleFloat(timer, base_y, 4, 1);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

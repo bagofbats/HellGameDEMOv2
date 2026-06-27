@@ -78,6 +78,7 @@ namespace PERSIST
         protected float dialogue_speed = 5f;
         protected float dialogue_speed_multiplier = 1f;
         protected bool dialogue_skippable = true;
+        protected bool dialogue_physics = false;
         protected int opts_highlighted = 0;
         protected bool cutscene_cam = false;
         protected bool cutscene_cam_simple = false;
@@ -174,6 +175,12 @@ namespace PERSIST
             if (dialogue)
             {
                 DialogueActions(gameTime);
+                if (dialogue_physics)
+                {
+                    player.SetNoInput();
+                    player.DoMovement(gameTime);
+                    player.DoAnimate(gameTime);
+                }
             }
 
 
@@ -1008,7 +1015,7 @@ namespace PERSIST
             }
         }
 
-        public void StartDialogue(DialogueStruct[] array, int start_index, char justification, float speed, bool skippable=true, bool lookforward=true)
+        public void StartDialogue(DialogueStruct[] array, int start_index, char justification, float speed, bool skippable=true, bool lookforward=true, bool physics=false)
         {
             dialogue = true;
             dialogue_txt = array;
@@ -1016,8 +1023,9 @@ namespace PERSIST
             dialogue_loc = justification;
             dialogue_speed = speed;
             dialogue_skippable = skippable;
+            dialogue_physics = physics;
             opts_highlighted = 0;
-            player.EnterDialogue();
+            player.EnterDialogue(lookforward);
         }
 
         public void AdvanceDialogue()

@@ -279,13 +279,16 @@ namespace PERSIST
             enter = false;
             shift = false;
 
-
             space_pressed = false;
             space_released = false;
             enter_pressed = false;
             enter_released = false;
             shift_pressed = false;
             shift_released = false;
+
+            // cancel dashing
+            dashing = false;
+            dash_timer = 0f;
         }
 
         public void DoMovement(GameTime gameTime)

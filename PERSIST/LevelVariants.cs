@@ -904,6 +904,7 @@ namespace PERSIST
         private Lukas_Cutscene lukas_cutscene = null;
         private ShadePickup shade_pickup = null;
         private Kanna_Cutscene kanna_cutscene = null;
+        private Reaper_Cutscene reaper_cutscene = null;
 
         private Alice_Boss alice_boss;
 
@@ -2002,6 +2003,9 @@ namespace PERSIST
 
             if (lukas_cutscene != null && dialogue)
                 lukas_cutscene.Update(gameTime);
+
+            if (reaper_cutscene != null && dialogue)
+                reaper_cutscene.Animate(gameTime);
 
             river_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
 
@@ -3108,6 +3112,12 @@ namespace PERSIST
 
             if (cutscene_code[0] == "fightfamine")
             {
+                if (lukas_cutscene != null)
+                    lukas_cutscene.Update(gameTime);
+
+                if (reaper_cutscene != null)
+                    reaper_cutscene.Animate(gameTime);
+
                 if (cutscene_timer > 0f)
                 {
                     player.SetNoInput();
@@ -3116,7 +3126,17 @@ namespace PERSIST
 
                     if (cutscene_code[1] == "")
                     {
-                        StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+                        foreach (Enemy e in enemies)
+                        {
+                            if (e.GetType() == typeof(Lukas_Cutscene))
+                                lukas_cutscene = (Lukas_Cutscene)e;
+
+                            if (e.GetType() == typeof(Reaper_Cutscene))
+                                reaper_cutscene = (Reaper_Cutscene)e;
+                        }
+                            
+
+                        StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true, true, true);
                         cutscene_code[1] = "-";
                         famine_dialogue_loc++;
 
@@ -3130,7 +3150,7 @@ namespace PERSIST
                     cutscene_cam = true;
                     cutscene_cam_simple = true;
                     cutscene_cam_speed = 0.7f;
-                    cutscene_cam_pos = new Vector2(saved_camera_x + 128, saved_camera_y);
+                    cutscene_cam_pos = new Vector2(saved_camera_x + 112, saved_camera_y);
                 }
 
                 if (cutscene_timer > 4f && cutscene_code[2] == "")
@@ -3161,6 +3181,8 @@ namespace PERSIST
                     cutscene_cam = false;
                     cutscene_cam_simple = false;
                     door_trans = false;
+
+                    lukas_cutscene = null;
                 }
             }
 
@@ -3520,7 +3542,7 @@ namespace PERSIST
 
         public void FamineDialogue()
         {
-            StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+            StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true, true, false);
             famine_dialogue_loc++;
         }
 
