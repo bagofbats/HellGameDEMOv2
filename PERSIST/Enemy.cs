@@ -4382,6 +4382,9 @@ namespace PERSIST
         public bool looking
         { get; set; } = false;
 
+        public bool clutching
+        { get; set; } = false;
+
         public bool magic
         { get; set; } = false;
 
@@ -4415,7 +4418,9 @@ namespace PERSIST
 
         private void UpdateFamine(GameTime gameTime)
         {
-            if (looking)
+            if (clutching)
+                frame_ybase = 128;
+            else if (looking)
                 frame_ybase = 416;
             else
                 frame_ybase = 32;
@@ -4617,6 +4622,9 @@ namespace PERSIST
 
         private float timer = 0f;
 
+        public int frame_x = 240;
+        public int frame_y = 48;
+
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 48, 48); } }
 
@@ -4677,6 +4685,9 @@ namespace PERSIST
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds * (60 / CONSTANTS.frame_rate);
 
             pos.Y = GentleFloat(timer, base_y, 4, 1);
+
+            frame.X = frame_x;
+            frame.Y = frame_y;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

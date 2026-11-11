@@ -1311,6 +1311,21 @@ namespace PERSIST
         {
 
         }
+
+        // generic functions
+        public void SmoothMove(GameTime gameTime, Vector2 target, float delta)
+        {
+            float frame_factor = 60 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            float x_dif = target.X - bounds.X;
+            float y_dif = target.Y - bounds.Y;
+
+            bounds = new Rectangle(
+                (int)(bounds.X + x_dif / (delta / frame_factor)),
+                (int)(bounds.Y + y_dif / (delta / frame_factor)),
+                bounds.Width,
+                bounds.Height);
+        }
     }
 
     public class Obstacle
@@ -1480,6 +1495,9 @@ namespace PERSIST
         private int shake_xoset = 0;
         private int shake_yoset = 0;
 
+        public float destroy_threshhold 
+        { get; private set; } = 0.75f;
+
         private Random rnd = new Random();
 
         private string type = "";
@@ -1608,7 +1626,7 @@ namespace PERSIST
             }
                 
 
-            if (shake_timer >= 0.75f)
+            if (shake_timer >= destroy_threshhold)
             {
                 for (int i = draw_rectangle.X; i < draw_rectangle.X + draw_rectangle.Width; i += 16)
                     for (int j = draw_rectangle.Y; j < draw_rectangle.Y + draw_rectangle.Height; j += 16)
