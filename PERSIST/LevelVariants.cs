@@ -905,11 +905,16 @@ namespace PERSIST
         private ShadePickup shade_pickup = null;
         private Kanna_Cutscene kanna_cutscene = null;
         private Reaper_Cutscene reaper_cutscene = null;
+        private Famine famine_boss = null;
         private Crumble crumble_cutscene_1 = null;
         private Crumble crumble_cutscene_2 = null;
 
         private Vector2 saved_crumblepos1 = new Vector2(0, 0);
         private Vector2 saved_crumblepos2 = new Vector2(0, 0);
+        private Vector2 reaper_target_pos = new Vector2(0, 0);
+
+        public float famine_draw_oset
+        { get; private set; } = 0;
 
         private Alice_Boss alice_boss;
 
@@ -1135,7 +1140,8 @@ namespace PERSIST
             new DialogueStruct("Lukas . . .", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
             new DialogueStruct("You are not a good liar.", 'd', Color.Gray, 'r', true, "", 450, 0, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 3)),
 
-            new DialogueStruct("H-Huh?\nY-y-y-you . . . ?", 'd', Color.White, 'p', false, "", 540, 225),
+            new DialogueStruct("H-Huh?\nY-y-y-you . . . ?", 'd', Color.White, 'p', true, "", 540, 225),
+
             new DialogueStruct("L-L-Listen, buddy.\nYou g-gotta get out of here.\nReaper, she doesn't", 'd', Color.White, 'p', true, "", 540, 0),
 
             new DialogueStruct("\"FOR THEM, THE LIVING\"\n\"FOR US, THE DEAD\"\nYou know these words, do you not?", 'd', Color.DeepSkyBlue * 0.8f, 'r', false, "", 450, 135, 25f, new DialogueVFXStruct(Color.DeepSkyBlue, CONSTANTS.reaper_angry_trans, 4)),
@@ -1146,9 +1152,9 @@ namespace PERSIST
             new DialogueStruct("I apologize.\nI really do.\nIt is not supposed to be this way.", 'd', Color.Gray, 'r', false, "", 450, 180, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
             new DialogueStruct("But as long as you're here, well . . .", 'd', Color.Gray, 'r', true, "", 450, 45, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 3)),
 
-            new DialogueStruct("I don't have a choice.", 'd', Color.DeepSkyBlue * 0.8f, 'r', true, "", 450, 90, 25f, new DialogueVFXStruct(Color.DeepSkyBlue, CONSTANTS.reaper_angry_trans, 4)),
+            new DialogueStruct("I don't have a choice.", 'd', Color.DeepSkyBlue * 0.8f, 'r', true, "", 450, 135, 25f, new DialogueVFXStruct(Color.DeepSkyBlue, CONSTANTS.reaper_angry_trans, 4)),
         };
-        readonly int[] famine_start_bps = { 0, 1, 2, 3, 4, 5, 6, 8, 10, 13 };
+        readonly int[] famine_start_bps = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 14 };
         private int famine_dialogue_loc = 0;
 
         DialogueStruct[] dialogue_fisher =
@@ -3121,7 +3127,12 @@ namespace PERSIST
                     lukas_cutscene.Update(gameTime);
 
                 if (reaper_cutscene != null)
+                {
                     reaper_cutscene.Animate(gameTime);
+                    if (reaper_target_pos.X != 0)
+                        reaper_cutscene.SmoothMove(gameTime, reaper_target_pos, 10);
+                }
+                    
 
                 if (crumble_cutscene_1 != null)
                 {
@@ -3135,6 +3146,7 @@ namespace PERSIST
                     crumble_cutscene_2.Update(gameTime);
                     crumble_cutscene_2.SmoothMove(gameTime, saved_crumblepos2 - new Vector2(-18, 72), 10);
                 }
+                    
                     
 
                 if (cutscene_timer > 0f)
@@ -3152,6 +3164,9 @@ namespace PERSIST
 
                             if (e.GetType() == typeof(Reaper_Cutscene))
                                 reaper_cutscene = (Reaper_Cutscene)e;
+
+                            if (e.GetType() == typeof(Famine))
+                                famine_boss = (Famine)e;
                         }
                             
 
@@ -3164,7 +3179,7 @@ namespace PERSIST
                     }
                 }
 
-                if (cutscene_timer > 0.03f)
+                if (cutscene_timer > 0.03f && cutscene_timer < 13f)
                 {
                     cutscene_cam = true;
                     cutscene_cam_simple = true;
@@ -3179,7 +3194,6 @@ namespace PERSIST
                     famine_dialogue_loc++;
                 }
 
-                // TODO: pick up the blocks and throw them away
                 if (cutscene_timer > 4.1f && cutscene_code[5] == "")
                 {
                     if (reaper_cutscene != null)
@@ -3216,7 +3230,7 @@ namespace PERSIST
 
                 if (cutscene_timer > 6f && cutscene_code[3] == "")
                 {
-                    StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+                    StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true, true, false, false);
                     cutscene_code[3] = "-";
                     famine_dialogue_loc++;
 
@@ -3225,6 +3239,13 @@ namespace PERSIST
 
                     if (reaper_cutscene != null)
                         reaper_cutscene.frame_y = 48;
+                }
+
+                if (cutscene_timer > 6f && cutscene_code[11] == "" && !dialogue)
+                {
+                    StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, false, true, false, true);
+                    cutscene_code[11] = "-";
+                    famine_dialogue_loc++;
                 }
 
                 // TODO: cool VFX engulfing lukas
@@ -3279,6 +3300,82 @@ namespace PERSIST
                     StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
                     cutscene_code[7] = "-";
                     famine_dialogue_loc++;
+                }
+
+                if (cutscene_timer > 11.95f && cutscene_timer < 13f)
+                {
+                    cutscene_cam = true;
+                    cutscene_cam_simple = false;
+                    cutscene_cam_speed = 10f;
+                    cutscene_cam_pos = new Vector2(480, 0);
+                }
+
+                if (cutscene_timer > 12f && cutscene_code[10] == "")
+                {
+                    if (reaper_cutscene != null)
+                        reaper_cutscene.flash = true;
+
+                    cutscene_code[10] = "-";
+                }
+
+                if (cutscene_timer > 12.05f && cutscene_code[12] == "")
+                {
+                    if (reaper_cutscene != null)
+                    {
+                        reaper_cutscene.gentle_float = false;
+                        reaper_cutscene.SetPos(reaper_cutscene.Pos + new Vector2(-144, 0));
+                        reaper_target_pos = reaper_cutscene.Pos + new Vector2(0, -24);
+                        reaper_cutscene.frame_x = 0;
+                        reaper_cutscene.frame_y = 192;
+                    }
+                        
+                    cutscene_code[12] = "-";
+                }
+
+                if (cutscene_timer > 12.1f && cutscene_code[13] == "")
+                {
+                    if (reaper_cutscene != null)
+                        reaper_cutscene.flash = false;
+
+                    cutscene_code[13] = "-";
+                }
+
+                if (cutscene_timer > 13 && cutscene_code[14] == "")
+                {
+                    StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
+                    famine_dialogue_loc++;
+
+                    cutscene_code[14] = "-";
+                }
+
+                if (cutscene_timer > 13.4 && cutscene_code[15] == "")
+                {
+                    for (int i = special_walls.Count - 1; i >= 0; i--)
+                        if (special_walls[i].GetType() == typeof(FakeWall))
+                        {
+                            RemoveSpecialWall(special_walls[i]);
+                            break;
+                        }
+
+                    famine_draw_oset = 180;
+
+                    cutscene_code[15] = "-";     
+                }
+
+                if (cutscene_timer > 15f && cutscene_timer < 99f)
+                {
+                    cutscene_cam = true;
+                    cutscene_cam_simple = true;
+                    cutscene_cam_speed = 0.7f;
+                    cutscene_cam_pos = new Vector2(480, 240);
+                }
+
+                if (cutscene_timer > 21f && cutscene_timer < 99f)
+                {
+                    if (famine_draw_oset > 0)
+                        famine_draw_oset -= (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
+
+                    famine_boss.Animate(gameTime);
                 }
 
                 if (cutscene_timer > 99.8f)
@@ -3643,7 +3740,7 @@ namespace PERSIST
         {
             if (!prog_manager.GetFlag(FLAGS.famine_started)) 
             {
-                HandleCutscene("fightfamine||||||||||||||||||", gameTime, true);
+                HandleCutscene("fightfamine|||||||||||||||||||||||||||||", gameTime, true);
             }
         }
 

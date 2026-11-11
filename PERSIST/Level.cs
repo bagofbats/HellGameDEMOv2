@@ -79,6 +79,7 @@ namespace PERSIST
         protected float dialogue_speed_multiplier = 1f;
         protected bool dialogue_skippable = true;
         protected bool dialogue_physics = false;
+        protected bool dialogue_autoplay = false;
         protected int opts_highlighted = 0;
         protected bool cutscene_cam = false;
         protected bool cutscene_cam_simple = false;
@@ -278,6 +279,9 @@ namespace PERSIST
             {
                 dialogue_letter += (float)gameTime.ElapsedGameTime.TotalSeconds * dialogue_txt[dialogue_num].speed * dialogue_speed_multiplier;
                 dialogue_letter = Math.Min(dialogue_letter, dialogue_txt[dialogue_num].text.Length);
+
+                if (dialogue_autoplay && dialogue_letter == dialogue_txt[dialogue_num].text.Length)
+                    AdvanceDialogue();
 
                 dialogue_vfx_yoset = 2f * (float)Math.Sin(generic_timer * 3); //+ 0.04f * Math.Sign(Math.Sin(generic_timer * 3));
                 dialogue_vfx_xoset = 2f * (float)Math.Cos((generic_timer * 3) + 0.2f); //+ 0.04f * Math.Sign(Math.Cos(generic_timer * 3));
@@ -1015,7 +1019,7 @@ namespace PERSIST
             }
         }
 
-        public void StartDialogue(DialogueStruct[] array, int start_index, char justification, float speed, bool skippable=true, bool lookforward=true, bool physics=false)
+        public void StartDialogue(DialogueStruct[] array, int start_index, char justification, float speed, bool skippable=true, bool lookforward=true, bool physics=false, bool autoplay=false)
         {
             dialogue = true;
             dialogue_txt = array;
@@ -1024,6 +1028,7 @@ namespace PERSIST
             dialogue_speed = speed;
             dialogue_skippable = skippable;
             dialogue_physics = physics;
+            dialogue_autoplay = autoplay;
             opts_highlighted = 0;
             player.EnterDialogue(lookforward);
         }

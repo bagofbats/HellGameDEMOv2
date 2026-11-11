@@ -2847,6 +2847,8 @@ namespace PERSIST
 
     public class Famine : Enemy
     {
+        protected new StyxLevel root;
+
         private Texture2D sprite;
 
         private int h_oset = 3;
@@ -3011,6 +3013,11 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            Rectangle drawbox = PositionRectangle;
+
+            if (!root.prog_manager.GetFlag(FLAGS.famine_started))
+                drawbox.Y += (int)root.famine_draw_oset;
+
             Rectangle body_frame_tmp = body_frame;
             body_frame_tmp.X += body_frame.Width * (int)(timer * 10 % num_body_frames);
 
@@ -3020,11 +3027,29 @@ namespace PERSIST
                 heads[i].Draw(spriteBatch);
             }
 
-            spriteBatch.Draw(sprite, PositionRectangle, body_frame_tmp, Color.Black);
+            spriteBatch.Draw(sprite, drawbox, body_frame_tmp, Color.Black);
 
             if (flash)
-                spriteBatch.Draw(sprite, PositionRectangle, body_frame_tmp, Color.White * 0.03f);
+                spriteBatch.Draw(sprite, drawbox, body_frame_tmp, Color.White * 0.03f);
                 
+        }
+
+        public void Animate(GameTime gameTime)
+        {
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
+
+            for (int i = 0; i < num_heads; i++)
+                AnimateHead(gameTime, heads[i], i, i == slowest_head);
+        }
+
+        public void AnimateHead(GameTime gameTime, Famine_Head head, int i, bool slowest)
+        {
+
+        }
+
+        public void ResetForFight()
+        {
+
         }
 
 
@@ -3054,6 +3079,8 @@ namespace PERSIST
 
     public class Famine_Head : Enemy
     {
+        protected new StyxLevel root;
+
         private Texture2D sprite;
         private Famine famine;
 
@@ -3249,6 +3276,11 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            Rectangle drawbox = PositionRectangle;
+
+            if (!root.prog_manager.GetFlag(FLAGS.famine_started))
+                drawbox.Y += (int)root.famine_draw_oset;
+
             // draw spectral blue VFX when attacking
             if (blue_queue.Count > blue_queue_max)
                 blue_queue.Dequeue();
@@ -3295,6 +3327,10 @@ namespace PERSIST
                     16
                     );
 
+                // extra clause for cutscene before fight
+                if (!root.prog_manager.GetFlag(FLAGS.famine_started))
+                    neck_rect.Y += (int)root.famine_draw_oset;
+
                 Rectangle neck_frame_tmp = neck_frame;
                 neck_frame_tmp.X += neck_frame.Width * (int)(timer * 10 % num_neck_frames);
 
@@ -3313,13 +3349,13 @@ namespace PERSIST
 
             Rectangle head_frame_tmp = frame;
             head_frame_tmp.X += frame.Width * (int)(timer * 10 % num_head_frames);
-            spriteBatch.Draw(sprite, PositionRectangle, head_frame_tmp, Color.White);
+            spriteBatch.Draw(sprite, drawbox, head_frame_tmp, Color.White);
 
             if (flash)
             {
                 Rectangle head_flash_frame = head_frame_tmp;
                 head_flash_frame.X += flash_xoset;
-                spriteBatch.Draw(sprite, PositionRectangle, head_flash_frame, Color.White * 0.3f);
+                spriteBatch.Draw(sprite, drawbox, head_flash_frame, Color.White * 0.3f);
             }
         }
 
@@ -4625,6 +4661,12 @@ namespace PERSIST
         public int frame_x = 240;
         public int frame_y = 48;
 
+        public bool flash
+        { get; set; } = false;
+
+        public bool gentle_float
+        { get; set; } = true;
+
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 48, 48); } }
 
@@ -4682,9 +4724,11 @@ namespace PERSIST
 
         public void Animate(GameTime gameTime)
         {
+
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds * (60 / CONSTANTS.frame_rate);
 
-            pos.Y = GentleFloat(timer, base_y, 4, 1);
+            if (gentle_float)
+                pos.Y = GentleFloat(timer, base_y, 4, 1);
 
             frame.X = frame_x;
             frame.Y = frame_y;
@@ -4693,6 +4737,12 @@ namespace PERSIST
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+
+            Rectangle flash_frame = frame;
+            flash_frame.X += 384;
+
+            if (flash)
+                spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.White);
         }
 
         public override void LoadAssets(Texture2D sprite)
@@ -4700,6 +4750,10 @@ namespace PERSIST
             this.sprite = sprite;
         }
 
+        public void SetPos(Vector2 new_pos)
+        {
+            this.pos = new_pos;
+        }
 
 
 

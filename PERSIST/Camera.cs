@@ -81,9 +81,9 @@ namespace PERSIST
                 current_y = target.Y;
 
             if (current_x != target.X)
-                current_x += diff;
+                current_x += diff * xdir;
             if (current_y != target.Y)
-                current_y += diff;
+                current_y += diff * ydir;
 
             stable = current_x == target.X && current_y == target.Y;
 
