@@ -1429,7 +1429,7 @@ namespace PERSIST
                                 special_walls_types.Add(s);
                             }
 
-                            if (l.objects[i].name == "fake_wall")
+                            if (l.objects[i].name == "fake_wall" && !prog_manager.GetFlag(FLAGS.famine_started))
                             {
                                 var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
                                 var wall = new FakeWall(temp);
@@ -1945,6 +1945,7 @@ namespace PERSIST
             asset_map.Add(typeof(SmallPlush), tst_styx);
             asset_map.Add(typeof(Alice_Boss), spr_alice);
             asset_map.Add(typeof(Reaper_Cutscene), spr_reaper);
+            asset_map.Add(typeof(FakeWall), tst_styx);
 
             asset_map.Add(typeof(ShadePickup), tst_styx);
             asset_map.Add(typeof(KeyPickup), tst_styx);
@@ -3370,15 +3371,25 @@ namespace PERSIST
                     cutscene_cam_pos = new Vector2(480, 240);
                 }
 
-                if (cutscene_timer > 21f && cutscene_timer < 99f)
+                if (cutscene_timer > 21f && cutscene_timer < 42f)
                 {
                     if (famine_draw_oset > 0)
                         famine_draw_oset -= (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
 
-                    famine_boss.Animate(gameTime);
+                    famine_boss.Animate(gameTime, false);
                 }
 
-                if (cutscene_timer > 99.8f)
+                if (cutscene_timer > 42f && cutscene_timer < 47f)
+                {
+                    famine_boss.Animate(gameTime, true);
+                }
+
+                if (cutscene_timer > 47f && cutscene_timer < 99f)
+                {
+                    famine_boss.Animate(gameTime, false);
+                }
+
+                if (cutscene_timer > 48f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
@@ -3386,7 +3397,11 @@ namespace PERSIST
                     cutscene_cam_simple = false;
                     door_trans = false;
 
+                    famine_boss.ResetForFight();
+
                     lukas_cutscene = null;
+
+                    prog_manager.SetFlag(FLAGS.famine_started);
                 }
             }
 

@@ -3034,22 +3034,23 @@ namespace PERSIST
                 
         }
 
-        public void Animate(GameTime gameTime)
+        public void Animate(GameTime gameTime, bool yell)
         {
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
 
             for (int i = 0; i < num_heads; i++)
-                AnimateHead(gameTime, heads[i], i, i == slowest_head);
-        }
-
-        public void AnimateHead(GameTime gameTime, Famine_Head head, int i, bool slowest)
-        {
-
+            {
+                if (yell)
+                    heads[i].Yell(gameTime, new Vector2(-24, -24));
+                else
+                    heads[i].Idle(gameTime);
+            }
+                
         }
 
         public void ResetForFight()
         {
-
+            timer = 0f;
         }
 
 
@@ -3175,12 +3176,17 @@ namespace PERSIST
 
                 idle_timer = 0f;
 
+                if ((pos - base_pos).Length() < 16)
+                {
+                    hurtful = true;
+                }
+
                 return;
             }
 
             extended = false;
             fired = false;
-            hurtful = false;
+            hurtful = true;
 
             // circle spin
             idle_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -3218,17 +3224,21 @@ namespace PERSIST
             else
             {
                 SmoothMove(gameTime, target, 15);
-                hurtful = pos != target;
+                //hurtful = pos != target;
 
                 //hurtful = false;
 
                 frame.Y = 32;
+
+                hurtful = true;
 
                 if ((pos - target).Length() < 16)
                 {
                     frame.Y = 64;
                     //blue_queue.Clear();
                     blue_queue_max = 0;
+
+                    hurtful = false;
                 }
                 else
                 {
@@ -3259,6 +3269,34 @@ namespace PERSIST
                 fired = false;
                 atk_timer = 0f;
                 AddProjectile(pos.X, pos.Y, "spew", famine.room.bounds, false);
+            }
+        }
+
+        public void Yell(GameTime gameTime, Vector2 oset)
+        {
+            if (atk_timer == 0)
+            {
+                windup = base_pos + oset;
+                windup.Normalize();
+                windup *= -16;
+                windup += pos;
+            }
+
+            atk_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            extended = true;
+
+            if (atk_timer < famine.idle_threshold * 0.1f)
+            {
+                SmoothMove(gameTime, windup, 17);
+                frame.Y = 96;
+            }
+
+            else
+            {
+                SmoothMove(gameTime, base_pos + oset, 17);
+
+                frame.Y = 32;
             }
         }
 
@@ -3347,9 +3385,13 @@ namespace PERSIST
 
             }
 
+            float opacity = 1f;
+            if (!hurtful)
+                opacity = 0.3f;
+
             Rectangle head_frame_tmp = frame;
             head_frame_tmp.X += frame.Width * (int)(timer * 10 % num_head_frames);
-            spriteBatch.Draw(sprite, drawbox, head_frame_tmp, Color.White);
+            spriteBatch.Draw(sprite, drawbox, head_frame_tmp, Color.White * opacity);
 
             if (flash)
             {
@@ -4145,8 +4187,6 @@ namespace PERSIST
         {
             pogoable = false;
             destroy_projectile = false;
-
-            hurtful = false;
 
             this.pos = pos;
             this.type = type;

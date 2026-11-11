@@ -1706,9 +1706,25 @@ namespace PERSIST
 
     public class FakeWall : Wall
     {
+        Texture2D img;
+
         public FakeWall(Rectangle bounds) : base(bounds)
         {
 
+        }
+
+        public override void Load(Texture2D img)
+        {
+            this.img = img;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Rectangle frame = new Rectangle(232, 104, 8, 8);
+
+            for (int i = 0; i < bounds.Width; i += 8)
+                spriteBatch.Draw(img, new Rectangle(bounds.X + i, bounds.Y, 8, 8), frame, Color.White);
+            
         }
     }
 
