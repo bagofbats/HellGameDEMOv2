@@ -1360,10 +1360,10 @@ namespace PERSIST
             new DialogueStruct("A statue of shadows.\nThey look a bit like the thing that attacked you.", 'd', Color.White, 'c'),
             new DialogueStruct("There is an inscription on the pedestal.", 'd', Color.White, 'c'),
             new DialogueStruct("Though slain, the primordials live on.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
-            new DialogueStruct("They lie slumbering,\nIn thise that are neither alive nor dead.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("They lie slumbering,\nIn those that are neither alive nor dead.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
             new DialogueStruct("Perhaps, under the right cirucmstances\nthey could awaken once again.", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
 
-            new DialogueStruct("The primordials threaten ORDER.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("The primordials threaten the precious ORDER.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
             new DialogueStruct("For REAPER to succeed,\nthey must stay forever contained.", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
         };
         int[] shade_statue_bps = { 0, 5 };

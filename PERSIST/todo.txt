@@ -3,11 +3,9 @@
  - saving/reloading
  - inventory
  - have tilting the joystick just a little bit make trigo walk slowly?
- - have some collapsable blocks go behind styx
  - think harder abt dashing and attacking at the same time
  - have different levels be able to load/unload sounds from audio manager
    so all the sounds aren't always loaded into memory all the time
- - check whether Lukas has to update the projectiles himself
  - give shockwave better hit box
  - doors out of secret areas should give dialogue box
  - clamp mushroom boss's X pos to be inside the zone at all times
@@ -64,6 +62,7 @@ art:
 
 secret content plan:
  - tutorial: one bonus level that gives you charon's blessing
+    - getting charon's blessing unlocks alternate final bosses for all areas??
  - styx: two bonus levels plus boss fight versus Alice that frees her from prison
  - laboratory: one bonus level that gives you good luck charm
  - tower: zero bonus levels
