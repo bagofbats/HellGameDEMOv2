@@ -1340,7 +1340,35 @@ namespace PERSIST
         };
         int[] conquest_statue_bps = { 0, 2 };
 
-        
+        DialogueStruct[] dialogue_reaper_statue =
+        {
+            new DialogueStruct("A statue of a woman.\nShe holds several chains in her right hand.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an inscription on the pedestal.", 'd', Color.White, 'c'),
+            new DialogueStruct("In the age of primordials\nthere was neither life nor death\nbut simply CHAOS.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("Slain at the hands of REAPER, their age is over\nand in the great slayer's wake, a new age began.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("This is an age of ORDER.\nAn age where the living and the dead\nshall have their rightful place.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("Here, she carries out her work.\nOverseer and enforcer of a new project:", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("THE LAND OF THE DEAD", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+
+            new DialogueStruct("FOR THEM, THE LIVING\nFOR US, THE DEAD", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("Such was her decree.", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+        };
+        int[] reaper_statue_bps = { 0, 7 };
+
+        DialogueStruct[] dialogue_shade_statue =
+        {
+            new DialogueStruct("A statue of shadows.\nThey look a bit like the thing that attacked you.", 'd', Color.White, 'c'),
+            new DialogueStruct("There is an inscription on the pedestal.", 'd', Color.White, 'c'),
+            new DialogueStruct("Though slain, the primordials live on.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("They lie slumbering,\nIn thise that are neither alive nor dead.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("Perhaps, under the right cirucmstances\nthey could awaken once again.", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+
+            new DialogueStruct("The primordials threaten ORDER.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("For REAPER to succeed,\nthey must stay forever contained.", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+        };
+        int[] shade_statue_bps = { 0, 5 };
+
+
 
         // dialogue_key is inside the key object -- i know, confusing...
 
@@ -1889,6 +1917,15 @@ namespace PERSIST
 
                                 if (value == "death_statue")
                                     temp.SetType(dialogue_death_statue, death_statue_bps);
+
+                                if (value == "conquest_statue")
+                                    temp.SetType(dialogue_conquest_statue, conquest_statue_bps);
+
+                                if (value == "reaper_statue")
+                                    temp.SetType(dialogue_reaper_statue, reaper_statue_bps);
+
+                                if (value == "shade_statue")
+                                    temp.SetType(dialogue_shade_statue, shade_statue_bps);
 
                                 AddInteractable(temp);
                             }
