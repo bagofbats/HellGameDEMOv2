@@ -3594,6 +3594,7 @@ namespace PERSIST
                     var temp = new Spectral_Alice(starting_pos, player, root);
                     root.AddEnemy(temp);
                     temp.LoadAssets(sprite);
+                    temp.Update(gameTime);
                     second_alice = true;
                 }
 
@@ -3603,6 +3604,7 @@ namespace PERSIST
                     var temp = new Spectral_Alice(starting_pos, player, root);
                     root.AddEnemy(temp);
                     temp.LoadAssets(sprite);
+                    temp.Update(gameTime);
                     third_alice = true;
                 }
             }
@@ -3625,7 +3627,13 @@ namespace PERSIST
             {
                 Vector2 ppos = player.GetPos();
 
-                right = rd.Next(2) == 0;
+                // don't let her spawn over the pit
+                if (!root.alice_zone.Contains(new Vector2(ppos.X - distance, ppos.Y)))
+                    right = false;
+                else if (!root.alice_zone.Contains(new Vector2(ppos.X + distance, ppos.Y)))
+                    right = true;
+                else
+                    right = rd.Next(2) == 0;
 
                 if (right)
                 {
@@ -3645,6 +3653,8 @@ namespace PERSIST
                     atk_target.X = ppos.X - (distance / 1.6f);
                     atk_target.Y = starting_pos.Y;
                 }
+
+                atk_target.X = Math.Clamp(atk_target.X, root.alice_zone.Left - h_oset, root.alice_zone.Right - PositionRectangle.Width + h_oset);
 
             }
 
