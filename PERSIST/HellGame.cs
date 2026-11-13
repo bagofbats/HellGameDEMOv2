@@ -678,7 +678,7 @@ namespace PERSIST
 
         private Level GenerateStyxLevel(Camera cam)
         {
-            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx3.tmx");
+            TiledMap one_map = new TiledMap(Content.RootDirectory + "\\rm_styx4.tmx");
             //TiledMap two_map = new TiledMap(Content.RootDirectory + "\\rm_styx2.tmx");
             //TiledMap thr_map = new TiledMap(Content.RootDirectory + "\\rm_styx_secret.tmx");
             TiledTileset one_tst = new TiledTileset(Content.RootDirectory + "\\tst_styx.tsx");
