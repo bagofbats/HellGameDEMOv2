@@ -3431,11 +3431,9 @@ namespace PERSIST
         protected bool super_flash = false;
         protected bool cooldown = false;
         protected bool right = false;
-        protected bool second_alice = false;
-        protected bool third_alice = false;
         protected bool over_middle = false;
         protected bool over_two_thirds = false;
-        protected bool timers_changed = false;
+        //protected bool timers_changed = false;
 
         protected STATES state;
         protected STATES old_state = STATES.diagonal;
@@ -3495,15 +3493,6 @@ namespace PERSIST
         public Rectangle HitBox
         { get { return new Rectangle((int)pos.X + h_oset, (int)pos.Y + v_oset, 32 - (h_oset * 2), 32 - v_oset); } }
 
-        protected void ActualUpdate(GameTime gameTime)
-        {
-            root.GetBossHP(hp, max_hp);
-
-            CycleAttacks(gameTime);
-
-            HandleFlash(gameTime);
-        }
-
         protected void CycleAttacks(GameTime gameTime)
         {
             // player_dir
@@ -3551,67 +3540,6 @@ namespace PERSIST
                 Cooldown(gameTime);
 
             state_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            /**
-            if (!second_alice && hp < max_hp * second_alice_threshhold && !cooldown)
-            {
-                
-                if (!over_middle && !timers_changed && state_timer > state_threshholds[state] / 2.6f)
-                {
-                    state_threshholds[STATES.dive] += 0.44f;
-                    state_threshholds[STATES.strike] += 0.44f;
-                    state_threshholds[STATES.cooldown] += 0.44f;
-                    timers_changed = true;
-                }
-
-                // only spawn second alice in the middle of an attack
-                if (over_middle && timers_changed)
-                {
-                    var temp = new Spectral_Alice(starting_pos, player, root);
-                    root.AddEnemy(temp);
-                    temp.LoadAssets(sprite);
-                    second_alice = true;
-                }
-            }
-
-            over_middle = state_timer > state_threshholds[state] / 2;
-            **/
-
-            if (!(second_alice && third_alice) && hp < max_hp * second_alice_threshhold && !cooldown)
-            {
-
-                if (!over_middle && !timers_changed && state_timer > state_threshholds[state] / 3.4f)
-                {
-                    state_threshholds[STATES.dive] += 0.44f * 2;
-                    state_threshholds[STATES.strike] += 0.44f * 2;
-                    // state_threshholds[STATES.cooldown] += 0.44f;
-                    timers_changed = true;
-                }
-
-                // only spawn second alice in the middle of an attack
-                if (over_middle && timers_changed && !second_alice)
-                {
-                    var temp = new Spectral_Alice(starting_pos, player, root);
-                    root.AddEnemy(temp);
-                    temp.LoadAssets(sprite);
-                    temp.Update(gameTime);
-                    second_alice = true;
-                }
-
-                // only spawn second alice in the middle of an attack
-                if (over_two_thirds && timers_changed)
-                {
-                    var temp = new Spectral_Alice(starting_pos, player, root);
-                    root.AddEnemy(temp);
-                    temp.LoadAssets(sprite);
-                    temp.Update(gameTime);
-                    third_alice = true;
-                }
-            }
-
-            over_middle = state_timer > state_threshholds[state] / 3;
-
-            over_two_thirds = state_timer > state_threshholds[state] * 2 / 3;
         }
 
         protected void AtkStrike(GameTime gameTime)
@@ -3836,6 +3764,9 @@ namespace PERSIST
 
     public class Alice_Boss : Alice_Abstract
     {
+        private int phase = 0;
+        private List<Spectral_Alice> summons = new List<Spectral_Alice>();
+
         public Alice_Boss(Vector2 pos, Player player, StyxLevel root) : base(pos, player, root)
         {
         }
@@ -3862,11 +3793,86 @@ namespace PERSIST
             }
         }
 
+        protected void ActualUpdate(GameTime gameTime)
+        {
+            root.GetBossHP(hp, max_hp);
+
+            PhaseController(gameTime);
+
+            HandleFlash(gameTime);
+        }
+
+        protected void PhaseController(GameTime gameTime)
+        {
+            switch(phase)
+            {
+                case 0:
+                    CycleAttacks(gameTime);
+                    PhaseZeroToOneWatchdog(gameTime);
+                    break;
+
+                case 1:
+                    CycleAttacks(gameTime);
+                    GracefulSummonTwo(gameTime);
+                    break;
+
+                case 2:
+                    break;
+
+                case 3:
+                    break;
+
+                default:
+                    break;
+
+            }
+        }
+
+        protected void GracefulSummonTwo(GameTime gameTime)
+        {
+            over_middle = state_timer > state_threshholds[state] / 3;
+            over_two_thirds = state_timer > state_threshholds[state] * 2 / 3;
+
+            if (summons.Count < 2 && !cooldown)
+            {
+                // only spawn second alice in the middle of an attack
+                if (over_middle && summons.Count < 1)
+                {
+                    var temp = new Spectral_Alice(starting_pos, player, root, "cycle");
+                    root.AddEnemy(temp);
+                    temp.LoadAssets(sprite);
+                    temp.Update(gameTime);
+                    summons.Add(temp);
+                }
+
+                // only spawn second alice in the middle of an attack
+                if (over_two_thirds)
+                {
+                    var temp = new Spectral_Alice(starting_pos, player, root, "cycle");
+                    root.AddEnemy(temp);
+                    temp.LoadAssets(sprite);
+                    temp.Update(gameTime);
+                    summons.Add(temp);
+                }
+            }
+        }
+
+        protected void PhaseZeroToOneWatchdog(GameTime gameTime)
+        {
+            if (hp < max_hp * second_alice_threshhold && cooldown)
+            {
+                state_threshholds[STATES.dive] += 0.44f * 2;
+                state_threshholds[STATES.strike] += 0.44f * 2;
+                phase++;
+            }
+                
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
             float transparency = 1f;
             if (!hurtful)
-                transparency = 0.5f;
+                transparency = 0.4f;
             spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White * transparency);
 
             if (flash)
@@ -3914,8 +3920,12 @@ namespace PERSIST
 
     public class Spectral_Alice : Alice_Abstract
     {
-        public Spectral_Alice(Vector2 pos, Player player, StyxLevel root) : base(pos, player, root)
+        protected String type = "";
+
+        public Spectral_Alice(Vector2 pos, Player player, StyxLevel root, String type) : base(pos, player, root)
         {
+            this.type = type;
+
             state_threshholds[STATES.dive] -= 0.29f;
             state_threshholds[STATES.strike] -= 0.29f;
             state_threshholds[STATES.cooldown] += 0.44f + 0.44f + 0.29f;
@@ -3926,7 +3936,15 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
-            CycleAttacks(gameTime);
+
+            switch(type)
+            {
+                case "cycle":
+                    CycleAttacks(gameTime);
+                    break;
+                default:
+                    break;
+            }
 
             HandleFlash(gameTime);
         }
