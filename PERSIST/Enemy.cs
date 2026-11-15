@@ -3661,7 +3661,8 @@ namespace PERSIST
             if (state_timer > first_threshhold)
                 SmoothMove(gameTime, atk_target, delta);
 
-            // animate
+            // animate && hurtfulness check
+            hurtful = true;
             if (right)
             {
                 if (state_timer <= first_threshhold)
@@ -3669,7 +3670,12 @@ namespace PERSIST
                 else if (state_timer > first_threshhold && Math.Abs(pos.X - atk_target.X) > 12)
                     frame.Y = 192;
                 else
+                {
                     frame.Y = 640;
+                    if (GetType() == typeof(Alice_Boss))
+                        hurtful = false;
+                }
+                    
             }
             else
             {
@@ -3678,7 +3684,12 @@ namespace PERSIST
                 else if (state_timer > first_threshhold && Math.Abs(pos.X - atk_target.X) > 12)
                     frame.Y = 576;
                 else
+                {
                     frame.Y = 704;
+                    if (GetType() == typeof(Alice_Boss))
+                        hurtful = false;
+                }
+                    
             }
 
 
@@ -3733,13 +3744,17 @@ namespace PERSIST
             }
 
 
-
+            hurtful = true;
             if (state_timer <= first_threshhold)
                 frame.Y = 256;
             else if (state_timer > first_threshhold && pos.Y != starting_pos.Y)
                 frame.Y = 320;
             else
+            {
                 frame.Y = 768;
+                if (GetType() == typeof(Alice_Boss))
+                    hurtful = false;
+            }
 
             if (state_timer < flash_threshhold || state_timer > state_threshholds[STATES.dive] - flash_threshhold)
                 super_flash = true;
@@ -3849,7 +3864,10 @@ namespace PERSIST
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            float transparency = 1f;
+            if (!hurtful)
+                transparency = 0.5f;
+            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White * transparency);
 
             if (flash)
             {
@@ -3917,9 +3935,13 @@ namespace PERSIST
         {
             //frame.X = 128;
 
+            Color c = Color.DodgerBlue;
+            if (!hurtful)
+                c = Color.Green;
+
             Rectangle flash_frame = new Rectangle(frame.X, frame.Y + 32, frame.Width, frame.Height);
 
-            spriteBatch.Draw(sprite, PositionRectangle, flash_frame, Color.DodgerBlue * 0.4f);
+            spriteBatch.Draw(sprite, PositionRectangle, flash_frame, c * 0.4f);
 
             //spriteBatch.Draw(sprite, PositionRectangle, frame, Color.DodgerBlue * 0.4f);
 
