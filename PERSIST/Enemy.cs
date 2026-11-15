@@ -3442,7 +3442,7 @@ namespace PERSIST
         protected float state_timer = 999f;
         protected float flash_timer = 0f;
         protected float super_flash_timer = 0f;
-        protected float second_alice_threshhold = 0.94f;
+        protected float second_alice_threshhold = 0.90f;
 
         protected Random rd = new Random();
         protected int player_dir = 1;
@@ -3765,6 +3765,8 @@ namespace PERSIST
     public class Alice_Boss : Alice_Abstract
     {
         private int phase = 0;
+        private float cutscene_timer = 0f;
+
         private List<Spectral_Alice> summons = new List<Spectral_Alice>();
 
         public Alice_Boss(Vector2 pos, Player player, StyxLevel root) : base(pos, player, root)
@@ -3806,17 +3808,21 @@ namespace PERSIST
         {
             switch(phase)
             {
+                // cycle attack
                 case 0:
                     CycleAttacks(gameTime);
                     PhaseZeroToOneWatchdog(gameTime);
                     break;
 
+                // cutscene phase
                 case 1:
-                    CycleAttacks(gameTime);
-                    GracefulSummonTwo(gameTime);
+                    PhaseZeroToOneCutscene(gameTime);
                     break;
 
+                // cycle attack (with friends!)
                 case 2:
+                    CycleAttacks(gameTime);
+                    GracefulSummonTwo(gameTime);
                     break;
 
                 case 3:
@@ -3866,6 +3872,19 @@ namespace PERSIST
                 phase++;
             }
                 
+        }
+
+        protected void PhaseZeroToOneCutscene(GameTime gameTime)
+        {
+            pos = new Vector2(root.alice_zone.Center.X, root.alice_zone.Center.Y);
+
+            cutscene_timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (cutscene_timer > 1)
+            {
+                cutscene_timer = 0f;
+                phase++;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -4776,7 +4795,7 @@ namespace PERSIST
         public override void Update(GameTime gameTime)
         {
             // entry dialogue
-            if (!root.prog_manager.GetFlag(FLAGS.famine_started))
+            if (!root.prog_manager.GetFlag(FLAGS.famine_started) && !player.GetCutscene())
             {
                 if (!dtrig1 && player.GetPos().X > root.dialogue_trigger1.X)
                 {
@@ -4784,19 +4803,19 @@ namespace PERSIST
                     dtrig1 = true;
                 }
 
-                if (!dtrig2 && player.GetPos().X > root.dialogue_trigger2.X)
+                else if (!dtrig2 && player.GetPos().X > root.dialogue_trigger2.X)
                 {
                     root.FamineDialogue();
                     dtrig2 = true;
                 }
 
-                if (!dtrig3 && player.GetPos().X > root.dialogue_trigger3.X)
+                else if (!dtrig3 && player.GetPos().X > root.dialogue_trigger3.X)
                 {
                     root.FamineDialogue();
                     dtrig3 = true;
                 }
 
-                if (!dtrig4 && player.GetPos().X > root.dialogue_trigger4.X)
+                else if (!dtrig4 && player.GetPos().X > root.dialogue_trigger4.X)
                 {
                     root.FamineDialogue();
                     dtrig4 = true;

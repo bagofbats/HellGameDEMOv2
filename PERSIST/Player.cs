@@ -852,6 +852,11 @@ namespace PERSIST
             return (hp, max_hp);
         }
 
+        public bool GetCutscene()
+        {
+            return cutscene;
+        }
+
         public int HandleDialogueOptions(int option, int max_options)
         {
             // clause for when you interact with someone

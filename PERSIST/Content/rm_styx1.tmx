@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="450" height="160" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="1057">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="450" height="160" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="1059">
  <tileset firstgid="1" source="tst_styx.tsx"/>
  <objectgroup id="3" name="rooms">
   <object id="288" name="Trampoline" x="624" y="848" width="320" height="240"/>
@@ -400,6 +400,15 @@
    <point/>
   </object>
   <object id="1056" name="player" x="432" y="976">
+   <point/>
+  </object>
+  <object id="1057" name="door" x="3176" y="928" width="8" height="24">
+   <properties>
+    <property name="destination" value="rm_styx2"/>
+    <property name="link" value="orange"/>
+   </properties>
+  </object>
+  <object id="1058" name="player" x="2936" y="888">
    <point/>
   </object>
  </objectgroup>

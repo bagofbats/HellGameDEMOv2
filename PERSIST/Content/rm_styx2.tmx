@@ -2,7 +2,7 @@
 <map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="160" height="60" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="286">
  <tileset firstgid="1" source="tst_styx.tsx"/>
  <objectgroup id="5" name="rooms">
-  <object id="1" x="0" y="0" width="320" height="240"/>
+  <object id="1" name="Speak Friend, and Enter" x="0" y="0" width="320" height="240"/>
   <object id="36" name="Don't Suffocate" x="0" y="240" width="320" height="240"/>
   <object id="53" name="Priming" x="320" y="240" width="320" height="240"/>
   <object id="89" name="Airlock" x="640" y="240" width="320" height="240"/>

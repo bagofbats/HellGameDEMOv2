@@ -1041,7 +1041,7 @@ namespace PERSIST
             new DialogueStruct("But it is better than nothing.\nSo I take what I can get.", 'd', Color.White, 'p', true, "", 405, 0),
 
             // index 13
-            new DialogueStruct("rude.", 'd', Color.White, 'p', false, "", 405, 0),
+            new DialogueStruct("rude.", 'd', Color.White, 'p', false, "", 405, 90),
             new DialogueStruct("But also pretty true, this does kinda suck.\nI'd rather be anywhere else, honestly.", 'd', Color.White, 'p', false, "", 405, 0),
             new DialogueStruct("But a sucky hideout is still better than nothing.\nSo I take what I can get.", 'd', Color.White, 'p', true, "", 405, 0),
 
