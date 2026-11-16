@@ -1132,6 +1132,11 @@ namespace PERSIST
             new DialogueStruct("-- Defeated King Mush! --", 'd', Color.White, 'c', true, "", 0, 0, 10f),
         };
 
+        DialogueStruct[] dialogue_defeat_famine =
+        {
+            new DialogueStruct("-- Defeated FAMINE! --", 'd', Color.White, 'c', true, "", 0, 0, 10f),
+        };
+
         DialogueStruct[] dialogue_famine_start = {
             new DialogueStruct("I see. And then?", 'd', Color.Gray, 'l', true, "", 0, 225, 25f, new DialogueVFXStruct(Color.White, CONSTANTS.reaper_calm_trans, 2)),
             new DialogueStruct("Got away from me, I'm afraid.", 'd', Color.White, 'l', true),
@@ -1359,14 +1364,15 @@ namespace PERSIST
         {
             new DialogueStruct("A statue of shadows.\nThey look a bit like the thing that attacked you.", 'd', Color.White, 'c'),
             new DialogueStruct("There is an inscription on the pedestal.", 'd', Color.White, 'c'),
-            new DialogueStruct("Though slain, the primordials live on.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
-            new DialogueStruct("They lie slumbering,\nIn those that are neither alive nor dead.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
-            new DialogueStruct("Perhaps, under the right cirucmstances\nthey could awaken once again.", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
+            new DialogueStruct("Primordials cannot truly die.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("\"Slain\", their essence lies slumbering\n in those that are neither alive nor dead.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("Perhaps, under the right cirucmstances,\nthey could awaken once again.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
+            new DialogueStruct("And bring CHAOS in their wake.", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
 
             new DialogueStruct("The primordials threaten the precious ORDER.", 'd', Color.Gray, 'c', false, "", 0, 0, 99999f),
             new DialogueStruct("For REAPER to succeed,\nthey must stay forever contained.", 'd', Color.Gray, 'c', true, "", 0, 0, 99999f),
         };
-        int[] shade_statue_bps = { 0, 5 };
+        int[] shade_statue_bps = { 2 };
 
 
 
@@ -3437,8 +3443,34 @@ namespace PERSIST
                     famine_boss.ResetForFight();
 
                     lukas_cutscene = null;
+                    reaper_cutscene = null;
 
                     prog_manager.SetFlag(FLAGS.famine_started);
+                }
+            }
+
+            if (cutscene_code[0] == "deafeatfamine")
+            {
+                if (famine_boss != null)
+                    famine_boss.Animate(gameTime, true);
+
+                if (cutscene_timer > 0f)
+                {
+                    player.SetNoInput();
+                    //player.DoMovement(gameTime);
+                    //player.DoAnimate(gameTime);
+                }
+
+                if (cutscene_timer > 6.0f)
+                {
+                    player.ExitCutscene();
+                    cutscene = false;
+                    door_trans = false;
+                    famine_boss.RemoveSelf();
+                    famine_boss = null;
+                    prog_manager.SetFlag(FLAGS.famine_defeated);
+
+                    StartDialogue(dialogue_defeat_famine, 0, 'c', 10f, false, false);
                 }
             }
 
@@ -3793,6 +3825,16 @@ namespace PERSIST
             if (!prog_manager.GetFlag(FLAGS.famine_started)) 
             {
                 HandleCutscene("fightfamine|||||||||||||||||||||||||||||", gameTime, true);
+            }
+        }
+
+        public void DefeatFamine(GameTime gameTime, Famine famine_boss)
+        {
+            this.famine_boss = famine_boss;
+
+            if (!prog_manager.GetFlag(FLAGS.famine_defeated))
+            {
+                HandleCutscene("deafeatfamine||||||||||||||||||||||", gameTime, true);
             }
         }
 

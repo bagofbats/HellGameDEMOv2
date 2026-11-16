@@ -2851,6 +2851,8 @@ namespace PERSIST
 
         private Texture2D sprite;
 
+        private GameTime saved_gt;
+
         private int h_oset = 3;
         private int v_oset = 3;
 
@@ -2869,12 +2871,13 @@ namespace PERSIST
         private float target_fudge = 8f;
 
         private float hp;
-        private int hp_max = 50;
+        private int hp_max = 24;
 
         private int shooter_head = 2;
         private int slowest_head = 0;
 
         private bool flash = false;
+        private bool dead = false;
 
         private Rectangle body_frame = new Rectangle(0, 128, 112, 240);
         private int num_body_frames = 3;
@@ -2942,6 +2945,8 @@ namespace PERSIST
 
         public override void Update(GameTime gameTime)
         {
+            saved_gt = gameTime;
+
             if (!root.prog_manager.GetFlag(FLAGS.famine_started))
                 return;
 
@@ -2971,6 +2976,9 @@ namespace PERSIST
         public void UpdateHead(GameTime gameTime, Famine_Head head, int i, bool slowest)
         {
             head.Update(gameTime);
+
+            if (dead)
+                return;
 
             head_timer[i] += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -3044,6 +3052,8 @@ namespace PERSIST
                     heads[i].Yell(gameTime, new Vector2(-24, -24));
                 else
                     heads[i].Idle(gameTime);
+
+                heads[i].HandleFlash(gameTime);
             }
                 
         }
@@ -3073,6 +3083,31 @@ namespace PERSIST
         {
             hp -= damage;
             flash = true;
+
+            if (hp <= 0)
+                Die(saved_gt);
+        }
+
+        private void Die(GameTime gameTime)
+        {
+            //hurtful = false;
+            dead = true;
+
+            for (int i = 0; i < num_heads; i++)
+                heads[i].SetHurtful(false);
+
+            root.GetBossHP(0, 0);
+            root.DefeatFamine(gameTime, this);
+
+            //root.RemoveEnemy(this);
+        }
+
+        public void RemoveSelf()
+        {
+            for (int i = 0; i < num_heads; i++)
+                root.RemoveEnemy(heads[i]);
+
+            root.RemoveEnemy(this);
         }
 
 
@@ -3142,6 +3177,11 @@ namespace PERSIST
         }
 
         public override void Update(GameTime gameTime)
+        {
+            HandleFlash(gameTime);
+        }
+
+        public void HandleFlash(GameTime gameTime)
         {
             if (flash)
             {
@@ -3401,6 +3441,10 @@ namespace PERSIST
             }
         }
 
+        public void SetHurtful(bool hurtful)
+        {
+            this.hurtful = hurtful;
+        }
 
         public override bool CheckCollision(Rectangle input)
         {
