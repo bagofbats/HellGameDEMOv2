@@ -353,7 +353,7 @@ namespace PERSIST
                 {FLAGS.kanna_defeated       , false },
                 {FLAGS.mushroom_started     , false },
                 {FLAGS.mushroom_defeated    , false },
-                {FLAGS.famine_started       , true },
+                {FLAGS.famine_started       , false },
                 {FLAGS.famine_defeated      , false },
                 {FLAGS.alice_started        , false },
                 {FLAGS.alice_defeated       , false },

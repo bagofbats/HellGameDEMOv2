@@ -9,7 +9,7 @@
   <object id="4" name="checkpoint" x="560" y="344">
    <point/>
   </object>
-  <object id="5" name="player" x="560" y="328">
+  <object id="5" name="player" x="72" y="128">
    <point/>
   </object>
   <object id="6" name="famine" x="720" y="312">

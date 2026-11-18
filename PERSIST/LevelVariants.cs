@@ -908,6 +908,7 @@ namespace PERSIST
         private Famine famine_boss = null;
         private Crumble crumble_cutscene_1 = null;
         private Crumble crumble_cutscene_2 = null;
+        private EvilMagicFX saved_fx = null;
 
         private Vector2 saved_crumblepos1 = new Vector2(0, 0);
         private Vector2 saved_crumblepos2 = new Vector2(0, 0);
@@ -3305,6 +3306,21 @@ namespace PERSIST
                     {
                         lukas_cutscene.looking = false;
                         lukas_cutscene.clutching = true;
+
+                        Rectangle r = GetRoom(player.GetPos());
+
+                        EvilMagicFX magic = new EvilMagicFX(
+                            new Rectangle(lukas_cutscene.PositionRectangle.X, r.Y, 64, r.Height),
+                            particle_img,
+                            new Rectangle(0, 96, 16, 16),
+                            3,
+                            0.2f,
+                            this
+                            );
+
+                        AddFX(magic);
+
+                        saved_fx = magic;
                     }
 
                     cutscene_code[6] = "-";
@@ -3325,6 +3341,18 @@ namespace PERSIST
                     {
                         reaper_cutscene.frame_x = 48;
                         reaper_cutscene.frame_y = 48;
+                    }
+
+                    if (lukas_cutscene != null)
+                    {
+                        RemoveEnemy(lukas_cutscene);
+                        lukas_cutscene = null;
+                    }
+
+                    if (saved_fx != null)
+                    {
+                        RemoveFX(saved_fx);
+                        saved_fx = null;
                     }
                 }
 

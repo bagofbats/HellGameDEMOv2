@@ -438,4 +438,79 @@ namespace PERSIST
             }
         }
     }
+
+    public class EvilMagicFX : ParticleFX
+    {
+        private Texture2D img;
+        private Rectangle frame;
+        private int num_types;
+        private float frequency;
+
+        private struct CircleStruct
+        {
+            public Rectangle bounds;
+            public Rectangle frame;
+            public Color color;
+            public float speed;
+
+            public CircleStruct(Rectangle bounds, Rectangle frame, Color color, float speed)
+            {
+                this.bounds = bounds;
+                this.frame = frame;
+                this.color = color;
+                this.speed = speed;
+            }
+        }
+
+        private List<CircleStruct> circles = new List<CircleStruct>();
+        private float timer = 99f;
+
+        public EvilMagicFX(Rectangle pos, Texture2D img, Rectangle frame, int num_types, float frequency, Level root) 
+        { 
+            this.pos = pos;
+            this.img = img;
+            this.frame = frame;
+            this.num_types = num_types;
+            this.frequency = frequency;
+            this.root = root;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            for (int i = circles.Count - 1; i >= 0; i--) 
+            { 
+                spriteBatch.Draw(img, circles[i].bounds, circles[i].frame, circles[i].color);
+            }
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            float tdiff = (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
+            timer += tdiff;
+
+            for (int i = circles.Count - 1; i >= 0; i--) 
+            {
+                CircleStruct c = circles[i];
+
+                c.bounds.Y -= (int)(c.speed * tdiff);
+
+                circles[i] = c;
+                if (circles[i].bounds.Y <= pos.Y)
+                    circles.Remove(circles[i]);
+            }
+
+            if (timer > frequency)
+            {
+                timer = 0f;
+                CircleStruct tmp = new CircleStruct(
+                    new Rectangle(pos.X, pos.Y + pos.Height, frame.Width, frame.Height),
+                    frame,
+                    Color.White,
+                    400f
+                    );
+
+                circles.Add(tmp);
+            }
+        }
+    }
 }
