@@ -333,4 +333,109 @@ namespace PERSIST
             multiplier = 70;
         }
     }
+
+    public class PlusFX : ParticleFX
+    {
+        private Color c;
+        private float timer = 0f;
+        private Texture2D img;
+        private float trans = 1f;
+        private float rate_one = 1000f;
+        private float rate_two = 700f;
+        private float threshhold_one = 1f;
+        private float threshhold_two = 2f;
+
+        private Rectangle up;
+        private Rectangle down;
+        private Rectangle left;
+        private Rectangle right;
+        private Rectangle all;
+
+        public PlusFX(Vector2 pos, Color c, Level root)
+        {
+            this.pos = new Rectangle((int)pos.X, (int)pos.Y, 2, 2);
+            this.root = root;
+            this.c = c;
+
+            img = root.black;
+
+            up = this.pos;
+            down = this.pos;
+            left = this.pos;
+            right = this.pos;
+
+            all = new Rectangle(0, 0, 0, 0);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (timer < threshhold_two)
+            {
+                spriteBatch.Draw(img, pos, c * trans);
+                spriteBatch.Draw(img, up, c * trans);
+                spriteBatch.Draw(img, down, c * trans);
+                spriteBatch.Draw(img, left, c * trans);
+                spriteBatch.Draw(img, right, c * trans);
+            }
+            else
+            {
+                spriteBatch.Draw(img, all, c * trans);
+            }
+        }
+
+        // expand the + outward
+        // once it covers four screens in size, expand to fill out square
+        // once it fills entire space, fade out and delete self
+        public override void Update(GameTime gameTime)
+        {
+            float frame_factor = 60 / CONSTANTS.frame_rate;
+            float tdiff = (float)gameTime.ElapsedGameTime.TotalSeconds * frame_factor;
+
+            timer += tdiff;
+
+            if (timer < threshhold_one)
+            {
+                // expand the + outward
+                int expand = (int)(tdiff * rate_one);
+
+                up.Y -= expand;
+                up.Height += expand;
+
+                down.Height += expand;
+
+                left.X -= expand;
+                left.Width += expand;
+
+                right.Width += expand;
+            }
+            else if (timer < threshhold_two)
+            {
+                // expand to fill out square
+                int expand = (int)(tdiff * rate_two);
+
+                up.X -= expand;
+                up.Width += expand * 2;
+
+                down.X -= expand;
+                down.Width += expand * 2;
+
+                left.Y -= expand;
+                left.Height += expand * 2;
+
+                right.Y -= expand;
+                right.Height += expand * 2;
+            }
+            else
+            {
+                // fade out and delete self
+                trans -= tdiff;
+
+                if (all.Width == 0)
+                    all = Rectangle.Union(Rectangle.Union(up, down), Rectangle.Union(left, right));
+
+                if (trans <= 0)
+                    root.RemoveFX(this);
+            }
+        }
+    }
 }

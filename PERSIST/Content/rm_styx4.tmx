@@ -9,7 +9,7 @@
   <object id="4" name="checkpoint" x="560" y="344">
    <point/>
   </object>
-  <object id="5" name="player" x="64" y="128">
+  <object id="5" name="player" x="560" y="328">
    <point/>
   </object>
   <object id="6" name="famine" x="720" y="312">
@@ -298,13 +298,13 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="7" name="obstacles" visible="0">
+ <objectgroup id="7" name="obstacles">
   <object id="11" x="480" y="480" width="320" height="16"/>
   <object id="19" x="464" y="240" width="16" height="256"/>
   <object id="20" x="800" y="232" width="16" height="264"/>
   <object id="34" x="760" y="192" width="200" height="16"/>
  </objectgroup>
- <objectgroup id="6" name="walls" visible="0">
+ <objectgroup id="6" name="walls">
   <object id="22" x="0" y="208" width="552" height="32"/>
   <object id="25" x="760" y="208" width="200" height="24"/>
   <object id="27" x="0" y="0" width="960" height="32"/>

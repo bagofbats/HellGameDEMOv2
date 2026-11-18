@@ -2053,7 +2053,7 @@ namespace PERSIST
 
             base.Update(gameTime);
 
-            if (name == "rm_styx1")
+            if (name == "rm_styx1" && !prog_manager.GetFlag(FLAGS.mask))
                 prog_manager.SetFlag(FLAGS.mask);
 
             if (lukas_cutscene != null && dialogue)
@@ -3451,7 +3451,7 @@ namespace PERSIST
 
             if (cutscene_code[0] == "deafeatfamine")
             {
-                if (famine_boss != null)
+                if (famine_boss != null && cutscene_timer < 6.0f)
                     famine_boss.Animate(gameTime, true);
 
                 if (cutscene_timer > 0f)
@@ -3461,7 +3461,16 @@ namespace PERSIST
                     //player.DoAnimate(gameTime);
                 }
 
-                if (cutscene_timer > 6.0f)
+                if (cutscene_timer > 6.0f && famine_boss != null && cutscene_code[1] == "")
+                {
+                    Vector2 loc = new Vector2(famine_boss.PositionRectangle.Center.X, famine_boss.PositionRectangle.Center.Y);
+                    loc += new Vector2(8, 32);
+                    AddFX(new PlusFX(loc, Color.White, this));
+
+                    cutscene_code[1] = "-";
+                }
+
+                if (cutscene_timer > 99f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
