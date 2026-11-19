@@ -2853,8 +2853,8 @@ namespace PERSIST
 
         private GameTime saved_gt;
 
-        private int h_oset = 3;
-        private int v_oset = 3;
+        private int h_oset = 16;
+        private int v_oset = 40;
 
         private int num_heads = 3;
         private Famine_Head[] heads = new Famine_Head[3];
@@ -2869,6 +2869,7 @@ namespace PERSIST
         public float idle_threshold = 2f;
 
         private float target_fudge = 8f;
+        private int target_max_y = 304;
 
         private float hp;
         private int hp_max = 24;
@@ -2954,7 +2955,7 @@ namespace PERSIST
 
             Room r = root.RealGetRoom(pos);
 
-            if (r != root.RealGetRoom(player.GetPos()))
+            if (!r.bounds.Intersects(player.HitBox))
                 return;
 
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
@@ -3002,6 +3003,10 @@ namespace PERSIST
             {
                 head_attacking[i] = true;
                 head_target[i] = player.GetPos() + new Vector2(16, 16) + (head.calc_diff() / target_fudge);
+
+                // cap to prevent cheese?
+                // actually just makes cheese easier nvm
+                //head_target[i].Y = Math.Max(head_target[i].Y, target_max_y);
                 head_timer[i] = 0f;
             }
 
@@ -3314,6 +3319,8 @@ namespace PERSIST
 
         public void Yell(GameTime gameTime, Vector2 oset)
         {
+            blue_queue_max = 0;
+
             if (atk_timer == 0)
             {
                 windup = base_pos + oset;

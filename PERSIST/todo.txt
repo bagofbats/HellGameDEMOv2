@@ -28,6 +28,8 @@ art:
  - have it so when kanna jumps away from you she still fires the arrow in your direction
  - try chaning frame rate to see if anything breaks
  - add way to open plushie room after doing it once and then dying
+ - enemies stop updating if player intersects other rooms (famine boss)
+    - probably not an issue 99% of the time, but could matter if "Accessibility Mode" becomes a feature?
 
  - think there's a way to trigger kanna cutscene without being in the right room
     - lower yourself into kanna trigger zone, but don't trigger cutscene

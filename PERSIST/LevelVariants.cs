@@ -882,6 +882,9 @@ namespace PERSIST
         public Rectangle famine_trigger
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
+        public Rectangle famine_ceiling
+        { get; private set; } = new Rectangle(0, 0, 0, 0);
+
         public Rectangle dialogue_trigger1
         { get; private set; } = new Rectangle(0, 0, 0, 0);
 
@@ -1464,13 +1467,28 @@ namespace PERSIST
                                 special_walls_types.Add(s);
                             }
 
-                            if (l.objects[i].name == "fake_wall" && !prog_manager.GetFlag(FLAGS.famine_started))
+                            if (l.objects[i].name == "fake_wall")
                             {
                                 var temp = new Rectangle((int)l.objects[i].x + t.location.X, (int)l.objects[i].y + t.location.Y, (int)l.objects[i].width, (int)l.objects[i].height);
-                                var wall = new FakeWall(temp);
-                                AddSpecialWall(wall);
-                                special_walls_bounds.Add(temp);
-                                special_walls_types.Add("fake_wall");
+                                famine_ceiling = temp;
+
+                                if (!prog_manager.GetFlag(FLAGS.famine_started))
+                                {
+                                    var wall = new FakeWall(temp);
+                                    AddSpecialWall(wall);
+                                    special_walls_bounds.Add(temp);
+                                    special_walls_types.Add("fake_wall");
+                                }
+
+                                if (prog_manager.GetFlag(FLAGS.famine_started) && !prog_manager.GetFlag(FLAGS.famine_defeated))
+                                {
+                                    for (int z = famine_ceiling.X; z < famine_ceiling.X + famine_ceiling.Width - 16; z += 16)
+                                    {
+                                        BossBlock temp1 = new BossBlock(new Rectangle(z, famine_ceiling.Y + 8, 16, 16), this, new Rectangle(32, 144, 16, 16));
+                                        temp1.Load(tst_styx);
+                                        AddSpecialWall(temp1);
+                                    }
+                                }
                             }
 
                             if (l.objects[i].name == "walker")
@@ -2282,6 +2300,17 @@ namespace PERSIST
             foreach (JumpSwitch s in switches)
                 s.two = true;
 
+
+            // special case for famine boss
+            if (prog_manager.GetFlag(FLAGS.famine_started) && !prog_manager.GetFlag(FLAGS.famine_defeated))
+            {
+                for (int i = famine_ceiling.X; i < famine_ceiling.X + famine_ceiling.Width - 16; i += 16)
+                {
+                    BossBlock temp1 = new BossBlock(new Rectangle(i, famine_ceiling.Y + 8, 16, 16), this, new Rectangle(32, 144, 16, 16));
+                    temp1.Load(tst_styx);
+                    AddSpecialWall(temp1);
+                }
+            }
         }
 
         public override void Switch(Room r, bool two)
@@ -3168,6 +3197,9 @@ namespace PERSIST
 
             if (cutscene_code[0] == "fightfamine")
             {
+                // highest cutscene code: 18
+                // there CERTAINLY is a better way to handle this........
+
                 if (lukas_cutscene != null)
                     lukas_cutscene.Update(gameTime);
 
@@ -3343,6 +3375,16 @@ namespace PERSIST
                     famine_dialogue_loc++;
                 }
 
+                if (cutscene_timer > 8.6f && cutscene_code[18] == "")
+                {
+                    cutscene_code[18] = "-";
+
+                    if (lukas_cutscene != null)
+                    {
+                        lukas_cutscene.Disappear();
+                    }
+                }
+
                 if (cutscene_timer > 9.6f && cutscene_code[8] == "")
                 {
                     cutscene_code[8] = "-";
@@ -3351,11 +3393,6 @@ namespace PERSIST
                     {
                         reaper_cutscene.frame_x = 48;
                         reaper_cutscene.frame_y = 48;
-                    }
-
-                    if (lukas_cutscene != null)
-                    {
-                        lukas_cutscene.Disappear();
                     }
                 }
 
@@ -3477,6 +3514,13 @@ namespace PERSIST
 
                 if (cutscene_timer > 50f)
                 {
+                    for (int i = famine_ceiling.X; i < famine_ceiling.X + famine_ceiling.Width - 16; i += 16)
+                    {
+                        BossBlock temp1 = new BossBlock(new Rectangle(i, famine_ceiling.Y + 8, 16, 16), this, new Rectangle(32, 144, 16, 16));
+                        temp1.Load(tst_styx);
+                        AddSpecialWall(temp1);
+                    }
+
                     player.ExitCutscene();
                     cutscene = false;
                     cutscene_cam = false;
@@ -3513,14 +3557,18 @@ namespace PERSIST
                     cutscene_code[1] = "-";
                 }
 
+                if (cutscene_timer > 8f && famine_boss != null && cutscene_code[2] == "")
+                {
+                    famine_boss.RemoveSelf();
+                    famine_boss = null;
+                    prog_manager.SetFlag(FLAGS.famine_defeated);
+                }
+
                 if (cutscene_timer > 99f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
                     door_trans = false;
-                    famine_boss.RemoveSelf();
-                    famine_boss = null;
-                    prog_manager.SetFlag(FLAGS.famine_defeated);
 
                     StartDialogue(dialogue_defeat_famine, 0, 'c', 10f, false, false);
                 }

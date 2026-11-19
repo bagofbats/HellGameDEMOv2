@@ -343,7 +343,7 @@ namespace PERSIST
         private float rate_one = 1000f;
         private float rate_two = 700f;
         private float threshhold_one = 1f;
-        private float threshhold_two = 2f;
+        private float threshhold_two = 2.4f;
 
         private Rectangle up;
         private Rectangle down;
