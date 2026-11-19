@@ -1,3 +1,3 @@
 ﻿
-using var game = new PERSIST.HellGame();
+using var game = new HellGame.HellGame();
 game.Run();

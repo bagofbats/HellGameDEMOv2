@@ -17,7 +17,7 @@ using MonoGame.Extended.Gui.Controls;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.Timers;
 
-namespace PERSIST
+namespace HellGame
 {
     public abstract class Enemy
     {
@@ -2865,6 +2865,10 @@ namespace PERSIST
         private float timer = 0f;
         private float flash_timer = 0f;
 
+        private float dead_flash_timer = 0f;
+        private float dead_flash_threshhold = 1.8f;
+        private float flash_interval = 1.2f;
+
         private float atk_threshold = 6f;
         public float idle_threshold = 2f;
 
@@ -2872,7 +2876,7 @@ namespace PERSIST
         private int target_max_y = 304;
 
         private float hp;
-        private int hp_max = 24;
+        private int hp_max = 1; //24;
 
         private int shooter_head = 2;
         private int slowest_head = 0;
@@ -2963,6 +2967,11 @@ namespace PERSIST
             for (int i = 0; i < num_heads; i++)
                 UpdateHead(gameTime, heads[i], i, i==slowest_head);
 
+            HandleFlash(gameTime);
+        }
+
+        protected void HandleFlash(GameTime gameTime)
+        {
             if (flash)
             {
                 flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
@@ -3047,9 +3056,24 @@ namespace PERSIST
                 
         }
 
-        public void Animate(GameTime gameTime, bool yell)
+        public void Animate(GameTime gameTime, bool yell, bool flashing=false)
         {
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
+
+            if (flashing)
+            {
+                dead_flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * 60 / CONSTANTS.frame_rate;
+
+                if (dead_flash_timer > dead_flash_threshhold)
+                {
+                    flash = true;
+                    for (int i = 0; i < num_heads; i++)
+                        heads[i].flash = true;
+
+                    dead_flash_threshhold += flash_interval;
+                    flash_interval /= 1.3f;
+                }
+            }
 
             for (int i = 0; i < num_heads; i++)
             {
@@ -3060,7 +3084,9 @@ namespace PERSIST
 
                 heads[i].HandleFlash(gameTime);
             }
-                
+
+            HandleFlash(gameTime);
+
         }
 
         public void ResetForFight()

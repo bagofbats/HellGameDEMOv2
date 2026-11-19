@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using MonoGame.Extended.Gui.Controls;
 using System.Diagnostics.Metrics;
 
-namespace PERSIST
+namespace HellGame
 {
     public abstract class Interactable
     {

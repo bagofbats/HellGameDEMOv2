@@ -14,7 +14,7 @@ using Microsoft.Xna.Framework.Input;
 using TiledCS;
 
 
-namespace PERSIST
+namespace HellGame
 {
     public class TutorialLevel : Level
     {
@@ -1378,6 +1378,60 @@ namespace PERSIST
         };
         int[] shade_statue_bps = { 2 };
 
+        DialogueStruct[] dialogue_famine_defeated =
+        {
+            new DialogueStruct("Trigo?\nThat you down there?", 'd', Color.White, '>', true, "", 270, 0),
+            new DialogueStruct("Huh?\nKanna?\nWhat are you--  ", 'd', Color.White, 'p', true, "", 135, 0),
+
+            new DialogueStruct("I was heading towards the heart, like we said.\nBut then I heard some weird noises\nfrom off this way.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Don't tell me that was you . . .", 'd', Color.White, 'r', false, "", 270, 45),
+
+            new DialogueStruct("Yeah, it was me.\nNo, it just did that on its own actually.\nKanna I don't need your SASS ok?? I almost DIED!!!", 'o', Color.White, 'l', false, "leaving0 0|leaving0 1|leaving0 2"),
+
+            // yeah, it was me -- idx 5
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 45),
+            new DialogueStruct("Are you okay?", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Huh?\nYeah, I'm fine.\nI think . . . ?", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct("Good enough for now, I guess.\nCome on!", 'd', Color.White, 'r', true, "", 270, 0),
+
+            // no it just did that on its own -- idx 9
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 225),
+            new DialogueStruct("Did you get hurt?", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Huh?\nWell, no, but . . .", 'd', Color.White, 'p', false, "", 135, 90),
+            new DialogueStruct("but . . . ?", 'd', Color.White, 'r', false, "", 270, 45),
+            new DialogueStruct(". . . nothing.", 'd', Color.White, 'p', false, "", 135, 180),
+            new DialogueStruct("If you say so, I guess.\nFor now, here--", 'd', Color.White, 'r', true, "", 270, 0),
+
+            // end dialogue for first two options -- idx 15
+            new DialogueStruct("Take my hand!\nLet's get out of here!", 'd', Color.White, 'r', true, "", 270, 0),
+
+
+
+            // i don't need your SASS ok???? -- idx 16
+            new DialogueStruct(". . .", 'd', Color.White, 'r', true, "", 270, 0),
+            // take off mask... -- idx 17
+            new DialogueStruct("Are you okay???", 'd', Color.White, 'r', true, "", 225, 180),
+            // idx 18
+            new DialogueStruct("Huh?\nY-yeah, I'm--  ", 'd', Color.White, 'p', true, "", 135, 90),
+            // trigo interrupt himself -- idx 19
+            new DialogueStruct("H-hey!\nPut your damn mask back on!\nBefore someone sees!", 'd', Color.White, 'p', true, "", 135, 0),
+            // put mask back on -- idx 20
+            new DialogueStruct("Okay! Okay.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("S-sorry, I wasn't trying to upset you.\nHad I known, I wouldn't've . . .", 'd', Color.White, 'r', false, "", 270, 225),
+            new DialogueStruct("It's okay.\nWell, now you know.\n. . .", 'o', Color.White, 'l', false, "leaving1 0|leaving1 1|leaving1 2"),
+
+            // idx 23
+            new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 225),
+            new DialogueStruct("I'm glad you're okay, Trigo.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Now, here--", 'd', Color.White, 'r', true, "", 270, 0),
+
+            // end dialogue for sass option -- idx 26
+            new DialogueStruct("Take my hand.\nLet's get going.", 'd', Color.White, 'r', true, "", 270, 0),
+        };
+        int[] famine_defeated_bps = { 0, 1, 2 };
+        int famine_defeated_loc = 0;
+        bool reprimand_path = false;
+
 
 
         // dialogue_key is inside the key object -- i know, confusing...
@@ -2636,6 +2690,38 @@ namespace PERSIST
                         break;
                     }
             }
+
+            if (code[0] == "leaving0" && code.Length > 1)
+            {
+                if (code[1] == "0")
+                {
+                    dialogue_num++;
+                    dialogue_letter = 0f;
+                    return;
+                }
+
+                else if (code[1] == "1")
+                {
+                    dialogue_num = 9;
+                    dialogue_letter = 0f;
+                    return;
+                }
+
+                if (code[1] == "2")
+                {
+                    dialogue_num = 16;
+                    dialogue_letter = 0f;
+                    reprimand_path = true;
+                    return;
+                }
+            }
+
+            if (code[0] == "leaving1")
+            {
+                dialogue_num++;
+                dialogue_letter = 0f;
+                return;
+            }
         }
 
         public override void HandleCutscene(string code, GameTime gameTime, bool start)
@@ -3318,6 +3404,7 @@ namespace PERSIST
                         reaper_cutscene.frame_y = 48;
                 }
 
+                // special clause for interrupted lukas
                 if (cutscene_timer > 6f && cutscene_code[11] == "" && !dialogue)
                 {
                     StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, false, true, false, true);
@@ -3539,7 +3626,7 @@ namespace PERSIST
             if (cutscene_code[0] == "deafeatfamine")
             {
                 if (famine_boss != null && cutscene_timer < 6.0f)
-                    famine_boss.Animate(gameTime, true);
+                    famine_boss.Animate(gameTime, true, true);
 
                 if (cutscene_timer > 0f)
                 {
@@ -3548,7 +3635,7 @@ namespace PERSIST
                     //player.DoAnimate(gameTime);
                 }
 
-                if (cutscene_timer > 6.0f && famine_boss != null && cutscene_code[1] == "")
+                if (cutscene_timer > 7.0f && famine_boss != null && cutscene_code[1] == "")
                 {
                     Vector2 loc = new Vector2(famine_boss.PositionRectangle.Center.X, famine_boss.PositionRectangle.Center.Y);
                     loc += new Vector2(8, 32);
@@ -3557,21 +3644,121 @@ namespace PERSIST
                     cutscene_code[1] = "-";
                 }
 
-                if (cutscene_timer > 8f && famine_boss != null && cutscene_code[2] == "")
+                if (cutscene_timer > 9f && famine_boss != null && cutscene_code[2] == "")
                 {
+                    Room r = RealGetRoom(famine_boss.Pos);
+                    if (r == RealGetRoom(player.GetPos()))
+                    {
+                        var active_check = prog_manager.GetActiveCheckpoint();
+                        player.SetPos(new Vector2(active_check.box.X + 8, active_check.box.Y));
+                    }
+
                     famine_boss.RemoveSelf();
                     famine_boss = null;
                     prog_manager.SetFlag(FLAGS.famine_defeated);
                 }
 
+                if (cutscene_timer > 12.4f && cutscene_code[3] == "")
+                {
+                    cutscene_code[3] = "-";
+
+                    StartDialogue(dialogue_famine_defeated, famine_defeated_bps[famine_defeated_loc], 'c', 25f, true, true, true);
+                    famine_defeated_loc++;
+                }
+
+                // special case for interrupted trigo
+                if (cutscene_timer > 12.4f && cutscene_code[4] == "" && !dialogue)
+                {
+                    cutscene_code[4] = "-";
+
+                    StartDialogue(dialogue_famine_defeated, famine_defeated_bps[famine_defeated_loc], 'c', 25f, false, true, false, true);
+                    famine_defeated_loc++;
+                }
+
+                if (cutscene_timer > 14.0f && cutscene_code[5] == "")
+                {
+                    cutscene_code[5] = "-";
+
+                    StartDialogue(dialogue_famine_defeated, famine_defeated_bps[famine_defeated_loc], 'c', 25f, true, true, true);
+                    famine_defeated_loc++;
+                }
+
+                // longer cutscene branches out here
+                if(reprimand_path)
+                {
+                    if (cutscene_timer > 14.5f)
+                    {
+                        // kanna takes off mask
+                        // i shouldn't need a cutscene code marker for this one
+                    }
+
+                    if (cutscene_timer > 15f && cutscene_code[10] == "")
+                    {
+                        cutscene_code[10] = "-";
+                        StartDialogue(dialogue_famine_defeated, 17, 'c', 25f, true, true, true);
+                    }
+                    if (cutscene_timer > 15f && cutscene_code[11] == "" && !dialogue)
+                    {
+                        cutscene_code[11] = "-";
+                        StartDialogue(dialogue_famine_defeated, 18, 'c', 25f, true, true, true, true);
+                    }
+                    if (cutscene_timer > 15f && cutscene_code[12] == "" && !dialogue)
+                    {
+                        cutscene_code[12] = "-";
+                        StartDialogue(dialogue_famine_defeated, 19, 'c', 25f, true, true, true);
+                    }
+
+                    if (cutscene_timer > 15.3f)
+                    {
+                        // kanna puts mask back on
+                    }
+
+                    if (cutscene_timer > 15.6f && cutscene_code[13] == "")
+                    {
+                        cutscene_code[13] = "-";
+                        StartDialogue(dialogue_famine_defeated, 20, 'c', 25f, true, true, true);
+                    }
+
+                    if (cutscene_timer > 16f && cutscene_code[14] == "")
+                    {
+                        cutscene_code[14] = "-";
+                        StartDialogue(dialogue_famine_defeated, 26, 'c', 25f, true, true, true);
+
+                        player.ExitCutscene();
+                        cutscene = false;
+                        door_trans = false;
+                    }
+
+                }
+                else
+                {
+                    if (cutscene_timer > 14.3f && cutscene_code[6] == "")
+                    {
+                        cutscene_code[6] = "-";
+                        // kanna extends hand
+                    }
+
+                    if (cutscene_timer > 15.0f && cutscene_code[7] == "")
+                    {
+                        cutscene_code[7] = "-";
+                        StartDialogue(dialogue_famine_defeated, 15, 'c', 25f, true, true, true);
+
+                        player.ExitCutscene();
+                        cutscene = false;
+                        door_trans = false;
+                    }
+                }
+
+                /**
                 if (cutscene_timer > 99f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
                     door_trans = false;
 
-                    StartDialogue(dialogue_defeat_famine, 0, 'c', 10f, false, false);
+                    //StartDialogue(dialogue_defeat_famine, 0, 'c', 10f, false, false);
                 }
+                **/
             }
 
             if (cutscene_code[0] == "fightalice")
@@ -3934,7 +4121,7 @@ namespace PERSIST
 
             if (!prog_manager.GetFlag(FLAGS.famine_defeated))
             {
-                HandleCutscene("deafeatfamine||||||||||||||||||||||", gameTime, true);
+                HandleCutscene("deafeatfamine||||||||||||||||||||||||||||||||", gameTime, true);
             }
         }
 

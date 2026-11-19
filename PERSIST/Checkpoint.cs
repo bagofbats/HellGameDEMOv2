@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace PERSIST
+namespace HellGame
 {
     public class Checkpoint
     {
@@ -92,7 +92,7 @@ namespace PERSIST
 
         public void Interact()
         {
-            if (visible && root.boss_max_hp == 0)
+            if (visible && root.boss_max_hp == 0 && !root.GetDialogueStatus())
             {
                 root.StartDialogue(root.dialogue_checkpoint, dialogue_num, 'c', 25f, true);
                 dialogue_num = root.dialogue_second_index;

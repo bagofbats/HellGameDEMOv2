@@ -10,7 +10,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using TiledCS;
 
-namespace PERSIST
+namespace HellGame
 {
     static class CONSTANTS
     {

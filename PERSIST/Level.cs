@@ -19,7 +19,7 @@ using MonoGame.Extended.Gui.Controls;
 using MonoGame.Extended.Sprites;
 using System.ComponentModel.Design.Serialization;
 
-namespace PERSIST
+namespace HellGame
 {
     public class Level
     {
@@ -816,6 +816,14 @@ namespace PERSIST
                         _spriteBatch.Draw(spr_portrait, right_portrait_loc, portrait, Color.White);
                     }
 
+                    if (dialogue_loc == '>')
+                    {
+                        // very right justify text (no portrait)
+
+                        textMiddlePoint = new Vector2(0, 0);
+                        textDrawPoint = new Vector2(cam.GetPos().X + 160, cam.GetPos().Y + 2);
+                    }
+
                     textMiddlePoint.X = (int)textMiddlePoint.X;
                     textMiddlePoint.Y = (int)textMiddlePoint.Y;
 
@@ -1083,6 +1091,11 @@ namespace PERSIST
         public virtual void DialogueActions(GameTime gameTime)
         {
             // nothing
+        }
+
+        public bool GetDialogueStatus()
+        {
+            return dialogue;
         }
     }
 
