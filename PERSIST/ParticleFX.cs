@@ -445,6 +445,21 @@ namespace PERSIST
         private Rectangle frame;
         private int num_types;
         private float frequency;
+        private Vector2 target = new Vector2(0, 0);
+        private bool target_set = false;
+        private bool shutting_down = false;
+
+        private Random rd = new Random();
+        private List<Color> palette = new List<Color>();
+        private List<Color> blues = new List<Color>
+        {
+            Color.SkyBlue,
+            Color.DeepSkyBlue,
+            Color.CadetBlue,
+            Color.SkyBlue,
+            Color.DodgerBlue,
+            Color.DodgerBlue,
+        };
 
         private struct CircleStruct
         {
@@ -452,20 +467,28 @@ namespace PERSIST
             public Rectangle frame;
             public Color color;
             public float speed;
+            public float different;
+            public float simple_oset;
 
-            public CircleStruct(Rectangle bounds, Rectangle frame, Color color, float speed)
+            public CircleStruct(Rectangle bounds, Rectangle frame, Color color, float speed, float different, float simple_oset)
             {
                 this.bounds = bounds;
                 this.frame = frame;
                 this.color = color;
                 this.speed = speed;
+                this.different = different;
+                this.simple_oset = simple_oset;
             }
         }
 
         private List<CircleStruct> circles = new List<CircleStruct>();
         private float timer = 99f;
+        private float base_speed = 425f;
+        private float speed_modifier = 75f;
+        private float freq = 0.04f;
+        private float diff_chance = 0.1f;
 
-        public EvilMagicFX(Rectangle pos, Texture2D img, Rectangle frame, int num_types, float frequency, Level root) 
+        public EvilMagicFX(Rectangle pos, Texture2D img, Rectangle frame, int num_types, float frequency, Level root, string colors="blues") 
         { 
             this.pos = pos;
             this.img = img;
@@ -473,13 +496,49 @@ namespace PERSIST
             this.num_types = num_types;
             this.frequency = frequency;
             this.root = root;
+
+            // add if clauses here if more palettes ever become desirable
+            palette = blues;
+        }
+
+        public void SetTarget(Vector2 target)
+        {
+            this.target = target;
+            target_set = true;
+        }
+
+        public void GracefulShutdown()
+        {
+            shutting_down = true;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             for (int i = circles.Count - 1; i >= 0; i--) 
-            { 
-                spriteBatch.Draw(img, circles[i].bounds, circles[i].frame, circles[i].color);
+            {
+                Rectangle tmp = circles[i].bounds;
+
+                if (target_set)
+                {
+                    int start = pos.Y + pos.Height;
+
+                    float amp = tmp.X - target.X;
+                    float y = start - tmp.Y;
+                    float target_y = start - target.Y;
+                    float nintey = 90f * (float)CONSTANTS.DegToRad;
+
+                    float xoset = (float)(amp * Math.Sin(freq * (y - target_y)));
+
+                    if (freq * (y - target_y) > nintey)
+                        xoset = amp;
+
+                    if (circles[i].different < diff_chance)
+                        xoset *= -1;
+
+                    tmp.X += (int)(xoset + circles[i].simple_oset);
+                }
+
+                spriteBatch.Draw(img, tmp, circles[i].frame, circles[i].color);
             }
         }
 
@@ -499,18 +558,35 @@ namespace PERSIST
                     circles.Remove(circles[i]);
             }
 
-            if (timer > frequency)
+            if (timer > frequency && !shutting_down)
             {
-                timer = 0f;
-                CircleStruct tmp = new CircleStruct(
-                    new Rectangle(pos.X, pos.Y + pos.Height, frame.Width, frame.Height),
-                    frame,
-                    Color.White,
-                    400f
-                    );
+                for (int i = 0; i < 3; i++)
+                {
+                    int x_init = pos.X + (int)(pos.Width * rd.NextDouble());
+                    Color c = palette[rd.Next(palette.Count)];
+                    float spd = base_speed + (int)(speed_modifier * 2 * (float)(0.5f - rd.NextDouble()));
+                    float trans = 0.6f + (0.2f * (float)(0.5f - rd.NextDouble()));
+                    int frame_idx = rd.Next(num_types);
 
-                circles.Add(tmp);
+                    Rectangle frame_tmp = frame;
+                    frame_tmp.X += frame_idx * frame.Width;
+
+                    timer = 0f;
+                    CircleStruct tmp = new CircleStruct(
+                        new Rectangle(x_init, pos.Y + pos.Height, frame.Width, frame.Height),
+                        frame_tmp,
+                        c * trans,
+                        spd,
+                        (float)rd.NextDouble(),
+                        24 * (float)(0.5f - rd.NextDouble())
+                        );
+
+                    circles.Add(tmp);
+                }
             }
+
+            if (shutting_down && circles.Count == 0)
+                root.RemoveFX(this);
         }
     }
 }

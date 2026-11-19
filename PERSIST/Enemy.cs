@@ -4562,6 +4562,13 @@ namespace PERSIST
         private float base_y = 0;
         private float vsp = 0f;
         private string type;
+        private bool flash = false;
+        private bool super_flash = false;
+        private float flash_timer = 0f;
+        private float flash_threshhold = 0.1f;
+        private float disappear_progress = 0f;
+        private bool disappearing = false;
+        private float dissapear_speed = 8f;
 
         private Rectangle frame = new Rectangle(0, 352, 32, 32);
 
@@ -4618,11 +4625,26 @@ namespace PERSIST
 
             frame.Y = frame_ybase;
 
-            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float frame_factor = 60 / CONSTANTS.frame_rate;
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds * frame_factor;
             frame.X = frame_xbase + (32 * ((int)(timer * 10) % frame_reset));
 
             // gentle float
             pos.Y = GentleFloat(timer, base_y, 2, 2);
+
+            if (flash)
+            {
+                flash_timer += (float)gameTime.ElapsedGameTime.TotalSeconds * frame_factor;
+                if (flash_timer > flash_threshhold)
+                    flash = false;
+            }
+
+            if (disappearing)
+            {
+                disappear_progress += dissapear_speed * (float)gameTime.ElapsedGameTime.TotalSeconds * frame_factor;
+                if (disappear_progress >= frame.Height)
+                    root.RemoveEnemy(this);
+            }
         }
 
         private void UpdatePickup(GameTime gameTime)
@@ -4649,9 +4671,40 @@ namespace PERSIST
             frame.X = frame_base + (32 * ((int)(timer * 10) % frame_reset));
         }
 
+        public void SetFlash()
+        {
+            flash = true;
+            flash_timer = 0f;
+        }
+
+        public void PermanentFlash()
+        {
+            super_flash = true;
+        }
+
+        public void Disappear(float speed = 12f)
+        {
+            disappearing = true;
+            dissapear_speed = speed;
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(sprite, PositionRectangle, frame, Color.White);
+            Rectangle frame_tmp = frame;
+            if (super_flash)
+                frame_tmp.X += 128;
+
+            Rectangle pos_tmp = PositionRectangle;
+            if (disappearing)
+            {
+                frame_tmp.Height -= (int)disappear_progress;
+                pos_tmp.Height -= (int)disappear_progress;
+            }
+
+            spriteBatch.Draw(sprite, pos_tmp, frame_tmp, Color.White);
+
+            if (flash)
+                spriteBatch.Draw(sprite, pos_tmp, new Rectangle(frame.X + 128, frame.Y, frame.Width, frame.Height), Color.White * 0.5f);
         }
 
         public override bool CheckCollision(Rectangle input)

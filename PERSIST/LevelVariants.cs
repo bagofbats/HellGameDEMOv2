@@ -3293,7 +3293,6 @@ namespace PERSIST
                     famine_dialogue_loc++;
                 }
 
-                // TODO: cool VFX engulfing lukas
                 if (cutscene_timer > 6.1f && cutscene_code[6] == "")
                 {
                     if (reaper_cutscene != null)
@@ -3306,17 +3305,20 @@ namespace PERSIST
                     {
                         lukas_cutscene.looking = false;
                         lukas_cutscene.clutching = true;
+                        lukas_cutscene.SetFlash();
 
                         Rectangle r = GetRoom(player.GetPos());
 
                         EvilMagicFX magic = new EvilMagicFX(
-                            new Rectangle(lukas_cutscene.PositionRectangle.X, r.Y, 64, r.Height),
+                            new Rectangle(lukas_cutscene.PositionRectangle.X - 16, r.Y, 48, r.Height),
                             particle_img,
                             new Rectangle(0, 96, 16, 16),
                             3,
-                            0.2f,
+                            0.016f,
                             this
                             );
+
+                        magic.SetTarget(new Vector2(lukas_cutscene.Pos.X + 8, lukas_cutscene.Pos.Y - 20));
 
                         AddFX(magic);
 
@@ -3324,6 +3326,14 @@ namespace PERSIST
                     }
 
                     cutscene_code[6] = "-";
+                }
+
+                if (cutscene_timer > 6.2f && cutscene_code[16] == "")
+                {
+                    if (lukas_cutscene != null)
+                        lukas_cutscene.PermanentFlash();
+
+                    cutscene_code[16] = "-";
                 }
 
                 if (cutscene_timer > 8f && cutscene_code[4] == "")
@@ -3345,18 +3355,21 @@ namespace PERSIST
 
                     if (lukas_cutscene != null)
                     {
-                        RemoveEnemy(lukas_cutscene);
-                        lukas_cutscene = null;
+                        lukas_cutscene.Disappear();
                     }
+                }
 
+                if (cutscene_timer > 10.6f && cutscene_code[17] == "")
+                {
+                    cutscene_code[17] = "-";
                     if (saved_fx != null)
                     {
-                        RemoveFX(saved_fx);
+                        saved_fx.GracefulShutdown();
                         saved_fx = null;
                     }
                 }
 
-                if (cutscene_timer > 11f && cutscene_code[9] == "")
+                if (cutscene_timer > 13f && cutscene_code[9] == "")
                 {
                     cutscene_code[9] = "-";
 
@@ -3365,16 +3378,18 @@ namespace PERSIST
                         reaper_cutscene.frame_x = 0;
                         reaper_cutscene.frame_y = 48;
                     }
+
+                    lukas_cutscene = null;
                 }
 
-                if (cutscene_timer > 11.8f && cutscene_code[7] == "")
+                if (cutscene_timer > 13.8f && cutscene_code[7] == "")
                 {
                     StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
                     cutscene_code[7] = "-";
                     famine_dialogue_loc++;
                 }
 
-                if (cutscene_timer > 11.95f && cutscene_timer < 13f)
+                if (cutscene_timer > 13.95f && cutscene_timer < 15f)
                 {
                     cutscene_cam = true;
                     cutscene_cam_simple = false;
@@ -3382,7 +3397,7 @@ namespace PERSIST
                     cutscene_cam_pos = new Vector2(480, 0);
                 }
 
-                if (cutscene_timer > 12f && cutscene_code[10] == "")
+                if (cutscene_timer > 14f && cutscene_code[10] == "")
                 {
                     if (reaper_cutscene != null)
                         reaper_cutscene.flash = true;
@@ -3390,7 +3405,7 @@ namespace PERSIST
                     cutscene_code[10] = "-";
                 }
 
-                if (cutscene_timer > 12.05f && cutscene_code[12] == "")
+                if (cutscene_timer > 14.05f && cutscene_code[12] == "")
                 {
                     if (reaper_cutscene != null)
                     {
@@ -3404,7 +3419,7 @@ namespace PERSIST
                     cutscene_code[12] = "-";
                 }
 
-                if (cutscene_timer > 12.1f && cutscene_code[13] == "")
+                if (cutscene_timer > 14.1f && cutscene_code[13] == "")
                 {
                     if (reaper_cutscene != null)
                         reaper_cutscene.flash = false;
@@ -3412,7 +3427,7 @@ namespace PERSIST
                     cutscene_code[13] = "-";
                 }
 
-                if (cutscene_timer > 13 && cutscene_code[14] == "")
+                if (cutscene_timer > 15 && cutscene_code[14] == "")
                 {
                     StartDialogue(dialogue_famine_start, famine_start_bps[famine_dialogue_loc], 'c', 25f, true);
                     famine_dialogue_loc++;
@@ -3420,7 +3435,7 @@ namespace PERSIST
                     cutscene_code[14] = "-";
                 }
 
-                if (cutscene_timer > 13.4 && cutscene_code[15] == "")
+                if (cutscene_timer > 15.4 && cutscene_code[15] == "")
                 {
                     for (int i = special_walls.Count - 1; i >= 0; i--)
                         if (special_walls[i].GetType() == typeof(FakeWall))
@@ -3434,7 +3449,7 @@ namespace PERSIST
                     cutscene_code[15] = "-";     
                 }
 
-                if (cutscene_timer > 15f && cutscene_timer < 99f)
+                if (cutscene_timer > 17f && cutscene_timer < 99f)
                 {
                     cutscene_cam = true;
                     cutscene_cam_simple = true;
@@ -3442,7 +3457,7 @@ namespace PERSIST
                     cutscene_cam_pos = new Vector2(480, 240);
                 }
 
-                if (cutscene_timer > 21f && cutscene_timer < 42f)
+                if (cutscene_timer > 23f && cutscene_timer < 44f)
                 {
                     if (famine_draw_oset > 0)
                         famine_draw_oset -= (float)gameTime.ElapsedGameTime.TotalSeconds * 10;
@@ -3450,17 +3465,17 @@ namespace PERSIST
                     famine_boss.Animate(gameTime, false);
                 }
 
-                if (cutscene_timer > 42f && cutscene_timer < 47f)
+                if (cutscene_timer > 44f && cutscene_timer < 49f)
                 {
                     famine_boss.Animate(gameTime, true);
                 }
 
-                if (cutscene_timer > 47f && cutscene_timer < 99f)
+                if (cutscene_timer > 49f && cutscene_timer < 99f)
                 {
                     famine_boss.Animate(gameTime, false);
                 }
 
-                if (cutscene_timer > 48f)
+                if (cutscene_timer > 50f)
                 {
                     player.ExitCutscene();
                     cutscene = false;
