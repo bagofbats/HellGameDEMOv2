@@ -4775,6 +4775,9 @@ namespace HellGame
         private int h_oset = 11;
         private int v_oset = 14;
 
+        // post-famine vars
+        private Vector2 saved_start_pos;
+
         public Rectangle PositionRectangle
         { get { return new Rectangle((int)pos.X, (int)pos.Y, 32, 32); } }
 
@@ -4792,25 +4795,39 @@ namespace HellGame
             hurtful = false;
             pogoable = false;
             destroy_projectile = false;
+
+            if (type == "post_famine")
+                saved_start_pos = new Vector2(pos.X + 23, pos.Y);
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (!root.prog_manager.GetFlag(FLAGS.hideout_entered))
+            switch(type)
             {
-                if (player.HitBox.Intersects(root.hideout_trigger))
-                    trigger_watch = true;
+                case "hideout":
+                    if (!root.prog_manager.GetFlag(FLAGS.hideout_entered))
+                    {
+                        if (player.HitBox.Intersects(root.hideout_trigger))
+                            trigger_watch = true;
 
-                else if (player.HitBox.Y < root.hideout_trigger.Y && trigger_watch && !triggered)
-                {
-                    root.EnterHideout(gameTime);
-                    triggered = true;
-                }
-                    
+                        else if (player.HitBox.Y < root.hideout_trigger.Y && trigger_watch && !triggered)
+                        {
+                            root.EnterHideout(gameTime);
+                            triggered = true;
+                        }
 
-                else
-                    trigger_watch = false;
+
+                        else
+                            trigger_watch = false;
+                    }
+                    break;
+
+                default:
+                    // nothing
+                    break;
             }
+
+            
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -4823,6 +4840,18 @@ namespace HellGame
             Rectangle temp_frame = new Rectangle(frame.X + mask_oset, frame.Y, frame.Width, frame.Height);
 
             spriteBatch.Draw(sprite, PositionRectangle, temp_frame, Color.White);
+
+            if (type == "post_famine")
+            {
+                Rectangle rope = new Rectangle(
+                    (int)saved_start_pos.X,
+                    (int)saved_start_pos.Y,
+                    1,
+                    (int)(pos.Y - saved_start_pos.Y + 32)
+                    );
+
+                spriteBatch.Draw(root.black, rope, Color.Sienna);
+            }
         }
 
         public override void Interact()
@@ -4830,27 +4859,42 @@ namespace HellGame
             if (diastruct == null)
                 return;
 
-            bool map = root.prog_manager.GetFlag(FLAGS.map_obtained);
-            bool stay_out_of_way = root.prog_manager.GetFlag(FLAGS.stay_out_of_way);
-            bool ask_hideout = root.prog_manager.GetFlag(FLAGS.ask_hideout);
-            bool ask_leaving = root.prog_manager.GetFlag(FLAGS.ask_leaving);
+            switch(type)
+            {
+                case "hideout":
+                    bool map = root.prog_manager.GetFlag(FLAGS.map_obtained);
+                    bool stay_out_of_way = root.prog_manager.GetFlag(FLAGS.stay_out_of_way);
+                    bool ask_hideout = root.prog_manager.GetFlag(FLAGS.ask_hideout);
+                    bool ask_leaving = root.prog_manager.GetFlag(FLAGS.ask_leaving);
 
-            int index = 5;
+                    int index = 5;
 
-            if (stay_out_of_way && !ask_hideout)
-                index = 18;
-            else if (!stay_out_of_way && ask_hideout)
-                index = 19;
-            else if (stay_out_of_way && ask_hideout && !ask_leaving && !map)
-                index = 20;
-            else if (ask_leaving && !map)
-                index = 36;
-            else if (stay_out_of_way && ask_hideout && !ask_leaving && map)
-                index = 37;
-            else if (stay_out_of_way && ask_hideout && ask_leaving && map)
-                index = 48;
+                    if (stay_out_of_way && !ask_hideout)
+                        index = 18;
+                    else if (!stay_out_of_way && ask_hideout)
+                        index = 19;
+                    else if (stay_out_of_way && ask_hideout && !ask_leaving && !map)
+                        index = 20;
+                    else if (ask_leaving && !map)
+                        index = 36;
+                    else if (stay_out_of_way && ask_hideout && !ask_leaving && map)
+                        index = 37;
+                    else if (stay_out_of_way && ask_hideout && ask_leaving && map)
+                        index = 48;
 
-            root.StartDialogue(diastruct, index, 'c', 25f, true);
+                    root.StartDialogue(diastruct, index, 'c', 25f, true);
+                    break;
+
+                default:
+                    // nothing
+                    break;
+            }
+            
+        }
+
+        public void SetFrame(Rectangle newframe)
+        {
+            frame = newframe;
         }
 
 

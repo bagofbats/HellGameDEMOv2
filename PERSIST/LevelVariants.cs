@@ -1383,7 +1383,7 @@ namespace HellGame
             new DialogueStruct("Trigo?\nThat you down there?", 'd', Color.White, '>', true, "", 270, 0),
             new DialogueStruct("Huh?\nKanna?\nWhat are you--  ", 'd', Color.White, 'p', true, "", 135, 0),
 
-            new DialogueStruct("I was heading towards the heart, like we said.\nBut then I heard some weird noises\nfrom off this way.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("I was heading towards the Heart, like we said.\nBut then I heard some weird noises\nfrom off this way.", 'd', Color.White, 'r', false, "", 270, 0),
             new DialogueStruct("Don't tell me that was you . . .", 'd', Color.White, 'r', false, "", 270, 45),
 
             new DialogueStruct("Yeah, it was me.\nNo, it just did that on its own actually.\nKanna I don't need your SASS ok?? I almost DIED!!!", 'o', Color.White, 'l', false, "leaving0 0|leaving0 1|leaving0 2"),
@@ -1392,7 +1392,7 @@ namespace HellGame
             new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 45),
             new DialogueStruct("Are you okay?", 'd', Color.White, 'r', false, "", 270, 0),
             new DialogueStruct("Huh?\nYeah, I'm fine.\nI think . . . ?", 'd', Color.White, 'p', false, "", 135, 90),
-            new DialogueStruct("Good enough for now, I guess.\nCome on!", 'd', Color.White, 'r', true, "", 270, 0),
+            new DialogueStruct("Hmm.\nWell, we can talk about it later.\nCome on!", 'd', Color.White, 'r', true, "", 270, 0),
 
             // no it just did that on its own -- idx 9
             new DialogueStruct(". . .", 'd', Color.White, 'r', false, "", 270, 225),
@@ -1431,6 +1431,22 @@ namespace HellGame
         int[] famine_defeated_bps = { 0, 1, 2 };
         int famine_defeated_loc = 0;
         bool reprimand_path = false;
+
+        DialogueStruct[] dialogue_demo_end =
+        {
+            new DialogueStruct("Kanna?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("yes?", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("why aren't you letting me out of the dialogue\nwindow?", 'd', Color.White, 'p', false, "", 135, 0),
+            new DialogueStruct("cuz I can't.\nCasey hasn't made any content past this part.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("lazy fucking bum", 'd', Color.White, 'p', false, "", 135, 135),
+            new DialogueStruct("ikr", 'd', Color.White, 'r', false, "", 270, 90),
+            new DialogueStruct("Anyway, uh,\nThanks a ton for playing.\nI'm sure it means a lot to her.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("If you have any thoughts at all,\nbe sure to share them.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("Even if they're negative.\nEspecially if they're negative!\nFeedback like that is how you improve.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("And if you have nice things to say,\nI'm sure she'd like to hear that, too.", 'd', Color.White, 'r', false, "", 270, 0),
+            new DialogueStruct("In the meantime,\nthis cutscene is gonna loop forever now.\nSo if I were you, I'd just close the window.", 'd', Color.White, 'r', false, "", 270, 135),
+            new DialogueStruct("Ciao!\nUntil next time . . .", 'd', Color.White, 'r', false, "", 270, 0),
+        };
 
 
 
@@ -3628,6 +3644,10 @@ namespace HellGame
                 if (famine_boss != null && cutscene_timer < 6.0f)
                     famine_boss.Animate(gameTime, true, true);
 
+                if (kanna_cutscene != null)
+                    kanna_cutscene.SmoothMove(gameTime, new Vector2(760 - 24, 312 - 16), 20);
+                    
+
                 if (cutscene_timer > 0f)
                 {
                     player.SetNoInput();
@@ -3675,9 +3695,29 @@ namespace HellGame
                     famine_defeated_loc++;
                 }
 
-                if (cutscene_timer > 14.0f && cutscene_code[5] == "")
+                if (cutscene_timer > 12.5f && cutscene_code[9] == "")
+                {
+                    cutscene_code[9] = "-";
+
+                    // should really calculate this vector at runtime instead of hardcoding it
+                    // in case i want to resize the room later
+                    kanna_cutscene = new Kanna_Cutscene(
+                        new Vector2(760 - 24, 240 - 24),
+                        this,
+                        player,
+                        "post_famine"
+                        );
+                    kanna_cutscene.LoadAssets(asset_map[typeof(Kanna_Cutscene)]);
+                    kanna_cutscene.SetFrame(new Rectangle(352, 320, 32, 32));
+                    AddEnemy(kanna_cutscene);
+                }
+
+                if (cutscene_timer > 14.6f && cutscene_code[5] == "")
                 {
                     cutscene_code[5] = "-";
+
+                    if (kanna_cutscene != null)
+                        kanna_cutscene.SetFrame(new Rectangle(384, 320, 32, 32));
 
                     StartDialogue(dialogue_famine_defeated, famine_defeated_bps[famine_defeated_loc], 'c', 25f, true, true, true);
                     famine_defeated_loc++;
@@ -3686,10 +3726,17 @@ namespace HellGame
                 // longer cutscene branches out here
                 if(reprimand_path)
                 {
-                    if (cutscene_timer > 14.5f)
+                    if (cutscene_timer > 14.7f)
                     {
                         // kanna takes off mask
                         // i shouldn't need a cutscene code marker for this one
+
+                        if (kanna_cutscene != null && cutscene_code[17] == "")
+                        {
+                            cutscene_code[17] = "-";
+                            kanna_cutscene.mask = false;
+                        }
+                            
                     }
 
                     if (cutscene_timer > 15f && cutscene_code[10] == "")
@@ -3708,46 +3755,85 @@ namespace HellGame
                         StartDialogue(dialogue_famine_defeated, 19, 'c', 25f, true, true, true);
                     }
 
-                    if (cutscene_timer > 15.3f)
+                    if (cutscene_timer > 15.3f && cutscene_code[16] == "")
                     {
                         // kanna puts mask back on
+                        cutscene_code[16] = "-";
+
+                        if (kanna_cutscene != null)
+                            kanna_cutscene.mask = true;
+
+                        kanna_cutscene.SetFrame(new Rectangle(352, 320, 32, 32));
                     }
 
                     if (cutscene_timer > 15.6f && cutscene_code[13] == "")
                     {
                         cutscene_code[13] = "-";
+                        kanna_cutscene.SetFrame(new Rectangle(384, 320, 32, 32));
                         StartDialogue(dialogue_famine_defeated, 20, 'c', 25f, true, true, true);
                     }
 
-                    if (cutscene_timer > 16f && cutscene_code[14] == "")
+                    if (cutscene_timer > 16f && cutscene_code[15] == "")
+                    {
+                        cutscene_code[15] = "-";
+
+                        // kanna extends hand
+                        if (kanna_cutscene != null)
+                            kanna_cutscene.SetFrame(new Rectangle(256, 320, 32, 32));
+                    }
+
+                    if (cutscene_timer > 16.4f && cutscene_code[14] == "")
                     {
                         cutscene_code[14] = "-";
                         StartDialogue(dialogue_famine_defeated, 26, 'c', 25f, true, true, true);
 
+                        /**
                         player.ExitCutscene();
                         cutscene = false;
                         door_trans = false;
+                        **/
                     }
 
                 }
                 else
                 {
-                    if (cutscene_timer > 14.3f && cutscene_code[6] == "")
+                    if (cutscene_timer > 15f && cutscene_code[6] == "")
                     {
                         cutscene_code[6] = "-";
                         // kanna extends hand
+
+                        if (kanna_cutscene != null)
+                            kanna_cutscene.SetFrame(new Rectangle(256, 320, 32, 32));
                     }
 
-                    if (cutscene_timer > 15.0f && cutscene_code[7] == "")
+                    if (cutscene_timer > 15.4f && cutscene_code[7] == "")
                     {
                         cutscene_code[7] = "-";
                         StartDialogue(dialogue_famine_defeated, 15, 'c', 25f, true, true, true);
 
+                        /**
                         player.ExitCutscene();
                         cutscene = false;
                         door_trans = false;
+                        **/
                     }
                 }
+
+                // delete this later ----------------------------------------------------
+                if (cutscene_timer > 18f && cutscene_code[8] == "")
+                {
+                    if (kanna_cutscene != null)
+                        kanna_cutscene.SetFrame(new Rectangle(384, 320, 32, 32));
+
+                    cutscene_code[8] = "-";
+                    StartDialogue(dialogue_demo_end, 0, 'c', 25f, true, true, true);
+                }
+
+                if (cutscene_timer > 20f)
+                {
+                    cutscene_timer = 20f;
+                }
+                // end delete this later ----------------------------------------------------
 
                 /**
                 if (cutscene_timer > 99f)
